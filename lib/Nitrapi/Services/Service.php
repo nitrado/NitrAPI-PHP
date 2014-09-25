@@ -7,20 +7,62 @@ use Nitrapi\Nitrapi;
 abstract class Service
 {
     protected $api;
-    protected $suspend_date;
+
     protected $id;
+    protected $delete_date;
+    protected $suspend_date;
+    protected $start_date;
 
     public function __construct(Nitrapi $api, $data) {
         $this->setApi($api);
         $this->loadData($data);
     }
 
+    /**
+     * Returns the suspend date
+     *
+     * @return \DateTime
+     */
     public function getSuspendDate() {
         $datetime = new \DateTime();
         $datetime->setTimestamp((int)$this->suspend_date);
         return $datetime;
     }
 
+    /**
+     * Returns the delete date
+     *
+     * @return \DateTime
+     */
+    public function getDeleteDate() {
+        $datetime = new \DateTime();
+        $datetime->setTimestamp((int)$this->delete_date);
+        return $datetime;
+    }
+
+    /**
+     * Returns the start date
+     *
+     * @return \DateTime
+     */
+    public function getStartDate() {
+        $datetime = new \DateTime();
+        $datetime->setTimestamp((int)$this->start_date);
+        return $datetime;
+    }
+
+    /**
+     * Returns the service id
+     *
+     * @return int
+     */
+    public function getId() {
+        return (int)$this->id;
+    }
+
+    /**
+     * @param array $data
+     */
     protected function loadData(array $data) {
         $reflectionClass = new \ReflectionClass($this);
         $properties = $reflectionClass->getProperties();
@@ -35,12 +77,6 @@ abstract class Service
             $property->setValue($this, $value);
             $property->setAccessible(false);
         }
-
-        return $this;
-    }
-
-    public function getId() {
-        return $this->id;
     }
 
     /**
