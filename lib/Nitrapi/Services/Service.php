@@ -6,9 +6,6 @@ use Nitrapi\Nitrapi;
 
 abstract class Service
 {
-    /**
-     * @var $api Nitrapi
-     */
     protected $api;
     protected $suspend_date;
     protected $id;
@@ -46,10 +43,16 @@ abstract class Service
         return $this->id;
     }
 
+    /**
+     * @param Nitrapi $api
+     */
     protected function setApi(Nitrapi $api) {
         $this->api = $api;
     }
 
+    /**
+     * @return Nitrapi
+     */
     protected function getApi() {
         return $this->api;
     }
