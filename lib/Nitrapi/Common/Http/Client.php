@@ -4,7 +4,10 @@ namespace Nitrapi\Common\Http;
 
 use Guzzle\Http\Client as GuzzleClient;
 use Guzzle\Http\Curl\CurlVersion;
+use Guzzle\Http\Exception\ServerErrorResponseException;
+use Guzzle\Http\Message\Response;
 use Nitrapi\Common\Exceptions\NitrapiException;
+use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 
 class Client extends GuzzleClient
 {
@@ -12,6 +15,7 @@ class Client extends GuzzleClient
     const MINIMUM_PHP_VERSION = '5.4.0';
 
     public function __construct($baseUrl = '', $config = null) {
+        //todo later implement rabbitmq
         if (PHP_VERSION < self::MINIMUM_PHP_VERSION) {
             throw new NitrapiException(sprintf(
                 'You must have PHP version >= %s installed.',
@@ -30,5 +34,73 @@ class Client extends GuzzleClient
 
     public function getUserAgent() {
         return $this->userAgent;
+    }
+
+    /**
+     * @param $url
+     * @param array $headers
+     * @param array $options
+     * @return mixed
+     */
+    public function dataGet($url, $headers = null, $options = []) {
+        try {
+            $res = $this->get($url, $headers, $options)->send();
+            $json = $res->json();
+            $this->checkErrors($res);
+        } catch (ServerErrorResponseException $e) {
+            throw new NitrapiHttpErrorException($e->getResponse()->json()['message']);
+        }
+
+        return (isset($json['data'])) ? $json['data'] : $json['message'];
+    }
+
+    /**
+     * @param $url
+     * @param array $body
+     * @param array $headers
+     * @param array $options
+     * @return mixed
+     */
+    public function dataPost($url, $body = null, $headers = null, $options = []) {
+        try {
+            $res = $this->post($url, $headers, $body, $options)->send();
+            $json = $res->json();
+            $this->checkErrors($res, 201);
+        } catch (ServerErrorResponseException $e) {
+            throw new NitrapiHttpErrorException($e->getResponse()->json()['message']);
+        }
+
+        return (isset($json['data'])) ? $json['data'] : $json['message'];
+    }
+
+    /**
+     * @param $url
+     * @param array $body
+     * @param array $headers
+     * @param array $options
+     * @return mixed
+     */
+    public function dataDelete($url, $body = null, $headers = null, $options = []) {
+        try {
+            $res = $this->delete($url, $headers, $body, $options)->send();
+            $json = $res->json();
+            $this->checkErrors($res);
+        } catch (ServerErrorResponseException $e) {
+            throw new NitrapiHttpErrorException($e->getResponse()->json()['message']);
+        }
+
+        return (isset($json['data'])) ? $json['data'] : $json['message'];
+    }
+
+    protected function checkErrors(Response $response, $responseCode = 200) {
+        $json = $response->json();
+
+        if ($response->getStatusCode() != $responseCode) {
+            throw new NitrapiHttpErrorException("Invalid http status code " . $res->getStatusCode());
+        }
+
+        if ($json['status'] == "error") {
+            throw new NitrapiHttpErrorException("Got Error from API " . $json["message"]);
+        }
     }
 }

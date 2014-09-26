@@ -10,7 +10,7 @@ try {
      */
 
     foreach ($api->getServices() as $service) {
-        var_dump($service->getSuspendDate());
+        var_dump($service->getStartDate());
     }
 
 } catch(\Exception $e) {
