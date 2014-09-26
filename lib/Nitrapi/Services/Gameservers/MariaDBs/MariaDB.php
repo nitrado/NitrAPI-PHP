@@ -16,6 +16,7 @@ class MariaDB extends ServiceItem
     protected $username;
     protected $password;
     protected $schema;
+    protected $hostname;
 
     public function __construct(Gameserver $service, array $data) {
         parent::__construct($service, $data);
@@ -37,5 +38,9 @@ class MariaDB extends ServiceItem
 
     public function getSchema() {
         return $this->schema;
+    }
+
+    public function getHostname() {
+        return $this->hostname;
     }
 }
