@@ -20,7 +20,7 @@ class ServiceCollection
     public function __construct(Nitrapi $api, array $options = []) {
         $this->setApi($api);
 
-        $_services = $this->getApi()->dataGet("services", null, $options);
+        $_services = $this->getApi()->dataGet("services", null, $options)['services'];
         if (count($_services) > 0) {
             foreach ($_services as $service) {
                 $this->services[] = ServiceFactory::factory($this->getApi(), [
