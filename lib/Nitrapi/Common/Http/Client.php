@@ -78,28 +78,27 @@ class Client extends GuzzleClient
      * @param array $body
      * @param array $headers
      * @param array $options
-     * @return mixed
+     * @return bool
      */
     public function dataDelete($url, $body = null, $headers = null, $options = []) {
         try {
             $res = $this->delete($url, $headers, $body, $options)->send();
-            $json = $res->json();
-            $this->checkErrors($res);
+            $this->checkErrors($res, 204);
         } catch (ServerErrorResponseException $e) {
             throw new NitrapiHttpErrorException($e->getResponse()->json()['message']);
         }
 
-        return (isset($json['data'])) ? $json['data'] : $json['message'];
+        return true;
     }
 
     protected function checkErrors(Response $response, $responseCode = 200) {
         $json = $response->json();
 
         if ($response->getStatusCode() != $responseCode) {
-            throw new NitrapiHttpErrorException("Invalid http status code " . $res->getStatusCode());
+            throw new NitrapiHttpErrorException("Invalid http status code " . $response->getStatusCode());
         }
 
-        if ($json['status'] == "error") {
+        if (isset($json['status']) && $json['status'] == "error") {
             throw new NitrapiHttpErrorException("Got Error from API " . $json["message"]);
         }
     }
