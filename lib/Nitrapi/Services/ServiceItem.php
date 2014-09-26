@@ -30,11 +30,16 @@ abstract class ServiceItem
         }
     }
 
-
+    /**
+     * @param Service $service
+     */
     protected function setService(Service $service) {
         $this->service = $service;
     }
 
+    /**
+     * @return Service
+     */
     protected function getService() {
         return $this->service;
     }
