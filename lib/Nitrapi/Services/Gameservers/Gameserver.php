@@ -23,8 +23,8 @@ class Gameserver extends Service
     public function createDatabase($credentials = array(), $options = array()) {
         $url = "services/" . $this->getId() . "/gameservers/mariadbs";
 
-        $result = $this->getApi()->dataPost($url, $credentials, null, $options)['database'];
-        return MariaDBFactory::factory($this, $result['id']);
+        $result = $this->getApi()->dataPost($url, $credentials, null, $options);
+        return MariaDBFactory::factory($this, $result['database']['id']);
     }
 
     /**
@@ -32,7 +32,8 @@ class Gameserver extends Service
      */
     public function getDatabases() {
         $url = "services/" . $this->getId() . "/gameservers/mariadbs";
-        return $this->getApi()->dataGet($url)['databases'];
+        $result = $this->getApi()->dataGet($url);
+        return $result['databases'];
     }
 
     /**
