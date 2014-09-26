@@ -42,13 +42,14 @@ class Client extends GuzzleClient
      * @param array $options
      * @return mixed
      */
-    public function dataGet($url, $headers = null, $options = []) {
+    public function dataGet($url, $headers = null, $options = array()) {
         try {
             $res = $this->get($url, $headers, $options)->send();
             $json = $res->json();
             $this->checkErrors($res);
         } catch (ServerErrorResponseException $e) {
-            throw new NitrapiHttpErrorException($e->getResponse()->json()['message']);
+            $response = $e->getResponse()->json();
+            throw new NitrapiHttpErrorException($response['message']);
         }
 
         return (isset($json['data'])) ? $json['data'] : $json['message'];
