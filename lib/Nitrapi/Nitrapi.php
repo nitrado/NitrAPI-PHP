@@ -14,14 +14,14 @@ class Nitrapi extends Client
 {
     protected $accessToken;
 
-    public function __construct($accessToken, $options = []) {
+    public function __construct($accessToken, $options = array()) {
         $this->setAccessToken($accessToken);
 
         parent::__construct(NITRAPI_DEV_URL, $options);
 
-        $this->setDefaultOption('query', [
+        $this->setDefaultOption('query', array(
             'access_token' => $this->getAccessToken()
-        ]);
+        ));
     }
 
     /**
@@ -30,7 +30,7 @@ class Nitrapi extends Client
      * @param array $options
      * @return Service
      */
-    public function getService(array $options = []) {
+    public function getService(array $options = array()) {
         return ServiceFactory::factory($this, $options);
     }
 
@@ -38,8 +38,10 @@ class Nitrapi extends Client
      * @param array $options
      * @return array
      */
-    public function getServices(array $options = []) {
-        return (new ServiceCollection($this, $options))->getServices();
+    public function getServices(array $options = array()) {
+        $collection = new ServiceCollection($this, $options);
+
+        return $collection->getServices();
     }
 
     protected function setAccessToken($accessToken) {
