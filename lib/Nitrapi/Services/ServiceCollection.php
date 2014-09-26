@@ -20,13 +20,7 @@ class ServiceCollection
     public function __construct(Nitrapi $api, array $options = []) {
         $this->setApi($api);
 
-        $res = $this->getApi()->get("services", null, $options)->send();
-        if ($res->getStatusCode() != 200) {
-            throw new NitrapiException("Can not load services from user");
-        }
-
-        $_services = $res->json()['data'];
-
+        $_services = $this->getApi()->dataGet("services", null, $options);
         if (count($_services) > 0) {
             foreach ($_services as $service) {
                 $this->services[] = ServiceFactory::factory($this->getApi(), [

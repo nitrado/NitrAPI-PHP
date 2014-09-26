@@ -21,7 +21,7 @@ class Gameserver extends Service
         return [];
     }
 
-    public function deleteDatabase() {
+    public function deleteDatabase($id) {
         return true;
     }
 }
