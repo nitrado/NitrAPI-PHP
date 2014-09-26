@@ -62,13 +62,14 @@ class Client extends GuzzleClient
      * @param array $options
      * @return mixed
      */
-    public function dataPost($url, $body = null, $headers = null, $options = []) {
+    public function dataPost($url, $body = null, $headers = null, $options = array()) {
         try {
             $res = $this->post($url, $headers, $body, $options)->send();
             $json = $res->json();
             $this->checkErrors($res, 201);
         } catch (ServerErrorResponseException $e) {
-            throw new NitrapiHttpErrorException($e->getResponse()->json()['message']);
+            $response = $e->getResponse()->json();
+            throw new NitrapiHttpErrorException($response['message']);
         }
 
         return (isset($json['data'])) ? $json['data'] : $json['message'];
@@ -81,12 +82,13 @@ class Client extends GuzzleClient
      * @param array $options
      * @return bool
      */
-    public function dataDelete($url, $body = null, $headers = null, $options = []) {
+    public function dataDelete($url, $body = null, $headers = null, $options = array()) {
         try {
             $res = $this->delete($url, $headers, $body, $options)->send();
             $this->checkErrors($res, 204);
         } catch (ServerErrorResponseException $e) {
-            throw new NitrapiHttpErrorException($e->getResponse()->json()['message']);
+            $response = $e->getResponse()->json();
+            throw new NitrapiHttpErrorException($response['message']);
         }
 
         return true;
