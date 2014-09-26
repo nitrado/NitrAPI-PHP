@@ -15,17 +15,17 @@ class ServiceCollection
     /**
      * @var array $services
      */
-    protected $services = [];
+    protected $services = array();
 
-    public function __construct(Nitrapi $api, array $options = []) {
+    public function __construct(Nitrapi $api, array $options = array()) {
         $this->setApi($api);
 
-        $_services = $this->getApi()->dataGet("services", null, $options)['services'];
-        if (count($_services) > 0) {
-            foreach ($_services as $service) {
-                $this->services[] = ServiceFactory::factory($this->getApi(), [
+        $_services = $this->getApi()->dataGet("services", null, $options);
+        if (count($_services['services']) > 0) {
+            foreach ($_services['services'] as $service) {
+                $this->services[] = ServiceFactory::factory($this->getApi(), array(
                     'id' => $service['id'],
-                ]);
+                ));
             }
         }
     }

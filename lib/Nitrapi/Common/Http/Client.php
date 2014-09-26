@@ -12,7 +12,7 @@ use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 class Client extends GuzzleClient
 {
     const VERSION = '1.0.0';
-    const MINIMUM_PHP_VERSION = '5.4.0';
+    const MINIMUM_PHP_VERSION = '5.3.0';
 
     public function __construct($baseUrl = '', $config = null) {
         //todo later implement rabbitmq

@@ -20,7 +20,7 @@ class Gameserver extends Service
      * @param array $options
      * @return MariaDB
      */
-    public function createDatabase($credentials = [], $options = []) {
+    public function createDatabase($credentials = array(), $options = array()) {
         $url = "services/" . $this->getId() . "/gameservers/mariadbs";
 
         $result = $this->getApi()->dataPost($url, $credentials, null, $options)['database'];
