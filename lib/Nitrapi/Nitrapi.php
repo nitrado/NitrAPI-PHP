@@ -19,9 +19,11 @@ class Nitrapi extends Client
 
         parent::__construct(NITRAPI_DEV_URL, $options);
 
-        $this->setDefaultOption('query', array(
-            'access_token' => $this->getAccessToken()
-        ));
+        if (!empty($accessToken)) {
+            $this->setDefaultOption('query', array(
+                'access_token' => $this->getAccessToken()
+            ));
+        }
     }
 
     /**
