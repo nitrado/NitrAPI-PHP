@@ -8,7 +8,7 @@ use Nitrapi\Nitrapi;
 class ServiceFactory
 {
     public static function factory(Nitrapi $api, array $options = []) {
-        $data = $api->dataGet("services/" . $options['id'], null, $options);
+        $data = $api->dataGet("services/" . $options['id'], null, $options)['service'];
 
         $type = $data['type'];
         $class = "Nitrapi\\Services\\" . ucfirst($type) . "s\\" . ucfirst($type);
