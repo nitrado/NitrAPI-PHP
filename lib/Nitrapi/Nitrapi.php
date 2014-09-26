@@ -19,11 +19,14 @@ class Nitrapi extends Client
 
         parent::__construct(NITRAPI_LIVE_URL, $options);
 
+        $query = array();
         if (!empty($accessToken)) {
-            $this->setDefaultOption('query', array(
-                'access_token' => $this->getAccessToken()
-            ));
+            $query['access_token'] = $accessToken;
         }
+        if (isset($options['user_id']) && !empty($options['user_id'])) {
+            $query['user_id'] = (int)$options['user_id'];
+        }
+        $this->setDefaultOption('query', $query);
     }
 
     /**
