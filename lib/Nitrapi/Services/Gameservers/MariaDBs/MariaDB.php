@@ -43,4 +43,18 @@ class MariaDB extends ServiceItem
     public function getHostname() {
         return $this->hostname;
     }
+
+    /**
+     * Imports a sql from uri
+     *
+     * @param $source_uri
+     * @return bool
+     */
+    public function import($source_uri) {
+        $url = "/services/".$this->getService()->getId()."/gameservers/mariadbs/".$this->getId()."/import";
+        $this->getService()->getApi()->dataPost($url, array(
+            "source_uri" => $source_uri
+        ));
+        return true;
+    }
 }
