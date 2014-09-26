@@ -17,7 +17,7 @@ class Nitrapi extends Client
     public function __construct($accessToken, $options = array()) {
         $this->setAccessToken($accessToken);
 
-        parent::__construct(NITRAPI_DEV_URL, $options);
+        parent::__construct(NITRAPI_LIVE_URL, $options);
 
         if (!empty($accessToken)) {
             $this->setDefaultOption('query', array(
