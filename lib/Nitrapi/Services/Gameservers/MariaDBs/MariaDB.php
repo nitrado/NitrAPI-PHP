@@ -47,13 +47,13 @@ class MariaDB extends ServiceItem
     /**
      * Imports a sql from uri
      *
-     * @param $source_uri
+     * @param $uri
      * @return bool
      */
-    public function import($source_uri) {
+    public function import($uri) {
         $url = "/services/".$this->getService()->getId()."/gameservers/mariadbs/".$this->getId()."/import";
         $this->getService()->getApi()->dataPost($url, array(
-            "source_uri" => $source_uri
+            "uri" => $uri
         ));
         return true;
     }
