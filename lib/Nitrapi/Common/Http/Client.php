@@ -71,7 +71,7 @@ class Client extends GuzzleClient
             throw new NitrapiHttpErrorException($response['message']);
         }
 
-        if (!empty($json['data'])) {
+        if (isset($json['data']) && is_array($json['data'])) {
             return $json['data'];
         }
 
