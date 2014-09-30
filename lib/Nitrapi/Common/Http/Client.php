@@ -65,14 +65,21 @@ class Client extends GuzzleClient
     public function dataPost($url, $body = null, $headers = null, $options = array()) {
         try {
             $res = $this->post($url, $headers, $body, $options)->send();
-            $json = $res->json();
             $this->checkErrors($res, 201);
         } catch (ServerErrorResponseException $e) {
             $response = $e->getResponse()->json();
             throw new NitrapiHttpErrorException($response['message']);
         }
 
-        return (isset($json['data'])) ? $json['data'] : $json['message'];
+        if (!empty($json['data'])) {
+            return $json['data'];
+        }
+
+        if (!empty($json['message'])) {
+            return $json['message'];
+        }
+
+        return true;
     }
 
     /**
