@@ -65,6 +65,7 @@ class Client extends GuzzleClient
     public function dataPost($url, $body = null, $headers = null, $options = array()) {
         try {
             $res = $this->post($url, $headers, $body, $options)->send();
+            $json = $res->json();
             $this->checkErrors($res, 201);
         } catch (ServerErrorResponseException $e) {
             $response = $e->getResponse()->json();
