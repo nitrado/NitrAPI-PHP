@@ -71,7 +71,7 @@ class Gameserver extends Service
         $return = array();
         if (count($result['keys']) > 0) {
             foreach ($result['keys'] as $key) {
-                $return[] = new LicenseKeyFactory($this, $key);
+                $return[] = LicenseKeyFactory::factory($this, $key);
             }
         }
 
