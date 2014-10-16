@@ -3,6 +3,7 @@
 namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
 use Nitrapi\Services\Service;
@@ -28,6 +29,8 @@ class Gameserver extends Service
     }
 
     /**
+     * Returns all mariadb databases of the gameserver
+     *
      * @return array
      */
     public function getDatabases() {
@@ -37,6 +40,8 @@ class Gameserver extends Service
     }
 
     /**
+     * Returns a mariadb database
+     *
      * @param $id
      * @return MariaDB
      */
@@ -45,11 +50,31 @@ class Gameserver extends Service
     }
 
     /**
+     * Deletes a mariadb database
+     *
      * @param MariaDB $database
      * @return bool
      */
     public function deleteDatabase(MariaDB $database) {
         $url = "services/" . $this->getId() . "/gameservers/mariadbs/" . $database->getId();
         return $this->getApi()->dataDelete($url);
+    }
+
+    /**
+     * Returns the license keys of the gameserver
+     *
+     * @return array
+     */
+    public function getLicenseKeys() {
+        $url = "services/" . $this->getId() . "/gameservers/license_keys";
+        $result = $this->getApi()->dataGet($url);
+        $return = array();
+        if (count($result['keys']) > 0) {
+            foreach ($result['keys'] as $key) {
+                $return[] = new LicenseKeyFactory($this, $key);
+            }
+        }
+
+        return $return;
     }
 }
