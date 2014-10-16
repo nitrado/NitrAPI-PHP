@@ -3,7 +3,7 @@
 require_once '../vendor/autoload.php';
 
 try {
-    $api = new \Nitrapi\Nitrapi("NTc2OGMyMjg0NGMxMGY5MDVhOTE1ZjJmY2VjODY2NDIzOWJiMGYzZmU0ZTI1MWMwNmQzMDZhMGYzNGZmYjU4Yw");
+    $api = new \Nitrapi\Nitrapi("<TOKEN>");
 
     /**
      * @var $service \Nitrapi\Services\Service
