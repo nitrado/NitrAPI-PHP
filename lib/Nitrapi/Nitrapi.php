@@ -14,10 +14,11 @@ class Nitrapi extends Client
 {
     protected $accessToken;
 
-    public function __construct($accessToken, $options = array()) {
+    public function __construct($accessToken, $options = array(), $dev = false) {
         $this->setAccessToken($accessToken);
 
-        parent::__construct(NITRAPI_LIVE_URL, $options);
+        $apiUrl = ($dev === false) ? NITRAPI_LIVE_URL : NITRAPI_DEV_URL;
+        parent::__construct($apiUrl, $options);
 
         $query = array();
         if (!empty($accessToken)) {
