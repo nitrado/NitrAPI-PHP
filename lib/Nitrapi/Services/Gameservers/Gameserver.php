@@ -3,6 +3,7 @@
 namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\Gameservers\FileServer\FileServer;
 use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
@@ -76,5 +77,14 @@ class Gameserver extends Service
         }
 
         return $return;
+    }
+
+    /**
+     * Returns a file server object
+     *
+     * @return FileServer
+     */
+    public function getFileServer() {
+        return new FileServer($this);
     }
 }
