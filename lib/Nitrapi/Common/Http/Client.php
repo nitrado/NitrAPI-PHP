@@ -93,7 +93,7 @@ class Client extends GuzzleClient
     public function dataDelete($url, $body = null, $headers = null, $options = array()) {
         try {
             $res = $this->delete($url, $headers, $body, $options)->send();
-            $this->checkErrors($res, 204);
+            $this->checkErrors($res, 200);
         } catch (ServerErrorResponseException $e) {
             $response = $e->getResponse()->json();
             throw new NitrapiHttpErrorException($response['message']);
