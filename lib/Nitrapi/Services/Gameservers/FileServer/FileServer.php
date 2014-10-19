@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\Gameservers\FileServer;
 
+use Guzzle\Http\Exception\ServerErrorResponseException;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
@@ -17,6 +18,45 @@ class FileServer
     public function __construct(Gameserver $service) {
         $this->service = $service;
     }
+
+    public function uploadToken($path, $name) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/upload";
+        $upload = $this->service->getApi()->dataPost($url, array(
+            'path' => $path,
+            'file' => $name
+        ));
+
+        if (empty($upload['token']) || empty($upload['url'])) {
+            throw new NitrapiErrorException('Unknown error while getting upload token');
+        }
+
+        return $upload;
+    }
+
+    public function uploadFile($file, $path, $name) {
+        if (!file_exists($file) || !is_readable($file)) {
+            throw new NitrapiErrorException('Can\' find local file');
+        }
+
+        $upload = $this->uploadToken($path, $name);
+
+        try {
+            $request = $this->service->getApi()->post($upload['url'], array(
+                'Content-Type' => 'multipart/form-data',
+                'body' => array(
+                    'token' => $upload['token'],
+                    'file' => fopen($file, 'r'),
+                )
+            ));
+            $request->send();
+        } catch (ServerErrorResponseException $e) {
+            $response = $e->getResponse()->json();
+            throw new NitrapiErrorException($response['message']);
+        }
+
+        return true;
+    }
+
 
     public function getFileList($dir) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
@@ -38,7 +78,7 @@ class FileServer
         $download = $this->service->getApi()->dataGet($url . '?file=' . $file);
 
         if (empty($download['token']) || empty($download['url'])) {
-            throw new NitrapiErrorException('Unknown error while downloading');
+            throw new NitrapiErrorException('Unknown error while getting download token');
         }
 
         return $download;
