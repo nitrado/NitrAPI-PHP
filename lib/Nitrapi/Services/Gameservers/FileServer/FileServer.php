@@ -42,14 +42,15 @@ class FileServer
 
         try {
             $request = $this->service->getApi()->post($upload['url'], array(
-                'Content-Type' => 'multipart/form-data',
-                'body' => array(
-                    'token' => $upload['token'],
-                    'file' => fopen($file, 'r'),
-                )
+                'content-type' => 'multipart/form-data',
+                'token' => $upload['token']
+            ), array(), array(
+                'debug' => true
             ));
+            $request->setBody(fopen($file, 'r'));
             $request->send();
         } catch (ServerErrorResponseException $e) {
+            var_dump($e->getResponse()->getBody(true));
             $response = $e->getResponse()->json();
             throw new NitrapiErrorException($response['message']);
         }
