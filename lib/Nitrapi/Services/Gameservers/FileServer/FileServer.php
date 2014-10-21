@@ -42,12 +42,10 @@ class FileServer
 
         try {
             $request = $this->service->getApi()->post($upload['url'], array(
-                'content-type' => 'multipart/form-data',
+                'content-type' => 'application/binary',
                 'token' => $upload['token']
-            ), array(), array(
-                'debug' => true
             ));
-            $request->setBody(fopen($file, 'r'));
+            $request->setBody(fopen($file, 'rb'));
             $request->send();
         } catch (ServerErrorResponseException $e) {
             var_dump($e->getResponse()->getBody(true));
