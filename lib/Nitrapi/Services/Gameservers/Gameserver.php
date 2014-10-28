@@ -102,7 +102,7 @@ class Gameserver extends Service
      * Claims all needed license keys and returns all
      * keys
      *
-     * @return array
+     * @return bool
      */
     public function releaseLicenseKeys() {
         $url = "services/" . $this->getId() . "/gameservers/license_keys/release_all";
