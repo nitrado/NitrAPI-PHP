@@ -26,11 +26,12 @@ class FileServer
             'file' => $name
         ));
 
-        if (empty($upload['token']) || empty($upload['url'])) {
+        $token = $upload['token'];
+        if (empty($token['token']) || empty($token['url'])) {
             throw new NitrapiErrorException('Unknown error while getting upload token');
         }
 
-        return $upload;
+        return $token;
     }
 
     public function uploadFile($file, $path, $name) {
