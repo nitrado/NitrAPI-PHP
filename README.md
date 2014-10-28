@@ -37,7 +37,6 @@ $api = new \Nitrapi\Nitrapi("<ACCESS TOKEN>"));
  * Example: Get all services as objects
  * @var $service \Nitrapi\Services\Service
  */
- 
 try {
     foreach ($api->getServices() as $service) {
         echo "Service " . $service->getId() . " started at " . $service->getStartDate()->format('Y-m-d H:i:s') . PHP_EOL;
