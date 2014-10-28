@@ -80,6 +80,37 @@ class Gameserver extends Service
     }
 
     /**
+     * Claims all needed license keys and returns all
+     * keys
+     *
+     * @return array
+     */
+    public function claimLicenseKeys() {
+        $url = "services/" . $this->getId() . "/gameservers/license_keys/claim_all";
+        $result = $this->getApi()->dataPost($url);
+        $return = array();
+        if (count($result['keys']) > 0) {
+            foreach ($result['keys'] as $key) {
+                $return[] = LicenseKeyFactory::factory($this, $key);
+            }
+        }
+
+        return $return;
+    }
+
+    /**
+     * Claims all needed license keys and returns all
+     * keys
+     *
+     * @return array
+     */
+    public function releaseLicenseKeys() {
+        $url = "services/" . $this->getId() . "/gameservers/license_keys/release_all";
+        $this->getApi()->dataPost($url);
+        return true;
+    }
+
+    /**
      * Returns a file server object
      *
      * @return FileServer
