@@ -4,10 +4,14 @@ namespace Nitrapi\Services\Gameservers;
 
 class CallbackHandler
 {
-    protected $api;
+    protected $service;
 
-    public function __construct(\Nitrapi\Nitrapi $api) {
-        $this->api = $api;
+    public function __construct(Gameserver $service) {
+        $this->service = $service;
+    }
+
+    public function getService() {
+        return $this->service;
     }
 
     /**
@@ -16,6 +20,11 @@ class CallbackHandler
      * @return bool
      */
     public function installed($gameShort) {
+        $url = "/services/".$this->getService()->getId()."/gameservers/callbacks/installed";
+        $this->getService()->getApi()->dataPost($url, array(
+            "game_short" => $gameShort
+        ));
+        return true;
     }
 
     /**
@@ -24,6 +33,11 @@ class CallbackHandler
      * @return bool
      */
     public function uninstalled($gameShort) {
+        $url = "/services/".$this->getService()->getId()."/gameservers/callbacks/uninstalled";
+        $this->getService()->getApi()->dataPost($url, array(
+            "game_short" => $gameShort
+        ));
+        return true;
     }
 
     /**
@@ -31,6 +45,9 @@ class CallbackHandler
      * @return bool
      */
     public function restarted() {
+        $url = "/services/".$this->getService()->getId()."/gameservers/callbacks/restarted";
+        $this->getService()->getApi()->dataPost($url);
+        return true;
     }
 
     /**
@@ -38,5 +55,8 @@ class CallbackHandler
      * @return bool
      */
     public function deleted() {
+        $url = "/services/".$this->getService()->getId()."/gameservers/callbacks/deleted";
+        $this->getService()->getApi()->dataPost($url);
+        return true;
     }
 }

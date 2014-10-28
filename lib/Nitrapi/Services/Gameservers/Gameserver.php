@@ -94,6 +94,6 @@ class Gameserver extends Service
      * @return CallbackHandler
      */
     public function getCallbackHandler() {
-        return new CallbackHandler($this->getApi());
+        return new CallbackHandler($this);
     }
 }
