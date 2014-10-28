@@ -87,4 +87,13 @@ class Gameserver extends Service
     public function getFileServer() {
         return new FileServer($this);
     }
+
+    /**
+     * Returns the callback handler for the gameserver
+     *
+     * @return CallbackHandler
+     */
+    public function getCallbackHandler() {
+        return new CallbackHandler($this->getApi());
+    }
 }
