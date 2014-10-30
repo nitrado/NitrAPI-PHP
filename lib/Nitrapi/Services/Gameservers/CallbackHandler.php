@@ -20,7 +20,7 @@ class CallbackHandler
      * @return bool
      */
     public function installed($gameShort) {
-        $url = "/services/".$this->getService()->getId()."/gameservers/callbacks/installed";
+        $url = "/services/".$this->getService()->getId()."/gameservers/callback/installed";
         $this->getService()->getApi()->dataPost($url, array(
             "game_short" => $gameShort
         ));
@@ -33,7 +33,7 @@ class CallbackHandler
      * @return bool
      */
     public function uninstalled($gameShort) {
-        $url = "/services/".$this->getService()->getId()."/gameservers/callbacks/uninstalled";
+        $url = "/services/".$this->getService()->getId()."/gameservers/callback/uninstalled";
         $this->getService()->getApi()->dataPost($url, array(
             "game_short" => $gameShort
         ));
@@ -45,7 +45,7 @@ class CallbackHandler
      * @return bool
      */
     public function restarted() {
-        $url = "/services/".$this->getService()->getId()."/gameservers/callbacks/restarted";
+        $url = "/services/".$this->getService()->getId()."/gameservers/callback/restarted";
         $this->getService()->getApi()->dataPost($url);
         return true;
     }
@@ -55,7 +55,7 @@ class CallbackHandler
      * @return bool
      */
     public function deleted() {
-        $url = "/services/".$this->getService()->getId()."/gameservers/callbacks/deleted";
+        $url = "/services/".$this->getService()->getId()."/gameservers/callback/deleted";
         $this->getService()->getApi()->dataPost($url);
         return true;
     }
