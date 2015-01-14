@@ -1,9 +1,10 @@
 **Nitrapi PHP SDK**
 ===================
 
-PHP based SDK for the Nitrapi. Nitrapi is the official public API of nitrado.net. 
+This documentation shows the usage of the PHP based SDK for the Nitrapi.
+Nitrapi is the official public API of nitrado.net.
 
-More coming soon.
+API Endpoint: https://api.nitrado.net/
 
 Requirements
 ------------
