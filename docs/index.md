@@ -1,6 +1,8 @@
 **Nitrapi PHP SDK**
 ===================
 
+![alt tag](https://static.nitrado.net/img/logo-orange.png)
+
 This documentation shows the usage of the PHP based SDK for the Nitrapi.
 Nitrapi is the official public API of nitrado.net.
 
@@ -26,7 +28,7 @@ php composer.phar require nitrado/nitrapi-php:dev-master
 Usage Example
 -------------
 
-```
+```php
 <?php
 
 require_once '../vendor/autoload.php';
