@@ -7,6 +7,7 @@ use Nitrapi\Services\Gameservers\FileServer\FileServer;
 use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
+use Nitrapi\Services\Gameservers\PluginSystem\PluginSystem;
 use Nitrapi\Services\Service;
 
 class Gameserver extends Service
@@ -117,6 +118,15 @@ class Gameserver extends Service
      */
     public function getFileServer() {
         return new FileServer($this);
+    }
+
+    /**
+     * Returns a plugin system object
+     *
+     * @return PluginSystem
+     */
+    public function getPluginSystem() {
+        return new PluginSystem($this);
     }
 
     /**

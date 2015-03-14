@@ -66,7 +66,7 @@ class Client extends GuzzleClient
         try {
             $res = $this->post($url, $headers, $body, $options)->send();
             $json = $res->json();
-            $this->checkErrors($res, 201);
+            $this->checkErrors($res, 200);
         } catch (ServerErrorResponseException $e) {
             $response = $e->getResponse()->json();
             throw new NitrapiHttpErrorException($response['message']);
