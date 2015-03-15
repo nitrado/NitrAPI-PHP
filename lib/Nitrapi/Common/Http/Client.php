@@ -105,7 +105,13 @@ class Client extends GuzzleClient
     protected function checkErrors(Response $response, $responseCode = 200) {
         $json = $response->json();
 
-        if ($response->getStatusCode() != $responseCode) {
+        $allowedPorts = array();
+        $allowedPorts[] = $responseCode;
+        if ($responseCode = 200) {
+            $allowedPorts[] = 201;
+        }
+
+        if (!in_array($response->getStatusCode(), $allowedPorts)) {
             throw new NitrapiHttpErrorException("Invalid http status code " . $response->getStatusCode());
         }
 
