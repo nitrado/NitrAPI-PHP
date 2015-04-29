@@ -77,7 +77,8 @@ class FileServer
         $url = "/services/".$this->service->getId()."/gameservers/file_server/download";
         $download = $this->service->getApi()->dataGet($url . '?file=' . $file);
 
-        if (empty($download['token']) || empty($download['url'])) {
+        $token = $download['token'];
+        if (empty($token['token']) || empty($token['url'])) {
             throw new NitrapiErrorException('Unknown error while getting download token');
         }
 
