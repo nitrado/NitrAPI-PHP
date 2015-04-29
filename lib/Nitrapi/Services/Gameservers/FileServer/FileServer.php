@@ -131,4 +131,69 @@ class FileServer
     public function deleteDirectory($directory) {
         return $this->deleteFile($directory);
     }
+
+    /**
+     * Moves a file to another directory
+     *
+     * @param $sourceFile
+     * @param $targetDir
+     * @param $fileName
+     * @return bool
+     */
+    public function moveFile($sourceFile, $targetDir, $fileName) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/move";
+        $this->service->getApi()->dataPost($url, array(
+            'source_path' => $sourceFile,
+            'target_path' => $targetDir,
+            'target_filename' => $fileName
+        ));
+        return true;
+    }
+
+    /**
+     * Moves a directory to another directory (recursive)
+     *
+     * @param $source
+     * @param $target
+     * @return bool
+     */
+    public function moveDirectory($source, $target) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/move";
+        $this->service->getApi()->dataPost($url, array(
+            'source_path' => $source,
+            'target_path' => $target
+        ));
+        return true;
+    }
+
+    /**
+     * Copies a file to another directory
+     *
+     * @param $source
+     * @param $targetDir
+     * @param $fileName
+     * @return bool
+     */
+    public function copyFile($source, $targetDir, $fileName) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/copy";
+        $this->service->getApi()->dataPost($url, array(
+            'source_path' => $source,
+            'target_path' => $targetDir,
+            'target_name' => $fileName
+        ));
+        return true;
+    }
+
+
+    /**
+     * Copies a directory to another directory (recursive)
+     *
+     * @param $source
+     * @param $targetDir
+     * @param $dirName
+     * @return bool
+     */
+    public function copyDirectory($source, $targetDir, $dirName) {
+        return $this->copyFile($source, $targetDir, $dirName);
+    }
 }
