@@ -19,6 +19,46 @@ class Gameserver extends Service
     }
 
     /**
+     * Returns informations about the gameserver
+     *
+     * @return mixed
+     */
+    public function getDetails() {
+        $url = "services/" . $this->getId() . "/gameservers";
+
+        $result = $this->getApi()->dataGet($url);
+        return $result['gameserver'];
+    }
+
+    /**
+     * Restarts the gameserver
+     *
+     * @param string $message
+     * @return bool
+     */
+    public function doRestart($message = null) {
+        $url = "services/" . $this->getId() . "/gameservers/restart";
+        $this->getApi()->dataPost($url, array(
+            'message' => $message
+        ));
+        return true;
+    }
+
+    /**
+     * Stopps the gameserver
+     *
+     * @param string $message
+     * @return bool
+     */
+    public function doStop($message = null) {
+        $url = "services/" . $this->getId() . "/gameservers/stop";
+        $this->getApi()->dataPost($url, array(
+            'message' => $message
+        ));
+        return true;
+    }
+
+    /**
      * @param array $credentials
      * @param array $options
      * @return MariaDB
