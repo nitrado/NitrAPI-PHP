@@ -148,4 +148,13 @@ class GameserverDetails
     public function getLabel() {
         return (string)$this->data['label'];
     }
+
+    /**
+     * Returns the user_id
+     *
+     * @return string
+     */
+    public function getUserId() {
+        return (int)$this->data['user_id'];
+    }
 }
