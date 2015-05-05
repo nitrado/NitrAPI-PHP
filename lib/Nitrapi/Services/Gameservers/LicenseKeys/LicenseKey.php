@@ -18,7 +18,7 @@ class LicenseKey extends ServiceItem
     protected $key;
     protected $type;
 
-    public function __construct(Gameserver $service, array $data) {
+    public function __construct(Gameserver &$service, array &$data) {
         parent::__construct($service, $data);
         $this->setService($service);
     }

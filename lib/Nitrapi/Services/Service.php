@@ -13,7 +13,7 @@ abstract class Service
     protected $suspend_date;
     protected $start_date;
 
-    public function __construct(Nitrapi $api, array $data) {
+    public function __construct(Nitrapi &$api, array &$data) {
         $this->setApi($api);
         $this->loadData($data);
     }

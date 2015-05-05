@@ -18,7 +18,7 @@ class MariaDB extends ServiceItem
     protected $schema;
     protected $hostname;
 
-    public function __construct(Gameserver $service, array $data) {
+    public function __construct(Gameserver &$service, array &$data) {
         parent::__construct($service, $data);
         $this->setService($service);
 

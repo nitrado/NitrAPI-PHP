@@ -3,6 +3,7 @@
 namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\Gameservers\CustomerSettings\CustomerSettings;
 use Nitrapi\Services\Gameservers\FileServer\FileServer;
 use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
@@ -13,9 +14,16 @@ use Nitrapi\Services\Service;
 class Gameserver extends Service
 {
     protected $game;
+    protected $info = null;
 
-    public function __construct(Nitrapi $api, $data) {
-         parent::__construct($api, $data);
+    public function __construct(Nitrapi &$api, &$data) {
+        parent::__construct($api, $data);
+        $this->info = $this->getApi()->dataGet("services/" . $this->getId() . "/gameservers");
+    }
+
+    public function refresh() {
+        $url = "services/" . $this->getId() . "/gameservers";
+        $this->info = $this->getApi()->dataGet($url);
     }
 
     /**
@@ -24,10 +32,11 @@ class Gameserver extends Service
      * @return mixed
      */
     public function getDetails() {
-        $url = "services/" . $this->getId() . "/gameservers";
+        return new GameserverDetails($this->info['gameserver']);
+    }
 
-        $result = $this->getApi()->dataGet($url);
-        return $result['gameserver'];
+    public function getCustomerSettings() {
+        return new CustomerSettings($this, $this->info['gameserver']['settings']);
     }
 
     /**
