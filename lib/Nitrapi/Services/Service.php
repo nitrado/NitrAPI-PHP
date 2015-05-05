@@ -61,6 +61,24 @@ abstract class Service
     }
 
     /**
+     * Returns the user id of the service
+     *
+     * @return int
+     */
+    public function getUserId() {
+        return (int)$this->user_id;
+    }
+
+    /**
+     * Returns the username
+     *
+     * @return string
+     */
+    public function getUsername() {
+        return (string)$this->username;
+    }
+
+    /**
      * @param array $data
      */
     protected function loadData(array $data) {
