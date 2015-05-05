@@ -166,4 +166,25 @@ class GameserverDetails
     public function getServiceId() {
         return (int)$this->data['service_id'];
     }
+
+    /**
+     * Gets the linux hostystem
+     *
+     * @return array
+     */
+    public function getLinuxHostsystem() {
+        return $this->data['hostsystems']['linux'];
+    }
+
+    /**
+     * Gets the windows hostsystem
+     *
+     * @return array
+     */
+    public function getWindowsHostsystem() {
+        if (isset($this->data['hostsystems']['windows'])) {
+            return $this->data['hostsystems']['windows'];
+        }
+        return array();
+    }
 }
