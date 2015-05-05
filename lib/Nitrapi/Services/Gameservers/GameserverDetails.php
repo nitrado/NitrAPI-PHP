@@ -150,11 +150,20 @@ class GameserverDetails
     }
 
     /**
-     * Returns the user_id
+     * Returns the user id
      *
      * @return string
      */
     public function getUserId() {
         return (int)$this->data['user_id'];
+    }
+
+    /**
+     * Returns the service id
+     *
+     * @return string
+     */
+    public function getServiceId() {
+        return (int)$this->data['service_id'];
     }
 }
