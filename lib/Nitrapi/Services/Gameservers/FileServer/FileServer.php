@@ -196,4 +196,20 @@ class FileServer
     public function copyDirectory($source, $targetDir, $dirName) {
         return $this->copyFile($source, $targetDir, $dirName);
     }
+
+    /**
+     * Creates a new directory
+     *
+     * @param $path
+     * @param $name
+     * @return bool
+     */
+    public function createDirectory($path, $name) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/mkdir";
+        $this->service->getApi()->dataPost($url, array(
+            'path' => $path,
+            'name' => $name
+        ));
+        return true;
+    }
 }
