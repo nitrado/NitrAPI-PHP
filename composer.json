@@ -1,0 +1,27 @@
+{
+    "name": "nitrado/nitrapi-php-lib",
+    "description": "PHP SDK for Nitrapi",
+    "keywords": ["nitrapi", "nitrado", "marbis", "api"],
+    "type": "library",
+    "authors": [
+        {
+            "name": "Alexander Birkner",
+            "email": "alexander.birkner@marbis.net",
+            "homepage" : "https://github.com/BirknerAlex"
+        },
+        {
+            "name": "Aaron Fischer",
+            "email": "aaron.fischer@marbis.net",
+            "homepage" : "https://github.com/f0086"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Nitrapi": ["lib/"]
+        }
+    },
+    "require": {
+        "php" : ">=5.3",
+        "guzzle/guzzle": "3.9.*@dev"
+    }
+}
