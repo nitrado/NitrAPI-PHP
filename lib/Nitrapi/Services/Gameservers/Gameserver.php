@@ -161,6 +161,100 @@ class Gameserver extends Service
     }
 
     /**
+     * Returns the full list of games
+     *
+     * @return array
+     */
+    public function getGames() {
+        $url = "services/" . $this->getId() . "/gameservers/games";
+        return $this->getApi()->dataGet($url);
+    }
+
+    /**
+     * Installs a new game. Optional with mod pack.
+     *
+     * @param $game
+     * @param null $modpack
+     * @return bool
+     */
+    public function installGame($game, $modpack = null) {
+        $url = "services/" . $this->getId() . "/gameservers/games/install";
+        $this->getApi()->dataPost($url, array(
+            'game' => $game,
+            'modpack' => $modpack,
+        ));
+        return true;
+    }
+
+    /**
+     * Uninstalls a specific game.
+     *
+     * @param $game
+     * @return bool
+     */
+    public function uninstallGame($game) {
+        $url = "services/" . $this->getId() . "/gameservers/games/uninstall";
+        $this->getApi()->dataDelete($url, array(
+            'game' => $game,
+        ));
+        return true;
+    }
+
+    /**
+     * (Re)starts a specific game.
+     *
+     * @param $game
+     * @return bool
+     */
+    public function startGame($game) {
+        $url = "services/" . $this->getId() . "/gameservers/games/restart";
+        $this->getApi()->dataPost($url, array(
+            'game' => $game,
+        ));
+        return true;
+    }
+
+    /**
+     * Changes the ftp password.
+     *
+     * @param $password
+     * @return bool
+     */
+    public function changeFTPPassword($password) {
+        $url = "services/" . $this->getId() . "/gameservers/ftp/password";
+        $this->getApi()->dataPost($url, array(
+            'password' => $password,
+        ));
+        return true;
+    }
+
+    /**
+     * Changes the mysql password.
+     *
+     * @param $password
+     * @return bool
+     */
+    public function changeMySQLPassword($password) {
+        $url = "services/" . $this->getId() . "/gameservers/mysql/password";
+        $this->getApi()->dataPost($url, array(
+            'password' => $password,
+        ));
+        return true;
+    }
+
+    /**
+     * Reset the mysql database.
+     *
+     * @param $password
+     * @return bool
+     */
+    public function resetMySQLDatabase() {
+        $url = "services/" . $this->getId() . "/gameservers/mysql/reset";
+        $this->getApi()->dataPost($url);
+        return true;
+    }
+
+    /**
      * Returns a file server object
      *
      * @return FileServer
