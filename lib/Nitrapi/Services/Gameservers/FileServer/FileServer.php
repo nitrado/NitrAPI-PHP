@@ -36,7 +36,7 @@ class FileServer
 
     public function uploadFile($file, $path, $name) {
         if (!file_exists($file) || !is_readable($file)) {
-            throw new NitrapiErrorException('Can\' find local file');
+            throw new NitrapiErrorException('Can\'t find local file');
         }
 
         $upload = $this->uploadToken($path, $name);
@@ -49,7 +49,6 @@ class FileServer
             $request->setBody(fopen($file, 'rb'));
             $request->send();
         } catch (ServerErrorResponseException $e) {
-            var_dump($e->getResponse()->getBody(true));
             $response = $e->getResponse()->json();
             throw new NitrapiErrorException($response['message']);
         }
@@ -57,6 +56,28 @@ class FileServer
         return true;
     }
 
+
+    public function writeFile($path, $name, $content) {
+        if (empty($content)) {
+            throw new NitrapiErrorException('Not content provided.');
+        }
+
+        $upload = $this->uploadToken($path, $name);
+
+        try {
+            $request = $this->service->getApi()->post($upload['url'], array(
+                'content-type' => 'application/binary',
+                'token' => $upload['token']
+            ));
+            $request->setBody($content, 'text/plain');
+            $request->send();
+        } catch (ServerErrorResponseException $e) {
+            $response = $e->getResponse()->json();
+            throw new NitrapiErrorException($response['message']);
+        }
+
+        return true;
+    }
 
     public function getFileList($dir) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
