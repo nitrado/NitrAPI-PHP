@@ -3,6 +3,7 @@
 namespace Nitrapi\Services\Gameservers\FileServer;
 
 use Guzzle\Http\Exception\ServerErrorResponseException;
+use Guzzle\Http\Message\PostFile;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
@@ -46,7 +47,8 @@ class FileServer
                 'content-type' => 'application/binary',
                 'token' => $upload['token']
             ));
-            $request->setBody(fopen($file, 'rb'));
+            $postBody = $request->getBody();
+            $postBody->addFile(new PostFile('file', fopen($file, 'rb')));
             $request->send();
         } catch (ServerErrorResponseException $e) {
             $response = $e->getResponse()->json();

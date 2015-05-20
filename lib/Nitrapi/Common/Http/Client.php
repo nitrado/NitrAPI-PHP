@@ -2,10 +2,7 @@
 
 namespace Nitrapi\Common\Http;
 
-use Guzzle\Http\Client as GuzzleClient;
-use Guzzle\Http\Curl\CurlVersion;
-use Guzzle\Http\Exception\ServerErrorResponseException;
-use Guzzle\Http\Message\Response;
+use GuzzleHttp\Client as GuzzleClient;
 use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 
@@ -23,17 +20,8 @@ class Client extends GuzzleClient
             ));
         }
 
-        parent::__construct($baseUrl, $config);
-    }
-
-    public function getDefaultUserAgent() {
-        return 'Nitrapi/' . self::VERSION
-        . ' cURL/' . CurlVersion::getInstance()->get('version')
-        . ' PHP/' . PHP_VERSION;
-    }
-
-    public function getUserAgent() {
-        return $this->userAgent;
+        $config['base_url'] = $baseUrl;
+        parent::__construct($config);
     }
 
     /**
