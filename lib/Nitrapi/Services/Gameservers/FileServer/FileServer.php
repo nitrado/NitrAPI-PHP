@@ -2,7 +2,9 @@
 
 namespace Nitrapi\Services\Gameservers\FileServer;
 
-use Guzzle\Http\Exception\ServerErrorResponseException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Post\PostFile;
+use GuzzleHttp\Stream\Stream;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
@@ -42,13 +44,15 @@ class FileServer
         $upload = $this->uploadToken($path, $name);
 
         try {
-            $request = $this->service->getApi()->post($upload['url'], array(
-                'content-type' => 'application/binary',
-                'token' => $upload['token']
+            $this->service->getApi()->post($upload['url'], array(
+                'headers' => array(
+                    'content-type' => 'application/binary',
+                    'token' => $upload['token']
+                ),
+                'body' => Stream::factory(fopen($file, 'rb')),
             ));
-            $request->setBody(fopen($file, 'rb'));
-            $request->send();
-        } catch (ServerErrorResponseException $e) {
+        } catch (RequestException $e) {
+            var_dump($e->getResponse()->getBody()->getContents());
             $response = $e->getResponse()->json();
             throw new NitrapiErrorException($response['message']);
         }
@@ -61,17 +65,17 @@ class FileServer
         if (empty($content)) {
             throw new NitrapiErrorException('Not content provided.');
         }
-
         $upload = $this->uploadToken($path, $name);
 
         try {
-            $request = $this->service->getApi()->post($upload['url'], array(
-                'content-type' => 'application/binary',
-                'token' => $upload['token']
+            $this->service->getApi()->post($upload['url'], array(
+                'body' => $content,
+                'headers' => array(
+                    'content-type' => 'application/binary',
+                    'token' => $upload['token']
+                )
             ));
-            $request->setBody($content, 'text/plain');
-            $request->send();
-        } catch (ServerErrorResponseException $e) {
+        } catch (RequestException $e) {
             $response = $e->getResponse()->json();
             throw new NitrapiErrorException($response['message']);
         }
@@ -122,9 +126,7 @@ class FileServer
 
         $download = $this->downloadToken($file);
         $url = $download['url'];
-        $this->service->getApi()->get($url)
-            ->setResponseBody($path . DIRECTORY_SEPARATOR . $name)
-            ->send();
+        //$this->service->getApi()->get($url)->getBody()->read(1024)
         return true;
     }
 

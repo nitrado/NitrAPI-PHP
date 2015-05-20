@@ -1,5 +1,5 @@
 <?php
-
+content-type
 require_once '../vendor/autoload.php';
 
 try {
