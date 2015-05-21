@@ -124,9 +124,14 @@ class FileServer
             throw new NitrapiErrorException('The target directory "' . $path . '" is not writeable');
         }
 
+        if (file_exists($path . DIRECTORY_SEPARATOR . $name)) {
+            throw new NitrapiErrorException('The target file '.$path . DIRECTORY_SEPARATOR . $name.' already exists');
+        }
+
         $download = $this->downloadToken($file);
-        $url = $download['url'];
-        //$this->service->getApi()->get($url)->getBody()->read(1024)
+        $this->service->getApi()->get($download['token']['url'], array(
+            'save_to' => Stream::factory(fopen($path . DIRECTORY_SEPARATOR . $name, 'wb'))
+        ));
         return true;
     }
 
