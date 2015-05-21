@@ -66,6 +66,15 @@ class GameserverDetails
     }
 
     /**
+     * Returns the modpack
+     *
+     * @return string
+     */
+    public function getModpack() {
+        return $this->data['modpack'];
+    }
+
+    /**
      * Returns the slot amount of the gameserver
      *
      * @return int
