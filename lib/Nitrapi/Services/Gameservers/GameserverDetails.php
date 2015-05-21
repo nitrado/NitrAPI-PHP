@@ -187,4 +187,13 @@ class GameserverDetails
         }
         return array();
     }
+
+    /**
+     * Returns the customer settings
+     *
+     * @return array
+     */
+    public function getSettings() {
+        return $this->data['settings'];
+    }
 }

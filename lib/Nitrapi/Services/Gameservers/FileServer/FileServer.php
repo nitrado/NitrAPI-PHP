@@ -136,6 +136,21 @@ class FileServer
     }
 
     /**
+     * Reads a specific file
+     *
+     * @param $file
+     * @return string
+     */
+    public function readFile($file) {
+        $download = $this->downloadToken($file);
+
+        $request = $this->service->getApi()->createRequest('GET', $download['token']['url']);
+        $response = $this->service->getApi()->send($request);
+
+        return $response->getBody()->getContents();
+    }
+
+    /**
      * Deletes a file from server
      *
      * @param $file
