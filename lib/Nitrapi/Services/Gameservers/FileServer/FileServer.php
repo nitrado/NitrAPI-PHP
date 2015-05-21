@@ -68,7 +68,7 @@ class FileServer
         $upload = $this->uploadToken($path, $name);
 
         try {
-            $this->service->getApi()->post($upload['url'], array(
+            $this->service->getApi()->dataPost($upload['url'], null, null, array(
                 'body' => $content,
                 'headers' => array(
                     'content-type' => 'application/binary',
@@ -129,7 +129,7 @@ class FileServer
         }
 
         $download = $this->downloadToken($file);
-        $this->service->getApi()->get($download['token']['url'], array(
+        $this->service->getApi()->dataGet($download['token']['url'], null, array(
             'save_to' => Stream::factory(fopen($path . DIRECTORY_SEPARATOR . $name, 'wb'))
         ));
         return true;
