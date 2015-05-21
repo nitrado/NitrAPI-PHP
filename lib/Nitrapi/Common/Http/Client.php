@@ -3,6 +3,8 @@
 namespace Nitrapi\Common\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Message\Response;
 use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 
@@ -12,7 +14,6 @@ class Client extends GuzzleClient
     const MINIMUM_PHP_VERSION = '5.3.0';
 
     public function __construct($baseUrl = '', $config = null) {
-        //todo later implement rabbitmq
         if (PHP_VERSION < self::MINIMUM_PHP_VERSION) {
             throw new NitrapiException(sprintf(
                 'You must have PHP version >= %s installed.',
@@ -32,10 +33,15 @@ class Client extends GuzzleClient
      */
     public function dataGet($url, $headers = null, $options = array()) {
         try {
-            $res = $this->get($url, $headers, $options)->send();
-            $json = $res->json();
-            $this->checkErrors($res);
-        } catch (ServerErrorResponseException $e) {
+            if (is_array($headers)) {
+                $options['headers'] = $headers;
+            }
+            $request = $this->createRequest('GET', $url, $options);
+
+            $response = $this->send($request);
+            $this->checkErrors($response);
+            $json = $response->json();
+        } catch (RequestException $e) {
             $response = $e->getResponse()->json();
             throw new NitrapiHttpErrorException($response['message']);
         }
@@ -52,10 +58,18 @@ class Client extends GuzzleClient
      */
     public function dataPost($url, $body = null, $headers = null, $options = array()) {
         try {
-            $res = $this->post($url, $headers, $body, $options)->send();
-            $json = $res->json();
-            $this->checkErrors($res, 200);
-        } catch (ServerErrorResponseException $e) {
+            if (is_array($body)) {
+                $options['body'] = $body;
+            }
+            if (is_array($headers)) {
+                $options['headers'] = $headers;
+            }
+            $request = $this->createRequest('POST', $url, $options);
+
+            $response = $this->send($request);
+            $this->checkErrors($response);
+            $json = $response->json();
+        } catch (RequestException $e) {
             $response = $e->getResponse()->json();
             throw new NitrapiHttpErrorException($response['message']);
         }
@@ -80,9 +94,17 @@ class Client extends GuzzleClient
      */
     public function dataDelete($url, $body = null, $headers = null, $options = array()) {
         try {
-            $res = $this->delete($url, $headers, $body, $options)->send();
-            $this->checkErrors($res, 200);
-        } catch (ServerErrorResponseException $e) {
+            if (is_array($body)) {
+                $options['body'] = $body;
+            }
+            if (is_array($headers)) {
+                $options['headers'] = $headers;
+            }
+            $request = $this->createRequest('DELETE', $url, $options);
+
+            $response = $this->send($request);
+            $this->checkErrors($response);
+        } catch (RequestException $e) {
             $response = $e->getResponse()->json();
             throw new NitrapiHttpErrorException($response['message']);
         }

@@ -2,8 +2,9 @@
 
 namespace Nitrapi\Services\Gameservers\FileServer;
 
-use Guzzle\Http\Exception\ServerErrorResponseException;
-use Guzzle\Http\Message\PostFile;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Post\PostFile;
+use GuzzleHttp\Stream\Stream;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
@@ -43,14 +44,15 @@ class FileServer
         $upload = $this->uploadToken($path, $name);
 
         try {
-            $request = $this->service->getApi()->post($upload['url'], array(
-                'content-type' => 'application/binary',
-                'token' => $upload['token']
+            $this->service->getApi()->post($upload['url'], array(
+                'headers' => array(
+                    'content-type' => 'application/binary',
+                    'token' => $upload['token']
+                ),
+                'body' => Stream::factory(fopen($file, 'rb')),
             ));
-            $postBody = $request->getBody();
-            $postBody->addFile(new PostFile('file', fopen($file, 'rb')));
-            $request->send();
-        } catch (ServerErrorResponseException $e) {
+        } catch (RequestException $e) {
+            var_dump($e->getResponse()->getBody()->getContents());
             $response = $e->getResponse()->json();
             throw new NitrapiErrorException($response['message']);
         }
@@ -63,17 +65,17 @@ class FileServer
         if (empty($content)) {
             throw new NitrapiErrorException('Not content provided.');
         }
-
         $upload = $this->uploadToken($path, $name);
 
         try {
-            $request = $this->service->getApi()->post($upload['url'], array(
-                'content-type' => 'application/binary',
-                'token' => $upload['token']
+            $this->service->getApi()->dataPost($upload['url'], null, null, array(
+                'body' => $content,
+                'headers' => array(
+                    'content-type' => 'application/binary',
+                    'token' => $upload['token']
+                )
             ));
-            $request->setBody($content, 'text/plain');
-            $request->send();
-        } catch (ServerErrorResponseException $e) {
+        } catch (RequestException $e) {
             $response = $e->getResponse()->json();
             throw new NitrapiErrorException($response['message']);
         }
@@ -122,11 +124,14 @@ class FileServer
             throw new NitrapiErrorException('The target directory "' . $path . '" is not writeable');
         }
 
+        if (file_exists($path . DIRECTORY_SEPARATOR . $name)) {
+            throw new NitrapiErrorException('The target file '.$path . DIRECTORY_SEPARATOR . $name.' already exists');
+        }
+
         $download = $this->downloadToken($file);
-        $url = $download['url'];
-        $this->service->getApi()->get($url)
-            ->setResponseBody($path . DIRECTORY_SEPARATOR . $name)
-            ->send();
+        $this->service->getApi()->dataGet($download['token']['url'], null, array(
+            'save_to' => Stream::factory(fopen($path . DIRECTORY_SEPARATOR . $name, 'wb'))
+        ));
         return true;
     }
 
