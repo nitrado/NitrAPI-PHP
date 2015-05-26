@@ -14,6 +14,7 @@ class CustomerSettings
     protected $settings = null;
 
     public function __construct(Gameserver &$service, array &$settings) {
+        $this->service = $service;
         $this->settings = $settings;
     }
 
@@ -26,19 +27,29 @@ class CustomerSettings
             throw new CustomerSettingNotFoundException("Setting \"".$key."\" in category \"".$category."\" not found");
         }
 
-        if (empty($category) && empty($key)) {
-            return $this->settings;
+        if (!empty($category) && !empty($key)) {
+            return $this->settings[$category][$key];
         }
 
-        if (empty($category)) {
+        if (!empty($category)) {
             return $this->settings[$category];
         }
 
-        return $this->settings[$category][$key];
+        return $this->settings;
     }
 
-    public function writeSetting($category, $key) {
-        //todo
+    public function writeSetting($category, $key, $value) {
+        if (!$this->hasSetting($category, $key)) {
+            throw new CustomerSettingNotFoundException("Setting \"".$key."\" in category \"".$category."\" not found");
+        }
+
+        $this->service->getApi()->dataPost("services/" . $this->service->getId() . "/gameservers/settings", [
+            "category" => $category,
+            "key" => $key,
+            "value" => $value,
+        ]);
+
+        return true;
     }
 
     protected function hasCategory($category) {
