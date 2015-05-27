@@ -52,6 +52,25 @@ class CustomerSettings
         return true;
     }
 
+    public function getConfigSets() {
+        return $this->service->getApi()->dataGet("services/" . $this->service->getId() . "/gameservers/settings/sets")['sets'];
+    }
+
+    public function restoreConfigset($id) {
+        $this->service->getApi()->dataPost("services/" . $this->service->getId() . "/gameservers/settings/sets/".$id."/restore");
+        return true;
+    }
+
+    public function deleteConfigset($id) {
+        $this->service->getApi()->dataDelete("services/" . $this->service->getId() . "/gameservers/settings/sets/".$id);
+        return true;
+    }
+
+    public function createConfigset() {
+        $this->service->getApi()->dataPost("services/" . $this->service->getId() . "/gameservers/settings/sets");
+        return true;
+    }
+
     protected function hasCategory($category) {
         if (!isset($this->settings[$category])) {
             return false;
