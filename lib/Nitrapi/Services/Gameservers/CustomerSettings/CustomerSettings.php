@@ -66,8 +66,10 @@ class CustomerSettings
         return true;
     }
 
-    public function createConfigset() {
-        $this->service->getApi()->dataPost("services/" . $this->service->getId() . "/gameservers/settings/sets");
+    public function createConfigset($name = null) {
+        $settings = (!empty($name)) ? ['name' => $name] : [];
+
+        $this->service->getApi()->dataPost("services/" . $this->service->getId() . "/gameservers/settings/sets", $settings);
         return true;
     }
 
