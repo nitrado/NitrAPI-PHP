@@ -73,6 +73,11 @@ class CustomerSettings
         return true;
     }
 
+    public function resetSettings() {
+        $this->service->getApi()->dataDelete("services/" . $this->service->getId() . "/gameservers/settings");
+        return true;
+    }
+
     protected function hasCategory($category) {
         if (!isset($this->settings[$category])) {
             return false;
