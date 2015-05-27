@@ -207,7 +207,7 @@ class Gameserver extends Service
      * @return bool
      */
     public function startGame($game) {
-        $url = "services/" . $this->getId() . "/gameservers/games/restart";
+        $url = "services/" . $this->getId() . "/gameservers/games/start";
         $this->getApi()->dataPost($url, array(
             'game' => $game,
         ));
