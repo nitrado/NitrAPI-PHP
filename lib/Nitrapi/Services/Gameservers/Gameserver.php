@@ -179,10 +179,11 @@ class Gameserver extends Service
      */
     public function installGame($game, $modpack = null) {
         $url = "services/" . $this->getId() . "/gameservers/games/install";
-        $this->getApi()->dataPost($url, array(
+        $data =  array(
             'game' => $game,
-            'modpack' => $modpack,
-        ));
+        );
+        if (!empty($modpack)) $data['modpack'] = $modpack;
+        $this->getApi()->dataPost($url, $data);
         return true;
     }
 
