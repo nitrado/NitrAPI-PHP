@@ -21,6 +21,15 @@ class FileServer
         $this->service = $service;
     }
 
+    /**
+     * Returns the upload token and url. You can post the file by your own directly to the url.
+     *
+     * @param $path
+     * @param $name
+     * @return array
+     * @throws NitrapiErrorException
+     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     */
     public function uploadToken($path, $name) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/upload";
         $upload = $this->service->getApi()->dataPost($url, array(
@@ -36,6 +45,15 @@ class FileServer
         return $token;
     }
 
+    /**
+     * Uploads a specific file
+     *
+     * @param $file
+     * @param $path
+     * @param $name
+     * @return bool
+     * @throws NitrapiErrorException
+     */
     public function uploadFile($file, $path, $name) {
         if (!file_exists($file) || !is_readable($file)) {
             throw new NitrapiErrorException('Can\'t find local file');
@@ -60,7 +78,16 @@ class FileServer
         return true;
     }
 
-
+    /**
+     * Writes a specific file. File will be overwritten if it's already existing.
+     *
+     * @param $path
+     * @param $name
+     * @param $content
+     * @return bool
+     * @throws NitrapiErrorException
+     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     */
     public function writeFile($path, $name, $content) {
         if (empty($content)) {
             throw new NitrapiErrorException('Not content provided.');
@@ -83,6 +110,13 @@ class FileServer
         return true;
     }
 
+    /**
+     * Lists all files and folder inside of a given directory
+     *
+     * @param $dir
+     * @return array
+     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     */
     public function getFileList($dir) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
 
@@ -91,6 +125,14 @@ class FileServer
         return $entries['entries'];
     }
 
+    /**
+     * Searches inside a specific directory recursively for specific file pattern.
+     *
+     * @param $dir
+     * @param $search
+     * @return array
+     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     */
     public function doFileSearch($dir, $search) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
 
