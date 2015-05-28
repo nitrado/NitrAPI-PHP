@@ -91,6 +91,14 @@ class FileServer
         return $entries['entries'];
     }
 
+    public function doFileSearch($dir, $search) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
+
+        $entries = $this->service->getApi()->dataGet($url . '?dir=' . $dir . '&search=' . $search);
+
+        return $entries['entries'];
+    }
+
     /**
      * Returns the download token and url for a file
      *
