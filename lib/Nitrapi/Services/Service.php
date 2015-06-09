@@ -13,7 +13,7 @@ abstract class Service
     protected $suspend_date;
     protected $start_date;
 
-    public function __construct(Nitrapi $api, array $data) {
+    public function __construct(Nitrapi &$api, array &$data) {
         $this->setApi($api);
         $this->loadData($data);
     }
@@ -58,6 +58,24 @@ abstract class Service
      */
     public function getId() {
         return (int)$this->id;
+    }
+
+    /**
+     * Returns the user id of the service
+     *
+     * @return int
+     */
+    public function getUserId() {
+        return (int)$this->user_id;
+    }
+
+    /**
+     * Returns the username
+     *
+     * @return string
+     */
+    public function getUsername() {
+        return (string)$this->username;
     }
 
     /**

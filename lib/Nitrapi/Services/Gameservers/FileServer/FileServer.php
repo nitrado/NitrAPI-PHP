@@ -2,7 +2,9 @@
 
 namespace Nitrapi\Services\Gameservers\FileServer;
 
-use Guzzle\Http\Exception\ServerErrorResponseException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Post\PostFile;
+use GuzzleHttp\Stream\Stream;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
@@ -15,10 +17,19 @@ class FileServer
 
     protected $lastError = null;
 
-    public function __construct(Gameserver $service) {
+    public function __construct(Gameserver &$service) {
         $this->service = $service;
     }
 
+    /**
+     * Returns the upload token and url. You can post the file by your own directly to the url.
+     *
+     * @param $path
+     * @param $name
+     * @return array
+     * @throws NitrapiErrorException
+     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     */
     public function uploadToken($path, $name) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/upload";
         $upload = $this->service->getApi()->dataPost($url, array(
@@ -34,22 +45,32 @@ class FileServer
         return $token;
     }
 
+    /**
+     * Uploads a specific file
+     *
+     * @param $file
+     * @param $path
+     * @param $name
+     * @return bool
+     * @throws NitrapiErrorException
+     */
     public function uploadFile($file, $path, $name) {
         if (!file_exists($file) || !is_readable($file)) {
-            throw new NitrapiErrorException('Can\' find local file');
+            throw new NitrapiErrorException('Can\'t find local file');
         }
 
         $upload = $this->uploadToken($path, $name);
 
         try {
-            $request = $this->service->getApi()->post($upload['url'], array(
-                'content-type' => 'application/binary',
-                'token' => $upload['token']
+            $this->service->getApi()->post($upload['url'], array(
+                'headers' => array(
+                    'content-type' => 'application/binary',
+                    'token' => $upload['token']
+                ),
+                'body' => Stream::factory(fopen($file, 'rb')),
             ));
-            $request->setBody(fopen($file, 'rb'));
-            $request->send();
-        } catch (ServerErrorResponseException $e) {
-            var_dump($e->getResponse()->getBody(true));
+        } catch (RequestException $e) {
+            var_dump($e->getResponse()->getBody()->getContents());
             $response = $e->getResponse()->json();
             throw new NitrapiErrorException($response['message']);
         }
@@ -57,11 +78,65 @@ class FileServer
         return true;
     }
 
+    /**
+     * Writes a specific file. File will be overwritten if it's already existing.
+     *
+     * @param $path
+     * @param $name
+     * @param $content
+     * @return bool
+     * @throws NitrapiErrorException
+     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     */
+    public function writeFile($path, $name, $content) {
+        if (empty($content)) {
+            throw new NitrapiErrorException('Not content provided.');
+        }
+        $upload = $this->uploadToken($path, $name);
 
+        try {
+            $this->service->getApi()->dataPost($upload['url'], null, null, array(
+                'body' => $content,
+                'headers' => array(
+                    'content-type' => 'application/binary',
+                    'token' => $upload['token']
+                )
+            ));
+        } catch (RequestException $e) {
+            $response = $e->getResponse()->json();
+            throw new NitrapiErrorException($response['message']);
+        }
+
+        return true;
+    }
+
+    /**
+     * Lists all files and folder inside of a given directory
+     *
+     * @param $dir
+     * @return array
+     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     */
     public function getFileList($dir) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
 
         $entries = $this->service->getApi()->dataGet($url . '?dir=' . $dir);
+
+        return $entries['entries'];
+    }
+
+    /**
+     * Searches inside a specific directory recursively for specific file pattern.
+     *
+     * @param $dir
+     * @param $search
+     * @return array
+     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     */
+    public function doFileSearch($dir, $search) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
+
+        $entries = $this->service->getApi()->dataGet($url . '?dir=' . $dir . '&search=' . $search);
 
         return $entries['entries'];
     }
@@ -77,7 +152,8 @@ class FileServer
         $url = "/services/".$this->service->getId()."/gameservers/file_server/download";
         $download = $this->service->getApi()->dataGet($url . '?file=' . $file);
 
-        if (empty($download['token']) || empty($download['url'])) {
+        $token = $download['token'];
+        if (empty($token['token']) || empty($token['url'])) {
             throw new NitrapiErrorException('Unknown error while getting download token');
         }
 
@@ -98,12 +174,30 @@ class FileServer
             throw new NitrapiErrorException('The target directory "' . $path . '" is not writeable');
         }
 
+        if (file_exists($path . DIRECTORY_SEPARATOR . $name)) {
+            throw new NitrapiErrorException('The target file '.$path . DIRECTORY_SEPARATOR . $name.' already exists');
+        }
+
         $download = $this->downloadToken($file);
-        $url = $download['url'];
-        $this->service->getApi()->get($url)
-            ->setResponseBody($path . DIRECTORY_SEPARATOR . $name)
-            ->send();
+        $this->service->getApi()->dataGet($download['token']['url'], null, array(
+            'save_to' => Stream::factory(fopen($path . DIRECTORY_SEPARATOR . $name, 'wb'))
+        ));
         return true;
+    }
+
+    /**
+     * Reads a specific file
+     *
+     * @param $file
+     * @return string
+     */
+    public function readFile($file) {
+        $download = $this->downloadToken($file);
+
+        $request = $this->service->getApi()->createRequest('GET', $download['token']['url']);
+        $response = $this->service->getApi()->send($request);
+
+        return $response->getBody()->getContents();
     }
 
     /**
@@ -129,5 +223,86 @@ class FileServer
      */
     public function deleteDirectory($directory) {
         return $this->deleteFile($directory);
+    }
+
+    /**
+     * Moves a file to another directory
+     *
+     * @param $sourceFile
+     * @param $targetDir
+     * @param $fileName
+     * @return bool
+     */
+    public function moveFile($sourceFile, $targetDir, $fileName) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/move";
+        $this->service->getApi()->dataPost($url, array(
+            'source_path' => $sourceFile,
+            'target_path' => $targetDir,
+            'target_filename' => $fileName
+        ));
+        return true;
+    }
+
+    /**
+     * Moves a directory to another directory (recursive)
+     *
+     * @param $source
+     * @param $target
+     * @return bool
+     */
+    public function moveDirectory($source, $target) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/move";
+        $this->service->getApi()->dataPost($url, array(
+            'source_path' => $source,
+            'target_path' => $target
+        ));
+        return true;
+    }
+
+    /**
+     * Copies a file to another directory
+     *
+     * @param $source
+     * @param $targetDir
+     * @param $fileName
+     * @return bool
+     */
+    public function copyFile($source, $targetDir, $fileName) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/copy";
+        $this->service->getApi()->dataPost($url, array(
+            'source_path' => $source,
+            'target_path' => $targetDir,
+            'target_name' => $fileName
+        ));
+        return true;
+    }
+
+
+    /**
+     * Copies a directory to another directory (recursive)
+     *
+     * @param $source
+     * @param $targetDir
+     * @param $dirName
+     * @return bool
+     */
+    public function copyDirectory($source, $targetDir, $dirName) {
+        return $this->copyFile($source, $targetDir, $dirName);
+    }
+
+    /**
+     * Creates a new directory
+     *
+     * @param $path
+     * @param $name
+     * @return bool
+     */
+    public function createDirectory($path, $name) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/mkdir";
+        $this->service->getApi()->dataPost($url, array(
+            'path' => $path,
+            'name' => $name
+        ));
+        return true;
     }
 }

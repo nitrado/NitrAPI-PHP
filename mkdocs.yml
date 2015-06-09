@@ -1,8 +1,0 @@
-site_name: Nitrapi PHP SDK
-theme: readthedocs
-pages:
-- ['index.md', 'User Guide', 'Installation']
-- ['user-guide/oauth.md', 'User Guide', 'Authentication']
-- ['about/license.md', 'About', 'License']
-repo_url: https://github.com/Nitrado/Nitrapi-PHP
-site_author: marbis GmbH

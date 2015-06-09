@@ -3,6 +3,7 @@
 namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\Gameservers\CustomerSettings\CustomerSettings;
 use Nitrapi\Services\Gameservers\FileServer\FileServer;
 use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
@@ -13,9 +14,57 @@ use Nitrapi\Services\Service;
 class Gameserver extends Service
 {
     protected $game;
+    protected $info = null;
 
-    public function __construct(Nitrapi $api, $data) {
-         parent::__construct($api, $data);
+    public function __construct(Nitrapi &$api, &$data) {
+        parent::__construct($api, $data);
+        $this->info = $this->getApi()->dataGet("services/" . $this->getId() . "/gameservers");
+    }
+
+    public function refresh() {
+        $url = "services/" . $this->getId() . "/gameservers";
+        $this->info = $this->getApi()->dataGet($url);
+    }
+
+    /**
+     * Returns informations about the gameserver
+     *
+     * @return mixed
+     */
+    public function getDetails() {
+        return new GameserverDetails($this->info['gameserver']);
+    }
+
+    public function getCustomerSettings() {
+        return new CustomerSettings($this, $this->info['gameserver']['settings']);
+    }
+
+    /**
+     * Restarts the gameserver
+     *
+     * @param string $message
+     * @return bool
+     */
+    public function doRestart($message = null) {
+        $url = "services/" . $this->getId() . "/gameservers/restart";
+        $this->getApi()->dataPost($url, array(
+            'message' => $message
+        ));
+        return true;
+    }
+
+    /**
+     * Stopps the gameserver
+     *
+     * @param string $message
+     * @return bool
+     */
+    public function doStop($message = null) {
+        $url = "services/" . $this->getId() . "/gameservers/stop";
+        $this->getApi()->dataPost($url, array(
+            'message' => $message
+        ));
+        return true;
     }
 
     /**
@@ -112,6 +161,101 @@ class Gameserver extends Service
     }
 
     /**
+     * Returns the full list of games
+     *
+     * @return array
+     */
+    public function getGames() {
+        $url = "services/" . $this->getId() . "/gameservers/games";
+        return $this->getApi()->dataGet($url);
+    }
+
+    /**
+     * Installs a new game. Optional with mod pack.
+     *
+     * @param $game
+     * @param null $modpack
+     * @return bool
+     */
+    public function installGame($game, $modpack = null) {
+        $url = "services/" . $this->getId() . "/gameservers/games/install";
+        $data =  array(
+            'game' => $game,
+        );
+        if (!empty($modpack)) $data['modpack'] = $modpack;
+        $this->getApi()->dataPost($url, $data);
+        return true;
+    }
+
+    /**
+     * Uninstalls a specific game.
+     *
+     * @param $game
+     * @return bool
+     */
+    public function uninstallGame($game) {
+        $url = "services/" . $this->getId() . "/gameservers/games/uninstall";
+        $this->getApi()->dataDelete($url, array(
+            'game' => $game,
+        ));
+        return true;
+    }
+
+    /**
+     * (Re)starts a specific game.
+     *
+     * @param $game
+     * @return bool
+     */
+    public function startGame($game) {
+        $url = "services/" . $this->getId() . "/gameservers/games/start";
+        $this->getApi()->dataPost($url, array(
+            'game' => $game,
+        ));
+        return true;
+    }
+
+    /**
+     * Changes the ftp password.
+     *
+     * @param $password
+     * @return bool
+     */
+    public function changeFTPPassword($password) {
+        $url = "services/" . $this->getId() . "/gameservers/ftp/password";
+        $this->getApi()->dataPost($url, array(
+            'password' => $password,
+        ));
+        return true;
+    }
+
+    /**
+     * Changes the mysql password.
+     *
+     * @param $password
+     * @return bool
+     */
+    public function changeMySQLPassword($password) {
+        $url = "services/" . $this->getId() . "/gameservers/mysql/password";
+        $this->getApi()->dataPost($url, array(
+            'password' => $password,
+        ));
+        return true;
+    }
+
+    /**
+     * Reset the mysql database.
+     *
+     * @param $password
+     * @return bool
+     */
+    public function resetMySQLDatabase() {
+        $url = "services/" . $this->getId() . "/gameservers/mysql/reset";
+        $this->getApi()->dataPost($url);
+        return true;
+    }
+
+    /**
      * Returns a file server object
      *
      * @return FileServer
@@ -137,4 +281,15 @@ class Gameserver extends Service
     public function getCallbackHandler() {
         return new CallbackHandler($this);
     }
+
+    /**
+     * Returns the admin logs
+     *
+     * @return array
+     */
+    public function getAdminLogs() {
+        $url = "services/" . $this->getId() . "/gameservers/admin_logs";
+        return $this->getApi()->dataGet($url);
+    }
+
 }
