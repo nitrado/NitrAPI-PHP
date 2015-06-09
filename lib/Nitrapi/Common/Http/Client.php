@@ -11,7 +11,7 @@ use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 
 class Client extends GuzzleClient
 {
-    const VERSION = '1.0.0';
+    const SDK_VERSION = '1.0.0';
     const MINIMUM_PHP_VERSION = '5.3.0';
 
     public function __construct($baseUrl = '', $config = null) {
@@ -27,7 +27,7 @@ class Client extends GuzzleClient
     }
 
     public function getDefaultUserAgent() {
-        return 'Nitrapi/' . self::VERSION
+        return 'Nitrapi/' . self::SDK_VERSION
         . ' cURL/' . CurlVersion::getInstance()->get('version')
         . ' PHP/' . PHP_VERSION;
     }
