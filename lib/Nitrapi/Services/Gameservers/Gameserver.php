@@ -281,4 +281,15 @@ class Gameserver extends Service
     public function getCallbackHandler() {
         return new CallbackHandler($this);
     }
+
+    /**
+     * Returns the admin logs
+     *
+     * @return array
+     */
+    public function getAdminLogs() {
+        $url = "services/" . $this->getId() . "/gameservers/admin_logs";
+        return $this->getApi()->dataGet($url);
+    }
+
 }
