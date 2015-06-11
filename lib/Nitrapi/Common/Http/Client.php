@@ -36,14 +36,18 @@ class Client extends GuzzleClient
             if (is_array($headers)) {
                 $options['headers'] = $headers;
             }
+
             $request = $this->createRequest('GET', $url, $options);
 
             $response = $this->send($request);
             $this->checkErrors($response);
             $json = $response->json();
         } catch (RequestException $e) {
-            $response = $e->getResponse()->json();
-            throw new NitrapiHttpErrorException($response['message']);
+            if ($e->hasResponse()) {
+                $response = $e->getResponse()->json();
+                throw new NitrapiHttpErrorException($response['message']);
+            }
+            throw new NitrapiHttpErrorException($e->getMessage());
         }
 
         return (isset($json['data'])) ? $json['data'] : $json['message'];
@@ -70,8 +74,11 @@ class Client extends GuzzleClient
             $this->checkErrors($response);
             $json = $response->json();
         } catch (RequestException $e) {
-            $response = $e->getResponse()->json();
-            throw new NitrapiHttpErrorException($response['message']);
+            if ($e->hasResponse()) {
+                $response = $e->getResponse()->json();
+                throw new NitrapiHttpErrorException($response['message']);
+            }
+            throw new NitrapiHttpErrorException($e->getMessage());
         }
 
         if (isset($json['data']) && is_array($json['data'])) {
@@ -105,8 +112,11 @@ class Client extends GuzzleClient
             $response = $this->send($request);
             $this->checkErrors($response);
         } catch (RequestException $e) {
-            $response = $e->getResponse()->json();
-            throw new NitrapiHttpErrorException($response['message']);
+            if ($e->hasResponse()) {
+                $response = $e->getResponse()->json();
+                throw new NitrapiHttpErrorException($response['message']);
+            }
+            throw new NitrapiHttpErrorException($e->getMessage());
         }
 
         return true;

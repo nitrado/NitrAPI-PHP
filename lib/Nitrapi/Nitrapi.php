@@ -28,6 +28,7 @@ class Nitrapi extends Client
             $query['user_id'] = (int)$options['user_id'];
         }
         $this->setDefaultOption('query', $query);
+        $this->setDefaultOption('verify', false);
     }
 
     /**
