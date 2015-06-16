@@ -45,7 +45,6 @@ class Client extends GuzzleClient
             if ($e->hasResponse()) {
                 $response = $e->getResponse()->json();
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
-                # TODO: Handle the error message better for debugging
                 throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());
@@ -77,7 +76,8 @@ class Client extends GuzzleClient
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $response = $e->getResponse()->json();
-                throw new NitrapiHttpErrorException($response['message']);
+                $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
+                throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());
         }
@@ -115,7 +115,8 @@ class Client extends GuzzleClient
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $response = $e->getResponse()->json();
-                throw new NitrapiHttpErrorException($response['message']);
+                $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
+                throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());
         }
