@@ -8,17 +8,15 @@ use Nitrapi\Services\ServiceCollection;
 use Nitrapi\Services\ServiceFactory;
 
 define('NITRAPI_LIVE_URL', 'https://api.nitrado.net/');
-define('NITRAPI_DEV_URL', 'http://0.0.0.0:3000/');
 
 class Nitrapi extends Client
 {
     protected $accessToken;
 
-    public function __construct($accessToken, $options = array(), $dev = false) {
+    public function __construct($accessToken, $options = array(), $url = NITRAPI_LIVE_URL) {
         $this->setAccessToken($accessToken);
 
-        $apiUrl = ($dev === false) ? NITRAPI_LIVE_URL : NITRAPI_DEV_URL;
-        parent::__construct($apiUrl, $options);
+        parent::__construct($url, $options);
 
         $query = array();
         if (!empty($accessToken)) {
