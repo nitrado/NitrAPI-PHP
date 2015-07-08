@@ -283,6 +283,16 @@ class Gameserver extends Service
     }
 
     /**
+     * Returns the ddos history
+     *
+     * @return array
+     */
+    public function getDDoSHistory() {
+        $url = "services/" . $this->getId() . "/gameservers/ddos";
+        return $this->getApi()->dataGet($url);
+    }
+
+    /**
      * Returns the admin logs
      *
      * @return array
