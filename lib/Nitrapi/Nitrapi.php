@@ -6,6 +6,7 @@ use Nitrapi\Common\Http\Client;
 use Nitrapi\Services\Service;
 use Nitrapi\Services\ServiceCollection;
 use Nitrapi\Services\ServiceFactory;
+use Nitrapi\Customer;
 
 define('NITRAPI_LIVE_URL', 'https://api.nitrado.net/');
 
@@ -46,6 +47,16 @@ class Nitrapi extends Client
         $collection = new ServiceCollection($this, $options);
 
         return $collection->getServices();
+    }
+
+    /**
+    * Gets the customer data set
+    * @return Nitrapi\Customer
+    */
+    public function getCustomer() {
+
+        return new Customer($this, $this->getAccessToken());
+
     }
 
     protected function setAccessToken($accessToken) {
