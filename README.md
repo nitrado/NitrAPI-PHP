@@ -7,7 +7,7 @@ PHP based SDK for the Nitrapi RESTful API.
 Recommends
 ---------
 
-* PHP 5.3 or higher
+* PHP 5.4 or higher
 * Composer
 
 
