@@ -1,6 +1,5 @@
 Nitrapi-PHP
 ===========
-[![PHP version](https://badge.fury.io/ph/nitrado%2Fnitrapi-php-lib.svg)](http://badge.fury.io/ph/nitrado%2Fnitrapi-php-lib)
 
 PHP based SDK for the Nitrapi RESTful API.
 
@@ -8,7 +7,7 @@ PHP based SDK for the Nitrapi RESTful API.
 Recommends
 ---------
 
-* PHP 5.4 or higher
+* PHP 5.3 or higher
 * Composer
 
 
