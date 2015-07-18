@@ -3,6 +3,7 @@
 namespace Nitrapi;
 
 use Nitrapi\Common\Http\Client;
+use Nitrapi\Customer\Customer;
 use Nitrapi\Services\Service;
 use Nitrapi\Services\ServiceCollection;
 use Nitrapi\Services\ServiceFactory;
@@ -46,6 +47,15 @@ class Nitrapi extends Client
         $collection = new ServiceCollection($this, $options);
 
         return $collection->getServices();
+    }
+
+    /**
+     * Gets the customer data set
+     *
+     * @return Customer
+     */
+    public function getCustomer() {
+        return new Customer($this, $this->getAccessToken());
     }
 
     protected function setAccessToken($accessToken) {
