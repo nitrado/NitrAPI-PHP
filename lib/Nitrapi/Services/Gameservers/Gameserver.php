@@ -9,6 +9,7 @@ use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
 use Nitrapi\Services\Gameservers\PluginSystem\PluginSystem;
+use Nitrapi\Services\Gameservers\TaskManager\TaskManager;
 use Nitrapi\Services\Service;
 
 class Gameserver extends Service
@@ -290,6 +291,15 @@ class Gameserver extends Service
     public function getDDoSHistory() {
         $url = "services/" . $this->getId() . "/gameservers/ddos";
         return $this->getApi()->dataGet($url);
+    }
+
+    /**
+     * Returns the task manager
+     *
+     * @return TaskManager
+     */
+    public function getTaskManager() {
+        return new TaskManager($this);
     }
 
     /**
