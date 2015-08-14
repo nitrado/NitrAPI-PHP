@@ -312,4 +312,17 @@ class Gameserver extends Service
         return $this->getApi()->dataGet($url);
     }
 
+    /**
+     * Sends a command directly into the game server
+     *
+     * @param $command
+     * @return bool
+     */
+    public function sendCommand($command) {
+        $url = "services/" . $this->getId() . "/gameservers/command";
+        $this->getApi()->dataPost($url);
+
+        return true;
+    }
+
 }
