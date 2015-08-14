@@ -3,14 +3,16 @@
 namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
-use Nitrapi\Services\Gameservers\CustomerSettings\CustomerSettings;
-use Nitrapi\Services\Gameservers\FileServer\FileServer;
-use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
-use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
-use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
-use Nitrapi\Services\Gameservers\PluginSystem\PluginSystem;
-use Nitrapi\Services\Gameservers\TaskManager\TaskManager;
 use Nitrapi\Services\Service;
+use Nitrapi\Services\Gameservers\Games\Game;
+use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
+use Nitrapi\Services\Gameservers\FileServer\FileServer;
+use Nitrapi\Services\Gameservers\TaskManager\TaskManager;
+use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
+use Nitrapi\Services\Gameservers\PluginSystem\PluginSystem;
+use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
+use Nitrapi\Common\Exceptions\NitrapiServiceTypeNotFoundException;
+use Nitrapi\Services\Gameservers\CustomerSettings\CustomerSettings;
 
 class Gameserver extends Service
 {
@@ -320,9 +322,27 @@ class Gameserver extends Service
      */
     public function sendCommand($command) {
         $url = "services/" . $this->getId() . "/gameservers/command";
-        $this->getApi()->dataPost($url);
+        $this->getApi()->dataPost($url, [
+            'command' => $command
+        ]);
 
         return true;
     }
 
+    /**
+     * Returns a game instance
+     *
+     * @param $game
+     * @return Game
+     * @throws NitrapiServiceTypeNotFoundException
+     */
+    public function getGame($game) {
+        $class = "Nitrapi\\Services\\Gameservers\\Games\\" . ucfirst($game);
+
+        if (!class_exists($class)) {
+            throw new NitrapiServiceTypeNotFoundException("Game class " . $game . " not found");
+        }
+
+        return new $class($this);
+    }
 }
