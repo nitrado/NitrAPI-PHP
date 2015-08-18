@@ -205,4 +205,13 @@ class GameserverDetails
     public function getSettings() {
         return $this->data['settings'];
     }
+
+    /**
+     * Returns the websocket token
+     *
+     * @return string
+     */
+    public function getWebsocketToken() {
+        return $this->data['websocket_token'];
+    }
 }
