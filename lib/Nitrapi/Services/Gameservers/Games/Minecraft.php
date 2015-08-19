@@ -97,5 +97,44 @@ class Minecraft extends Game
         return true;
     }
 
+    /**
+     * Creates a new backup of a specified world
+     *
+     * @param $world
+     * @return bool
+     */
+    public function createBackup($world) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/backup";
+        $this->service->getApi()->dataPost($url, [
+            'world' => $world
+        ]);
 
+        return true;
+    }
+
+    /**
+     * Deletes a specified backup
+     *
+     * @param $backup
+     * @return bool
+     */
+    public function deleteBackup($backup) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/backup/" . $backup;
+        $this->service->getApi()->dataDelete($url);
+
+        return true;
+    }
+
+    /**
+     * Restore a specified backup
+     *
+     * @param $backup
+     * @return bool
+     */
+    public function restoreBackup($backup) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/backup/" . $backup . "/restore";
+        $this->service->getApi()->dataPost($url);
+
+        return true;
+    }
 }
