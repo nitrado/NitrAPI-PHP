@@ -44,7 +44,7 @@ class Minecraft extends Game
      * @return bool
      */
     public function setOverviewMap($enabled = false, $signs = true, $ipsonly = null, $reset = false) {
-        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/chunkfix";
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/overviewmap";
         $this->service->getApi()->dataPost($url, [
             'enabled' => (int)$enabled,
             'signs' => (int)$signs,
