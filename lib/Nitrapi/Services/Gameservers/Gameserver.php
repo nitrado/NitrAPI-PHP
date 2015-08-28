@@ -3,6 +3,7 @@
 namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\Gameservers\ApplicationServer\ApplicationServer;
 use Nitrapi\Services\Service;
 use Nitrapi\Services\Gameservers\Games\Game;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
@@ -265,6 +266,15 @@ class Gameserver extends Service
      */
     public function getFileServer() {
         return new FileServer($this);
+    }
+
+    /**
+     * Returns a app server object
+     *
+     * @return ApplicationServer
+     */
+    public function getApplicationServer() {
+        return new ApplicationServer($this);
     }
 
     /**
