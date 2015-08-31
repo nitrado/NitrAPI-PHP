@@ -137,4 +137,19 @@ class Minecraft extends Game
 
         return true;
     }
+
+    /**
+     * Returns the formated UUID id of the specific minecraft user
+     *
+     * @param $username
+     * @return array
+     */
+    public function getUUID($username) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/uuid";
+        return $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'username' => $username
+            ]
+        ])['user'];
+    }
 }
