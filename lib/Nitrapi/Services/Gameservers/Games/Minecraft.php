@@ -152,4 +152,20 @@ class Minecraft extends Game
             ]
         ])['user'];
     }
+
+    /**
+     * Returns the avatar as base64 encoded content of the specific minecraft user
+     * Note: case sensitive!
+     *
+     * @param $username
+     * @return array
+     */
+    public function getAvatar($username) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/avatar";
+        return $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'username' => $username
+            ]
+        ])['user'];
+    }
 }
