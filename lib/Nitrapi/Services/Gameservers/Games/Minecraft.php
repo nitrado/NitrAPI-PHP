@@ -77,6 +77,25 @@ class Minecraft extends Game
     }
 
     /**
+     * Changing rtk settings
+     *
+     * @param bool|false $enabled
+     * @param null $username
+     * @param null $password
+     * @return bool
+     */
+    public function setRemoteToolkit($enabled = false, $username = null, $password = null) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/rtk";
+        $this->service->getApi()->dataPost($url, [
+            'enabled' => (int)$enabled,
+            'username' => $username,
+            'password' => $password,
+        ]);
+
+        return true;
+    }
+
+    /**
      * Changing mcmyadmin settings
      *
      * @param bool|false $enabled
