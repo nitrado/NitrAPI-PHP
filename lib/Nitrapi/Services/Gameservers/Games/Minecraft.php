@@ -164,7 +164,7 @@ class Minecraft extends Game
      * @return bool
      */
     public function switchVersion($md5) {
-        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/install_version";
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/change_version";
         $this->service->getApi()->dataPost($url, [
             'md5' => $md5
         ]);
