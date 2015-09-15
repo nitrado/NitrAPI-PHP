@@ -139,6 +139,21 @@ class Minecraft extends Game
     }
 
     /**
+     * Installs a specific Minecraft Version
+     *
+     * @param $md5
+     * @return bool
+     */
+    public function switchVersion($md5) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/install_version";
+        $this->service->getApi()->dataPost($url, [
+            'md5' => $md5
+        ]);
+
+        return true;
+    }
+
+    /**
      * Returns the formated UUID id of the specific minecraft user
      *
      * @param $username
