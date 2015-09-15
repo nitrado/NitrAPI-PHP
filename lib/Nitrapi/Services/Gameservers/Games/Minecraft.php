@@ -77,6 +77,25 @@ class Minecraft extends Game
     }
 
     /**
+     * Changing rtk settings
+     *
+     * @param bool|false $enabled
+     * @param null $username
+     * @param null $password
+     * @return bool
+     */
+    public function setRemoteToolkit($enabled = false, $username = null, $password = null) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/rtk";
+        $this->service->getApi()->dataPost($url, [
+            'enabled' => (int)$enabled,
+            'username' => $username,
+            'password' => $password,
+        ]);
+
+        return true;
+    }
+
+    /**
      * Changing mcmyadmin settings
      *
      * @param bool|false $enabled
@@ -161,6 +180,22 @@ class Minecraft extends Game
      */
     public function getUUID($username) {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/uuid";
+        return $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'username' => $username
+            ]
+        ])['user'];
+    }
+
+    /**
+     * Returns the avatar as base64 encoded content of the specific minecraft user
+     * Note: case sensitive!
+     *
+     * @param $username
+     * @return array
+     */
+    public function getAvatar($username) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/avatar";
         return $this->service->getApi()->dataGet($url, null, [
             'query' => [
                 'username' => $username
