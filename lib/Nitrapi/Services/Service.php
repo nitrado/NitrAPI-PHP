@@ -94,7 +94,7 @@ abstract class Service
      *
      * @return array
      */
-    public function getDetails() {
+    public function getServiceDetails() {
         return (array)$this->details;
     }
 
