@@ -77,6 +77,25 @@ class Minecraft extends Game
     }
 
     /**
+     * Changing rtk settings
+     *
+     * @param bool|false $enabled
+     * @param null $username
+     * @param null $password
+     * @return bool
+     */
+    public function setRemoteToolkit($enabled = false, $username = null, $password = null) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/rtk";
+        $this->service->getApi()->dataPost($url, [
+            'enabled' => (int)$enabled,
+            'username' => $username,
+            'password' => $password,
+        ]);
+
+        return true;
+    }
+
+    /**
      * Changing mcmyadmin settings
      *
      * @param bool|false $enabled
@@ -134,6 +153,21 @@ class Minecraft extends Game
     public function restoreBackup($backup) {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/backup/" . $backup . "/restore";
         $this->service->getApi()->dataPost($url);
+
+        return true;
+    }
+
+    /**
+     * Installs a specific Minecraft Version
+     *
+     * @param $md5
+     * @return bool
+     */
+    public function switchVersion($md5) {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/change_version";
+        $this->service->getApi()->dataPost($url, [
+            'md5' => $md5
+        ]);
 
         return true;
     }
