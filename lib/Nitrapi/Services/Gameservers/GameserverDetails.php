@@ -75,6 +75,19 @@ class GameserverDetails
     }
 
     /**
+     * Returns the installed modpack
+     *
+     * @return mixed
+     */
+    public function getInstalledModpack() {
+        $modpacks = $this->getModpacks();
+        if (isset($modpacks[$this->getGame()])) {
+            return $modpacks[$this->getGame()];
+        }
+        return null;
+    }
+
+    /**
      * Returns the slot amount of the gameserver
      *
      * @return int
