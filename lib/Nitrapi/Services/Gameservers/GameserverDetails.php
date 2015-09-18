@@ -66,12 +66,12 @@ class GameserverDetails
     }
 
     /**
-     * Returns the modpack
+     * Returns the installed modpacks
      *
      * @return string
      */
-    public function getModpack() {
-        return $this->data['modpack'];
+    public function getModpacks() {
+        return $this->data['modpacks'];
     }
 
     /**
