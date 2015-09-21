@@ -325,6 +325,16 @@ class Gameserver extends Service
     }
 
     /**
+     * Returns the stats of the last 24h
+     *
+     * @return array
+     */
+    public function getStats() {
+        $url = "services/" . $this->getId() . "/gameservers/stats";
+        return $this->getApi()->dataGet($url);
+    }
+
+    /**
      * Sends a command directly into the game server
      *
      * @param $command
