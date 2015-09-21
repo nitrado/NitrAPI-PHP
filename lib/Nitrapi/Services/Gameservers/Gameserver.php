@@ -331,7 +331,7 @@ class Gameserver extends Service
      */
     public function getStats() {
         $url = "services/" . $this->getId() . "/gameservers/stats";
-        return $this->getApi()->dataGet($url);
+        return $this->getApi()->dataGet($url)['stats'];
     }
 
     /**
