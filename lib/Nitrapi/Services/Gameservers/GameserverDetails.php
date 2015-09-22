@@ -229,6 +229,15 @@ class GameserverDetails
     }
 
     /**
+     * Returns the quota limit info
+     *
+     * @return mixed
+     */
+    public function getQuota() {
+        return $this->data['quota'];
+    }
+
+    /**
      * Returns the websocket token
      *
      * @return string
