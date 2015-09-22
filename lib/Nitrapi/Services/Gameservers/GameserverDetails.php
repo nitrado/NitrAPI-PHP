@@ -154,6 +154,15 @@ class GameserverDetails
     }
 
     /**
+     * Returns the memory in mb
+     *
+     * @return int
+     */
+    public function getMemoryInMB() {
+        return (int)$this->data['memory_mb'];
+    }
+
+    /**
      * Returns the gameserver type
      *
      * @return string
