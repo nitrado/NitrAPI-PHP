@@ -325,13 +325,19 @@ class Gameserver extends Service
     }
 
     /**
-     * Returns the stats of the last 24h
+     * Returns the stats of the last x hours
+     * Default: 24 hours
      *
+     * @param int $hours
      * @return array
      */
-    public function getStats() {
+    public function getStats($hours = 24) {
         $url = "services/" . $this->getId() . "/gameservers/stats";
-        return $this->getApi()->dataGet($url)['stats'];
+        return $this->getApi()->dataGet($url, null, [
+            'query' => [
+                'hours' => $hours
+            ]
+        ])['stats'];
     }
 
     /**
