@@ -23,7 +23,7 @@ class Customer {
      */
     public function getUserId() {
 
-        return $this->get('id');
+        return $this->get('user_id');
 
     }
 
