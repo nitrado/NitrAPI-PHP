@@ -1,0 +1,79 @@
+{
+   "status":"success",
+   "data":{
+      "gameserver":{
+         "status":"started",
+         "websocket_token":"b05ac3d5d71a8858fca3011a8c179f1d9ec5ab41",
+         "hostsystems":{
+            "linux":{
+               "hostname":"ms001.nitrado.net",
+               "status":"online"
+            }
+         },
+         "username": "ni1_1",
+         "user_id": 1,
+         "service_id": 1,
+         "minecraft_mode":false,
+         "ip":"127.0.0.1",
+         "port":25565,
+         "label": "ni",
+         "type": "Gameserver",
+         "memory": "Standard",
+         "memory_total": 1024,
+         "game":"mc",
+         "modpacks":{  
+            "mcrdns":{  
+               "name":"Pixelmon Craft",
+               "modpack_version":"4.0.6",
+               "game_version":"1.8.4"
+            }
+         },
+         "slots":4,
+         "location":"DE",
+         "credentials":{
+            "ftp":{
+               "hostname":"dev001.nitrado.net",
+               "port":21,
+               "username":"ni1_1",
+               "password":"4x8x15x16x23x42"
+            },
+            "mysql":{
+               "hostname":"dev001.nitrado.net",
+               "port":3306,
+               "username":"ni1_1",
+               "password":"4x8x15x16x23x42",
+               "database":"ni1_1_DB"
+            }
+         },
+         "settings":{
+            "base":{
+                "dailyrestart":"false"
+            },
+            "config":{
+               "pvp":"true",
+               "friendlyfire":"false"
+            }
+         },
+         "query":{
+            "server_name":"Minecraft Server",
+            "connect_ip":"127.0.0.1:25565",
+            "map":"random",
+            "version":"1.8",
+            "player_current":1,
+            "player_max":4,
+            "players": [
+               {
+                  "id": 1,
+                  "name": "Tyrola",
+                  "bot": false,
+                  "score": 0,
+                  "frags": 0,
+                  "deaths": 0,
+                  "time": 31,
+                  "ping": 8
+               }
+            ]
+         }
+      }
+   }
+}

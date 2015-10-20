@@ -4,7 +4,8 @@ namespace Nitrapi\Common\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\Response;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Request;
 use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 
@@ -20,7 +21,7 @@ class Client extends GuzzleClient
             ));
         }
 
-        $config['base_url'] = $baseUrl;
+        $config['base_uri'] = $baseUrl;
         parent::__construct($config);
     }
 
@@ -36,14 +37,15 @@ class Client extends GuzzleClient
                 $options['headers'] = $headers;
             }
 
-            $request = $this->createRequest('GET', $url, $options);
+            $request = new Request('GET', $url, $options);
 
             $response = $this->send($request);
             $this->checkErrors($response);
-            $json = $response->json();
+
+            $json = json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
-                $response = $e->getResponse()->json();
+                $response = json_decode($e->getResponse()->getBody(), true);
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
                 throw new NitrapiHttpErrorException($msg);
             }
@@ -72,10 +74,10 @@ class Client extends GuzzleClient
 
             $response = $this->send($request);
             $this->checkErrors($response);
-            $json = $response->json();
+            $json = json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
-                $response = $e->getResponse()->json();
+                $response = json_decode($e->getResponse()->getBody(), true);
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
                 throw new NitrapiHttpErrorException($msg);
             }
@@ -114,7 +116,7 @@ class Client extends GuzzleClient
             $this->checkErrors($response);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
-                $response = $e->getResponse()->json();
+                $response = json_decode($e->getResponse()->getBody(), true);
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
                 throw new NitrapiHttpErrorException($msg);
             }
@@ -125,7 +127,7 @@ class Client extends GuzzleClient
     }
 
     protected function checkErrors(Response $response, $responseCode = 200) {
-        $json = $response->json();
+        $json = json_decode($response->getBody(), true);
 
         $allowedPorts = array();
         $allowedPorts[] = $responseCode;
