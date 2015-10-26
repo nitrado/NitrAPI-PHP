@@ -218,4 +218,20 @@ class Minecraft extends Game
             ]
         ])['user'];
     }
+
+    /**
+     * Returns all installed Bukkit/Spigot Plugins at Minecraft Bukkit
+     *
+     * @return array
+     */
+    public function getPlugins() {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/plugins";
+        $result = $this->service->getApi()->dataGet($url);
+
+        if (isset($result['plugins'])) {
+            return $result['plugins'];
+        }
+
+        return [];
+    }
 }
