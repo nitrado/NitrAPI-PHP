@@ -37,11 +37,8 @@ class Client extends GuzzleClient
                 $options['headers'] = $headers;
             }
 
-            $request = new Request('GET', $url, $options);
-
-            $response = $this->send($request);
+            $response = $this->request('GET', $url, $options);
             $this->checkErrors($response);
-
             $json = json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
@@ -65,14 +62,13 @@ class Client extends GuzzleClient
     public function dataPost($url, $body = null, $headers = null, $options = array()) {
         try {
             if (is_array($body)) {
-                $options['body'] = $body;
+                $options['form_params'] = $body;
             }
             if (is_array($headers)) {
                 $options['headers'] = $headers;
             }
-            $request = $this->createRequest('POST', $url, $options);
 
-            $response = $this->send($request);
+            $response = $this->request('POST', $url, $options);
             $this->checkErrors($response);
             $json = json_decode($response->getBody(), true);
         } catch (RequestException $e) {
@@ -105,14 +101,12 @@ class Client extends GuzzleClient
     public function dataDelete($url, $body = null, $headers = null, $options = array()) {
         try {
             if (is_array($body)) {
-                $options['body'] = $body;
+                $options['form_params'] = $body;
             }
             if (is_array($headers)) {
                 $options['headers'] = $headers;
             }
-            $request = $this->createRequest('DELETE', $url, $options);
-
-            $response = $this->send($request);
+            $response = $this->request('DELETE', $url, $options);
             $this->checkErrors($response);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
