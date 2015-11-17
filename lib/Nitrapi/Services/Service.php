@@ -12,6 +12,8 @@ abstract class Service
     protected $delete_date;
     protected $suspend_date;
     protected $start_date;
+    protected $details;
+    protected $websocket_token;
 
     public function __construct(Nitrapi &$api, array &$data) {
         $this->setApi($api);
@@ -76,6 +78,24 @@ abstract class Service
      */
     public function getUsername() {
         return (string)$this->username;
+    }
+
+    /**
+     * Returns the websocket token
+     *
+     * @return string
+     */
+    public function getWebsocketToken() {
+        return (string)$this->websocket_token;
+    }
+
+    /**
+     * Returns all service details
+     *
+     * @return array
+     */
+    public function getServiceDetails() {
+        return (array)$this->details;
     }
 
     /**

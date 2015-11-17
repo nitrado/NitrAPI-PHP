@@ -5,8 +5,10 @@ namespace Nitrapi\Common\Http;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\Response;
+use Nitrapi\Common\Exceptions\NitrapiConcurrencyException;
 use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
+use Nitrapi\Common\Exceptions\NitrapiMaintenanceException;
 
 class Client extends GuzzleClient
 {
@@ -45,6 +47,12 @@ class Client extends GuzzleClient
             if ($e->hasResponse()) {
                 $response = $e->getResponse()->json();
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
+                if ($e->getResponse()->getStatusCode() == 503) {
+                    throw new NitrapiMaintenanceException();
+                }
+                if ($e->getResponse()->getStatusCode() == 428) {
+                    throw new NitrapiConcurrencyException();
+                }
                 throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());
@@ -77,6 +85,12 @@ class Client extends GuzzleClient
             if ($e->hasResponse()) {
                 $response = $e->getResponse()->json();
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
+                if ($e->getResponse()->getStatusCode() == 503) {
+                    throw new NitrapiMaintenanceException();
+                }
+                if ($e->getResponse()->getStatusCode() == 428) {
+                    throw new NitrapiConcurrencyException();
+                }
                 throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());
@@ -116,6 +130,12 @@ class Client extends GuzzleClient
             if ($e->hasResponse()) {
                 $response = $e->getResponse()->json();
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
+                if ($e->getResponse()->getStatusCode() == 503) {
+                    throw new NitrapiMaintenanceException();
+                }
+                if ($e->getResponse()->getStatusCode() == 428) {
+                    throw new NitrapiConcurrencyException();
+                }
                 throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());

@@ -216,6 +216,19 @@ class FileServer
     }
 
     /**
+     * Gets the file size of the given path
+     *
+     * @param $path
+     * @return int
+     */
+    public function pathSize($path) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/size?path=" . $path;
+        $result = $this->service->getApi()->dataGet($url);
+
+        return (int)$result['size'];
+    }
+
+    /**
      * Deletes a directory with content from server
      *
      * @param $directory

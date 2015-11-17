@@ -3,14 +3,17 @@
 namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
-use Nitrapi\Services\Gameservers\CustomerSettings\CustomerSettings;
-use Nitrapi\Services\Gameservers\FileServer\FileServer;
-use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
-use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
-use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
-use Nitrapi\Services\Gameservers\PluginSystem\PluginSystem;
-use Nitrapi\Services\Gameservers\TaskManager\TaskManager;
+use Nitrapi\Services\Gameservers\ApplicationServer\ApplicationServer;
 use Nitrapi\Services\Service;
+use Nitrapi\Services\Gameservers\Games\Game;
+use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
+use Nitrapi\Services\Gameservers\FileServer\FileServer;
+use Nitrapi\Services\Gameservers\TaskManager\TaskManager;
+use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
+use Nitrapi\Services\Gameservers\PluginSystem\PluginSystem;
+use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
+use Nitrapi\Common\Exceptions\NitrapiServiceTypeNotFoundException;
+use Nitrapi\Services\Gameservers\CustomerSettings\CustomerSettings;
 
 class Gameserver extends Service
 {
@@ -44,12 +47,14 @@ class Gameserver extends Service
      * Restarts the gameserver
      *
      * @param string $message
+     * @param string $restartMessage
      * @return bool
      */
-    public function doRestart($message = null) {
+    public function doRestart($message = null, $restartMessage = null) {
         $url = "services/" . $this->getId() . "/gameservers/restart";
         $this->getApi()->dataPost($url, array(
-            'message' => $message
+            'message' => $message,
+            'restart_message' => $restartMessage,
         ));
         return true;
     }
@@ -58,12 +63,14 @@ class Gameserver extends Service
      * Stopps the gameserver
      *
      * @param string $message
+     * @param string $stopMessage
      * @return bool
      */
-    public function doStop($message = null) {
+    public function doStop($message = null, $stopMessage = null) {
         $url = "services/" . $this->getId() . "/gameservers/stop";
         $this->getApi()->dataPost($url, array(
-            'message' => $message
+            'message' => $message,
+            'stop_message' => $stopMessage,
         ));
         return true;
     }
@@ -266,6 +273,15 @@ class Gameserver extends Service
     }
 
     /**
+     * Returns a app server object
+     *
+     * @return ApplicationServer
+     */
+    public function getApplicationServer() {
+        return new ApplicationServer($this);
+    }
+
+    /**
      * Returns a plugin system object
      *
      * @return PluginSystem
@@ -312,4 +328,67 @@ class Gameserver extends Service
         return $this->getApi()->dataGet($url);
     }
 
+    /**
+     * Returns the stats of the last x hours
+     * Default: 24 hours
+     *
+     * @param int $hours
+     * @return array
+     */
+    public function getStats($hours = 24) {
+        $url = "services/" . $this->getId() . "/gameservers/stats";
+        return $this->getApi()->dataGet($url, null, [
+            'query' => [
+                'hours' => $hours
+            ]
+        ])['stats'];
+    }
+
+    /**
+     * Returns the last log entries. You can optionally
+     * provide a page number.
+     *
+     * @param int $hours
+     * @return array
+     */
+    public function getLogs($page = 1) {
+        $url = "services/" . $this->getId() . "/gameservers/logs";
+        return $this->getApi()->dataGet($url, null, [
+            'query' => [
+                'page' => $page
+            ]
+        ]);
+    }
+
+    /**
+     * Sends a command directly into the game server
+     *
+     * @param $command
+     * @return bool
+     */
+    public function sendCommand($command) {
+        $url = "services/" . $this->getId() . "/gameservers/command";
+        $this->getApi()->dataPost($url, [
+            'command' => $command
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Returns a game instance
+     *
+     * @param $game
+     * @return Game
+     * @throws NitrapiServiceTypeNotFoundException
+     */
+    public function getGame($game) {
+        $class = "Nitrapi\\Services\\Gameservers\\Games\\" . ucfirst($game);
+
+        if (!class_exists($class)) {
+            throw new NitrapiServiceTypeNotFoundException("Game class " . $game . " not found");
+        }
+
+        return new $class($this);
+    }
 }

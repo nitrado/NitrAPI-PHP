@@ -1,10 +1,6 @@
 Nitrapi-PHP
 ===========
 
-[![Latest Stable Version](https://poser.pugx.org/nitrado/nitrapi-php-lib/v/stable.png)](https://packagist.org/packages/nitrado/nitrapi-php-lib)
-[![Latest Unstable Version](https://poser.pugx.org/nitrado/nitrapi-php-lib/v/unstable.svg)](https://packagist.org/packages/nitrado/nitrapi-php-lib)
-[![Total Downloads](https://poser.pugx.org/nitrado/nitrapi-php-lib/downloads.png)](https://packagist.org/packages/nitrado/nitrapi-php-lib)
-
 PHP based SDK for the Nitrapi RESTful API.
 
 

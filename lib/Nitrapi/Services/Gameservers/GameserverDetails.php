@@ -66,12 +66,25 @@ class GameserverDetails
     }
 
     /**
-     * Returns the modpack
+     * Returns the installed modpacks
      *
      * @return string
      */
-    public function getModpack() {
-        return $this->data['modpack'];
+    public function getModpacks() {
+        return $this->data['modpacks'];
+    }
+
+    /**
+     * Returns the installed modpack
+     *
+     * @return mixed
+     */
+    public function getInstalledModpack() {
+        $modpacks = $this->getModpacks();
+        if (isset($modpacks[$this->getGame()])) {
+            return $modpacks[$this->getGame()];
+        }
+        return null;
     }
 
     /**
@@ -141,6 +154,15 @@ class GameserverDetails
     }
 
     /**
+     * Returns the memory in mb
+     *
+     * @return int
+     */
+    public function getMemoryInMB() {
+        return (int)$this->data['memory_mb'];
+    }
+
+    /**
      * Returns the gameserver type
      *
      * @return string
@@ -204,5 +226,23 @@ class GameserverDetails
      */
     public function getSettings() {
         return $this->data['settings'];
+    }
+
+    /**
+     * Returns the quota limit info
+     *
+     * @return mixed
+     */
+    public function getQuota() {
+        return $this->data['quota'];
+    }
+
+    /**
+     * Returns the websocket token
+     *
+     * @return string
+     */
+    public function getWebsocketToken() {
+        return $this->data['websocket_token'];
     }
 }
