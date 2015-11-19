@@ -5,7 +5,6 @@ namespace Nitrapi\Common\Http;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\Request;
 use Nitrapi\Common\Exceptions\NitrapiConcurrencyException;
 use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
