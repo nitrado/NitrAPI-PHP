@@ -45,6 +45,12 @@ class Client extends GuzzleClient
             if ($e->hasResponse()) {
                 $response = json_decode($e->getResponse()->getBody(), true);
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
+                if ($e->getResponse()->getStatusCode() == 503) {
+                    throw new NitrapiMaintenanceException();
+                }
+                if ($e->getResponse()->getStatusCode() == 428) {
+                    throw new NitrapiMaintenanceException();
+                }
                 throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());
@@ -119,6 +125,12 @@ class Client extends GuzzleClient
             if ($e->hasResponse()) {
                 $response = json_decode($e->getResponse()->getBody(), true);
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
+                if ($e->getResponse()->getStatusCode() == 503) {
+                    throw new NitrapiMaintenanceException();
+                }
+                if ($e->getResponse()->getStatusCode() == 428) {
+                    throw new NitrapiMaintenanceException();
+                }
                 throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());
