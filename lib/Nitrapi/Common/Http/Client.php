@@ -13,7 +13,9 @@ use Nitrapi\Common\Exceptions\NitrapiMaintenanceException;
 
 class Client extends GuzzleClient
 {
-    const MINIMUM_PHP_VERSION = '5.3.0';
+    const MINIMUM_PHP_VERSION = '5.4.0';
+
+    protected $defaultQuery = [];
 
     public function __construct($baseUrl = '', $config = null) {
         if (PHP_VERSION < self::MINIMUM_PHP_VERSION) {
@@ -23,6 +25,9 @@ class Client extends GuzzleClient
             ));
         }
 
+        if (isset($config['query'])) {
+            $this->defaultQuery = $config['query'];
+        }
         $config['base_uri'] = $baseUrl;
         parent::__construct($config);
     }
@@ -37,6 +42,9 @@ class Client extends GuzzleClient
         try {
             if (is_array($headers)) {
                 $options['headers'] = $headers;
+            }
+            if (is_array($options) && isset($options['query'])) {
+                $options['query'] = array_merge($options['query'], $this->defaultQuery);
             }
 
             $response = $this->request('GET', $url, $options);
@@ -74,6 +82,9 @@ class Client extends GuzzleClient
             }
             if (is_array($headers)) {
                 $options['headers'] = $headers;
+            }
+            if (is_array($options) && isset($options['query'])) {
+                $options['query'] = array_merge($options['query'], $this->defaultQuery);
             }
 
             $response = $this->request('POST', $url, $options);
@@ -119,6 +130,9 @@ class Client extends GuzzleClient
             }
             if (is_array($headers)) {
                 $options['headers'] = $headers;
+            }
+            if (is_array($options) && isset($options['query'])) {
+                $options['query'] = array_merge($options['query'], $this->defaultQuery);
             }
             $response = $this->request('DELETE', $url, $options);
             $this->checkErrors($response);
