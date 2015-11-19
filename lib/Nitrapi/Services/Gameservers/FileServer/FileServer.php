@@ -194,6 +194,8 @@ class FileServer
     public function readFile($file) {
         $download = $this->downloadToken($file);
 
+        // Here we use the GuzzleClient API directly. This is intended, but
+        // should remain a special case. Don't copy this code.
         $request = $this->service->getApi()->createRequest('GET', $download['token']['url']);
         $response = $this->service->getApi()->send($request);
 
