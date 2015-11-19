@@ -6,6 +6,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Request;
+use Nitrapi\Common\Exceptions\NitrapiConcurrencyException;
 use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 use Nitrapi\Common\Exceptions\NitrapiMaintenanceException;
@@ -49,7 +50,7 @@ class Client extends GuzzleClient
                     throw new NitrapiMaintenanceException();
                 }
                 if ($e->getResponse()->getStatusCode() == 428) {
-                    throw new NitrapiMaintenanceException();
+                    throw new NitrapiConcurrencyException();
                 }
                 throw new NitrapiHttpErrorException($msg);
             }
@@ -86,7 +87,7 @@ class Client extends GuzzleClient
                     throw new NitrapiMaintenanceException();
                 }
                 if ($e->getResponse()->getStatusCode() == 428) {
-                    throw new NitrapiMaintenanceException();
+                    throw new NitrapiConcurrencyException();
                 }
                 throw new NitrapiHttpErrorException($msg);
             }
@@ -129,7 +130,7 @@ class Client extends GuzzleClient
                     throw new NitrapiMaintenanceException();
                 }
                 if ($e->getResponse()->getStatusCode() == 428) {
-                    throw new NitrapiMaintenanceException();
+                    throw new NitrapiConcurrencyException();
                 }
                 throw new NitrapiHttpErrorException($msg);
             }
