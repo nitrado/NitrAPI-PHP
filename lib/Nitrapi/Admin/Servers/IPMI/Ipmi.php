@@ -1,8 +1,8 @@
 <?php
 
-namespace Nitrapi\Admin\Ipmi;
+namespace Nitrapi\Admin\Servers\IPMI;
 
-use Nitrapi\Admin\ServerManager;
+use Nitrapi\Admin\Servers\ServerManager;
 
 class Ipmi
 {

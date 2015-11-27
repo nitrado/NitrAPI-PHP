@@ -8,7 +8,7 @@ class ServerManager
 {
     protected $admin;
 
-    public function __construct(Nitrapi\Admin\Admin $admin) {
+    public function __construct(\Nitrapi\Admin\Admin $admin) {
         $this->setAdmin($admin);
     }
 
@@ -19,7 +19,7 @@ class ServerManager
     /**
      * @param Admin $admin
      */
-    protected function setAdmin(Admin $admin) {
+    protected function setAdmin(\Nitrapi\Admin\Admin $admin) {
         $this->admin = $admin;
     }
 
