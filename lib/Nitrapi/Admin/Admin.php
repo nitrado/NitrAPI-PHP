@@ -3,6 +3,7 @@
 namespace Nitrapi\Admin;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Admin\Servers\ServerManager;
 
 class Admin
 {

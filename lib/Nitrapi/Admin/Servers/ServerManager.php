@@ -2,7 +2,7 @@
 
 namespace Nitrapi\Admin;
 
-use Nitrapi\Admin\Ipmi\Ipmi;
+use Nitrapi\Admin\Servers\IPMI\Ipmi;
 
 class ServerManager
 {
