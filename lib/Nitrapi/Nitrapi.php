@@ -2,6 +2,7 @@
 
 namespace Nitrapi;
 
+use Nitrapi\Admin\Admin;
 use Nitrapi\Common\Http\Client;
 use Nitrapi\Customer\Customer;
 use Nitrapi\Services\Service;
@@ -44,6 +45,15 @@ class Nitrapi extends Client
         $collection = new ServiceCollection($this, $options);
 
         return $collection->getServices();
+    }
+
+    /**
+     * Returns the admin controller
+     *
+     * @return Admin
+     */
+    public function getAdmin() {
+        return new Admin($this);
     }
 
     /**
