@@ -8,7 +8,7 @@ class ServerManager
 {
     protected $admin;
 
-    public function __construct(Admin $admin) {
+    public function __construct(Nitrapi\Admin\Admin $admin) {
         $this->setAdmin($admin);
     }
 
