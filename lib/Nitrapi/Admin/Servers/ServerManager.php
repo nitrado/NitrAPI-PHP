@@ -1,6 +1,6 @@
 <?php
 
-namespace Nitrapi\Admin;
+namespace Nitrapi\Admin\Servers;
 
 use Nitrapi\Admin\Servers\IPMI\Ipmi;
 
