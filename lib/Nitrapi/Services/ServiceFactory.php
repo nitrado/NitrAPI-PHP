@@ -11,6 +11,8 @@ class ServiceFactory
         $data = $api->dataGet("services/" . $options['id'], null);
 
         $type = $data['service']['type'];
+        if ($type == 'cloud_server') $type = 'CloudServer'; //todo make it more fancy
+
         $class = "Nitrapi\\Services\\" . ucfirst($type) . "s\\" . ucfirst($type);
 
         if (!class_exists($class)) {
