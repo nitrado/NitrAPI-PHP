@@ -3,6 +3,8 @@
 namespace Nitrapi\Services;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Payment\Price;
+use Nitrapi\Payment\PricePart;
 
 abstract class Service
 {
@@ -96,6 +98,20 @@ abstract class Service
      */
     public function getServiceDetails() {
         return (array)$this->details;
+    }
+
+    public function getPriceStructure() {
+        $type = 'cloud_server';
+        $priceStructure = $this->getApi()->dataGet("order/pricing/$type");
+
+        $price = new Price(
+            $priceStructure['prices']['base_price'],
+            $priceStructure['prices']['rental_times']
+        );
+        foreach ($priceStructure['prices']['parts'] as $pricePart)
+            $price->addPart(new PricePart($pricePart));
+
+        return $price;
     }
 
     /**
