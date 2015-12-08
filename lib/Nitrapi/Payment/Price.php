@@ -16,6 +16,20 @@ class Price
         $this->rentalTimes = $rentalTimes;
     }
 
+    public static function getPriceStructure($nitrapi, $type='cloud_server') {
+        $priceStructure = $nitrapi->dataGet("order/pricing/$type");
+
+        $price = new Price(
+            $priceStructure['prices']['base_price'],
+            $priceStructure['prices']['rental_times']
+        );
+        foreach ($priceStructure['prices']['parts'] as $pricePart)
+            $price->addPart(new PricePart($pricePart));
+
+        return $price;
+    }
+
+
     public function addPart(PricePart $part) {
         $this->parts[] = $part;
     }

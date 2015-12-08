@@ -12,13 +12,10 @@ class PaymentPriceTest extends NitrapiTestCase {
 
     function setUp() {
         $nitrapi = $this->nitrapiMock([
-            'service3' => [],
-            'gameservers' => [],
             'payment.order.prices' => []
         ]);
 
-        $service = $nitrapi->getService(['id' => 3]);
-        $this->price = $service->getPriceStructure();
+        $this->price = Price::getPriceStructure($nitrapi, 'cloud_server');
     }
 
     function testPriceInstance() {
