@@ -65,16 +65,16 @@ class PaymentPriceTest extends NitrapiTestCase {
     }
 
     function testSimplePriceCalculations() {
-        $this->assertEquals(200+150+80+100, $this->price->getBestPrice(72, [
+        $this->assertEquals(150+80+100, $this->price->getBestPrice(72, [
             'ram' => 1, 'cpu' => 1, 'ssd' => 10
         ]));
-        $this->assertEquals(200+(2*150)+80+100, $this->price->getBestPrice(72, [
+        $this->assertEquals((2*150)+80+100, $this->price->getBestPrice(72, [
             'ram' => 2, 'cpu' => 1, 'ssd' => 10
         ]));
-        $this->assertEquals(200+(5*120)+80+100, $this->price->getBestPrice(72, [
+        $this->assertEquals((5*120)+80+100, $this->price->getBestPrice(72, [
             'ram' => 5, 'cpu' => 1, 'ssd' => 10
         ]));
-        $this->assertEquals(200+(5*120)+80+100+100, $this->price->getBestPrice(72, [
+        $this->assertEquals((5*120)+80+100+100, $this->price->getBestPrice(72, [
             'ram' => 5, 'cpu' => 1, 'ssd' => 10, 'windows' => 1
         ]));
     }

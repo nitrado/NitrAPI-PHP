@@ -2,7 +2,6 @@
   "status": "success",
   "data": {
     "prices": {
-      "base_price": 200,
       "rental_times": [
         72,
         720,
