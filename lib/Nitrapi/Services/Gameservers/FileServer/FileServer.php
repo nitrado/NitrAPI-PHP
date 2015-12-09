@@ -3,8 +3,6 @@
 namespace Nitrapi\Services\Gameservers\FileServer;
 
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Post\PostFile;
-use GuzzleHttp\Stream\Stream;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
@@ -192,8 +190,12 @@ class FileServer
         }
 
         $download = $this->downloadToken($file);
+
+        $resource = fopen($path . DIRECTORY_SEPARATOR . $name, 'wb');
+        $stream = \GuzzleHttp\Psr7\stream_for($resource);
+
         $this->service->getApi()->dataGet($download['token']['url'], null, array(
-            'save_to' => Stream::factory(fopen($path . DIRECTORY_SEPARATOR . $name, 'wb'))
+            'save_to' => $stream
         ));
         return true;
     }
