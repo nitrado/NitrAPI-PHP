@@ -237,12 +237,12 @@ class FileServer
      * @return int
      */
     public function pathSize($path) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/size", null, [
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/size";
+        $result = $this->service->getApi()->dataGet($url, null, [
             'query' => [
                 'path' => $path
             ]
-        ];
-        $result = $this->service->getApi()->dataGet($url);
+        ]);
 
         return (int)$result['size'];
     }
