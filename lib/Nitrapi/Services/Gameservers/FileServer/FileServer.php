@@ -120,7 +120,11 @@ class FileServer
     public function getFileList($dir) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
 
-        $entries = $this->service->getApi()->dataGet($url . '?dir=' . $dir);
+        $entries = $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'dir' => $dir
+            ]
+        ]);
 
         return $entries['entries'];
     }
@@ -136,7 +140,12 @@ class FileServer
     public function doFileSearch($dir, $search) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
 
-        $entries = $this->service->getApi()->dataGet($url . '?dir=' . $dir . '&search=' . $search);
+        $entries = $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'dir' => $dir,
+                'search' => $search
+            ]
+        ]);
 
         return $entries['entries'];
     }
@@ -150,7 +159,11 @@ class FileServer
      */
     public function downloadToken($file) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/download";
-        $download = $this->service->getApi()->dataGet($url . '?file=' . $file);
+        $download = $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'file' => $file
+            ]
+        ]);
 
         $token = $download['token'];
         if (empty($token['token']) || empty($token['url'])) {
@@ -224,7 +237,11 @@ class FileServer
      * @return int
      */
     public function pathSize($path) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/size?path=" . $path;
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/size", null, [
+            'query' => [
+                'path' => $path
+            ]
+        ];
         $result = $this->service->getApi()->dataGet($url);
 
         return (int)$result['size'];
