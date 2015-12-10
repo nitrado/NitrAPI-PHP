@@ -194,7 +194,10 @@ class FileServer
         $resource = fopen($path . DIRECTORY_SEPARATOR . $name, 'wb');
         $stream = \GuzzleHttp\Psr7\stream_for($resource);
 
-        $this->service->getApi()->dataGet($download['token']['url'], null, [
+        $this->service->getApi()->request('GET', $download['token']['url'], [
+            'query' => [
+                'token' => $download['token']['token']
+            ],
             'sink' => $stream
         ]);
         return true;
