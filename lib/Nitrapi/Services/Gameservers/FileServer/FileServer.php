@@ -195,6 +195,9 @@ class FileServer
         $stream = \GuzzleHttp\Psr7\stream_for($resource);
 
         $this->service->getApi()->request('GET', $download['token']['url'], [
+            'query' => [
+                'token' => $download['token']['token']
+            ],
             'sink' => $stream
         ]);
         return true;
