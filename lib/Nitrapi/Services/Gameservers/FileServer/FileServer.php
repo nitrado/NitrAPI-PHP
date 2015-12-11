@@ -65,7 +65,7 @@ class FileServer
                     'content-type' => 'application/binary',
                     'token' => $upload['token']
                 ),
-                'body' => Stream::factory(fopen($file, 'rb')),
+                'body' => \GuzzleHttp\Psr7\stream_for(fopen($file, 'rb')),
             ));
         } catch (RequestException $e) {
             var_dump($e->getResponse()->getBody()->getContents());
