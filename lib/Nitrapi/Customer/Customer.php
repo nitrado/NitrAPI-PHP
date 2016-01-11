@@ -5,16 +5,12 @@ namespace Nitrapi\Customer;
 use Nitrapi\Nitrapi;
 
 class Customer {
-
     private $api;
     private $data;
 
     public function __construct(Nitrapi $api, $token) {
-
         $this->api = $api;
-
         $this->data = $api->dataGet("user?access_token=" . $token, null);
-
     }
 
     /**
@@ -22,9 +18,7 @@ class Customer {
      * @return string
      */
     public function getUserId() {
-
-        return $this->get('id');
-
+        return $this->get('user_id');
     }
 
     /**
@@ -32,9 +26,7 @@ class Customer {
      * @return string username
      */
     public function getUsername() {
-
         return $this->get('username');
-
     }
 
     /**
@@ -42,9 +34,7 @@ class Customer {
      * @return int
      */
     public function getCredit() {
-
         return $this->get('credit');
-
     }
 
     /**
@@ -52,9 +42,7 @@ class Customer {
      * @return string
      */
     public function getEmail() {
-
         return $this->get('email');
-
     }
 
     /**
@@ -62,9 +50,7 @@ class Customer {
      * @return array
      */
     public function getPersonalData() {
-
         return $this->get('profile');
-
     }
 
     /**
@@ -72,14 +58,7 @@ class Customer {
      * @return mixed
      */
     public function get($field = null) {
-
-        if($field === null) {
-            return $this->data['user'];
-        }
-
+        if($field === null) return $this->data['user'];
         return $this->data['user'][$field];
-
     }
-
-
 }

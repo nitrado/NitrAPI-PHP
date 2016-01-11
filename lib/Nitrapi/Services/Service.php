@@ -3,6 +3,8 @@
 namespace Nitrapi\Services;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Payment\Price;
+use Nitrapi\Payment\PricePart;
 
 abstract class Service
 {

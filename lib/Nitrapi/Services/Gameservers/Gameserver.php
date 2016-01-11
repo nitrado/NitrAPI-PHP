@@ -47,12 +47,14 @@ class Gameserver extends Service
      * Restarts the gameserver
      *
      * @param string $message
+     * @param string $restartMessage
      * @return bool
      */
-    public function doRestart($message = null) {
+    public function doRestart($message = null, $restartMessage = null) {
         $url = "services/" . $this->getId() . "/gameservers/restart";
         $this->getApi()->dataPost($url, array(
-            'message' => $message
+            'message' => $message,
+            'restart_message' => $restartMessage,
         ));
         return true;
     }
@@ -61,12 +63,14 @@ class Gameserver extends Service
      * Stopps the gameserver
      *
      * @param string $message
+     * @param string $stopMessage
      * @return bool
      */
-    public function doStop($message = null) {
+    public function doStop($message = null, $stopMessage = null) {
         $url = "services/" . $this->getId() . "/gameservers/stop";
         $this->getApi()->dataPost($url, array(
-            'message' => $message
+            'message' => $message,
+            'stop_message' => $stopMessage,
         ));
         return true;
     }
@@ -338,6 +342,22 @@ class Gameserver extends Service
                 'hours' => $hours
             ]
         ])['stats'];
+    }
+
+    /**
+     * Returns the last log entries. You can optionally
+     * provide a page number.
+     *
+     * @param int $hours
+     * @return array
+     */
+    public function getLogs($page = 1) {
+        $url = "services/" . $this->getId() . "/gameservers/logs";
+        return $this->getApi()->dataGet($url, null, [
+            'query' => [
+                'page' => $page
+            ]
+        ]);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Nitrapi;
 
+use Nitrapi\Admin\Admin;
 use Nitrapi\Common\Http\Client;
 use Nitrapi\Customer\Customer;
 use Nitrapi\Services\Service;
@@ -17,16 +18,13 @@ class Nitrapi extends Client
     public function __construct($accessToken, $options = array(), $url = NITRAPI_LIVE_URL) {
         $this->setAccessToken($accessToken);
 
-        parent::__construct($url, $options);
-
         $query = array();
-        if (!empty($accessToken)) {
-            $query['access_token'] = $accessToken;
-        }
-        if (isset($options['user_id']) && !empty($options['user_id'])) {
+        if (!empty($accessToken)) $query['access_token'] = $accessToken;
+        if (isset($options['user_id']) && !empty($options['user_id']))
             $query['user_id'] = (int)$options['user_id'];
-        }
-        $this->setDefaultOption('query', $query);
+
+        $options['query'] = $query;
+        parent::__construct($url, $options);
     }
 
     /**
@@ -47,6 +45,15 @@ class Nitrapi extends Client
         $collection = new ServiceCollection($this, $options);
 
         return $collection->getServices();
+    }
+
+    /**
+     * Returns the admin controller
+     *
+     * @return Admin
+     */
+    public function getAdmin() {
+        return new Admin($this);
     }
 
     /**

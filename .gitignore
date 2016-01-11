@@ -4,4 +4,4 @@ vendor/
 composer.phar
 composer.lock
 /examples/
-/nbproject/private/
+.DS_Store

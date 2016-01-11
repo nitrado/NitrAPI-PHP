@@ -3,8 +3,6 @@
 namespace Nitrapi\Services\Gameservers\FileServer;
 
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Post\PostFile;
-use GuzzleHttp\Stream\Stream;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
@@ -67,7 +65,7 @@ class FileServer
                     'content-type' => 'application/binary',
                     'token' => $upload['token']
                 ),
-                'body' => Stream::factory(fopen($file, 'rb')),
+                'body' => \GuzzleHttp\Psr7\stream_for(fopen($file, 'rb')),
             ));
         } catch (RequestException $e) {
             var_dump($e->getResponse()->getBody()->getContents());
@@ -120,7 +118,11 @@ class FileServer
     public function getFileList($dir) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
 
-        $entries = $this->service->getApi()->dataGet($url . '?dir=' . $dir);
+        $entries = $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'dir' => $dir
+            ]
+        ]);
 
         return $entries['entries'];
     }
@@ -136,7 +138,12 @@ class FileServer
     public function doFileSearch($dir, $search) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
 
-        $entries = $this->service->getApi()->dataGet($url . '?dir=' . $dir . '&search=' . $search);
+        $entries = $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'dir' => $dir,
+                'search' => $search
+            ]
+        ]);
 
         return $entries['entries'];
     }
@@ -150,7 +157,11 @@ class FileServer
      */
     public function downloadToken($file) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/download";
-        $download = $this->service->getApi()->dataGet($url . '?file=' . $file);
+        $download = $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'file' => $file
+            ]
+        ]);
 
         $token = $download['token'];
         if (empty($token['token']) || empty($token['url'])) {
@@ -179,9 +190,16 @@ class FileServer
         }
 
         $download = $this->downloadToken($file);
-        $this->service->getApi()->dataGet($download['token']['url'], null, array(
-            'save_to' => Stream::factory(fopen($path . DIRECTORY_SEPARATOR . $name, 'wb'))
-        ));
+
+        $resource = fopen($path . DIRECTORY_SEPARATOR . $name, 'wb');
+        $stream = \GuzzleHttp\Psr7\stream_for($resource);
+
+        $this->service->getApi()->request('GET', $download['token']['url'], [
+            'query' => [
+                'token' => $download['token']['token']
+            ],
+            'sink' => $stream
+        ]);
         return true;
     }
 
@@ -194,8 +212,13 @@ class FileServer
     public function readFile($file) {
         $download = $this->downloadToken($file);
 
-        $request = $this->service->getApi()->createRequest('GET', $download['token']['url']);
-        $response = $this->service->getApi()->send($request);
+        // Here we use the GuzzleClient API directly. This is intended, but
+        // should remain a special case. Don't copy this code.
+        $response = $this->service->getApi()->request('GET', $download['token']['url'], [
+            'query' => [
+                'token' => $download['token']['token']
+            ]
+        ]);
 
         return $response->getBody()->getContents();
     }
@@ -222,8 +245,12 @@ class FileServer
      * @return int
      */
     public function pathSize($path) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/size?path=" . $path;
-        $result = $this->service->getApi()->dataGet($url);
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/size";
+        $result = $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'path' => $path
+            ]
+        ]);
 
         return (int)$result['size'];
     }

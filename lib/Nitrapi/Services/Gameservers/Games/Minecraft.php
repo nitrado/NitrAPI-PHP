@@ -36,6 +36,22 @@ class Minecraft extends Game
     }
 
     /**
+     * Return the minecraft overview map log file
+     *
+     * @return mixed
+     */
+    public function getOverviewMapLog() {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/overviewmap_log";
+        $result = $this->service->getApi()->dataGet($url);
+
+        if (isset($result['log'])) {
+            return $result['log'];
+        }
+
+        return null;
+    }
+
+    /**
      * Changing some overview map settings
      *
      * @param bool|false $enabled
@@ -201,5 +217,21 @@ class Minecraft extends Game
                 'username' => $username
             ]
         ])['user'];
+    }
+
+    /**
+     * Returns all installed Bukkit/Spigot Plugins at Minecraft Bukkit
+     *
+     * @return array
+     */
+    public function getPlugins() {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/plugins";
+        $result = $this->service->getApi()->dataGet($url);
+
+        if (isset($result['plugins'])) {
+            return $result['plugins'];
+        }
+
+        return [];
     }
 }
