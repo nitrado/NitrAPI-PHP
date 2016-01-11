@@ -1,0 +1,215 @@
+{
+  "status": "success",
+  "data": {
+    "prices": {
+      "rental_times": [
+        72,
+        720,
+        2160,
+        8760
+      ],
+      "parts": [
+        {
+          "type": "ram",
+          "min_count": 1,
+          "max_count": 8,
+          "steps": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            7,
+            8
+          ],
+          "optional": false,
+          "rental_times": [
+            {
+              "hours": 72,
+              "prices": [
+                {
+                  "count": 1,
+                  "price": 150
+                },
+                {
+                  "count": 4,
+                  "price": 120
+                }
+              ]
+            },
+            {
+              "hours": 720,
+              "prices": [
+                {
+                  "count": 1,
+                  "price": 100
+                },
+                {
+                  "count": 4,
+                  "price": 80
+                }
+              ]
+            },
+            {
+              "hours": 2160,
+              "prices": [
+                
+              ]
+            },
+            {
+              "hours": 8760,
+              "prices": [
+                
+              ]
+            }
+          ]
+        },
+        {
+          "type": "cpu",
+          "min_count": 1,
+          "max_count": 4,
+          "steps": [
+            1,
+            2,
+            4
+          ],
+          "optional": false,
+          "rental_times": [
+            {
+              "hours": 72,
+              "prices": [
+                {
+                  "count": 1,
+                  "price": 80
+                },
+                {
+                  "count": 4,
+                  "price": 60
+                }
+              ]
+            },
+            {
+              "hours": 720,
+              "prices": [
+                {
+                  "count": 1,
+                  "price": 500
+                },
+                {
+                  "count": 4,
+                  "price": 200
+                }
+              ]
+            },
+            {
+              "hours": 2160,
+              "prices": [
+                
+              ]
+            },
+            {
+              "hours": 8760,
+              "prices": [
+                
+              ]
+            }
+          ]
+        },
+        {
+          "type": "windows",
+          "min_count": 0,
+          "max_count": 1,
+          "steps": [
+            
+          ],
+          "optional": true,
+          "rental_times": [
+            {
+              "hours": 72,
+              "prices": [
+                {
+                  "count": 1,
+                  "price": 100
+                }
+              ]
+            },
+            {
+              "hours": 720,
+              "prices": [
+                {
+                  "count": 1,
+                  "price": 1000
+                }
+              ]
+            },
+            {
+              "hours": 2160,
+              "prices": [
+                
+              ]
+            },
+            {
+              "hours": 8760,
+              "prices": [
+                
+              ]
+            }
+          ]
+        },
+        {
+          "type": "ssd",
+          "min_count": 1,
+          "max_count": 50,
+          "steps": [
+            10,
+            20,
+            30,
+            40,
+            50
+          ],
+          "optional": false,
+          "rental_times": [
+            {
+              "hours": 72,
+              "prices": [
+                {
+                  "count": 1,
+                  "price": 10
+                },
+                {
+                  "count": 30,
+                  "price": 8
+                }
+              ]
+            },
+            {
+              "hours": 720,
+              "prices": [
+                {
+                  "count": 1,
+                  "price": 500
+                },
+                {
+                  "count": 30,
+                  "price": 300
+                }
+              ]
+            },
+            {
+              "hours": 2160,
+              "prices": [
+                
+              ]
+            },
+            {
+              "hours": 8760,
+              "prices": [
+                
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
