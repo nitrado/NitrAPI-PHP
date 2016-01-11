@@ -13,9 +13,6 @@ class Arkse extends Game
      */
     public function getModList() {
         $url = "services/" . $this->service->getId() . "/gameservers/games/arkse/modlist";
-        return $this->service->getApi()->dataGet($url, null, [
-            'query' => [
-            ]
-        ])['modlist'];
+        return $this->service->getApi()->dataGet($url)['modlist'];
     }
 }
