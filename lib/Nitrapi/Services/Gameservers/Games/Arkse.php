@@ -9,7 +9,6 @@ class Arkse extends Game
     /**
      * Returns the installed ark mods as list
      *
-     * @param $username
      * @return array
      */
     public function getModList() {
