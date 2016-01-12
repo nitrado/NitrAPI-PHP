@@ -28,4 +28,9 @@ class CloudServer extends Service
     public function getDetails() {
         return new CloudServerDetails($this->info['cloud_server']);
     }
+
+    public static function getAvailableImages(Nitrapi &$nitrapi) {
+        $images = $nitrapi->dataGet('/information/cloud_servers/images');
+        return $images['images'];
+    }
 }
