@@ -1,6 +1,6 @@
 <?php
 
-namespace Nitrapi\Payment\Order;
+namespace Nitrapi\Payment;
 
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;

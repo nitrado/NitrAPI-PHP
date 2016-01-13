@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Payment;
 
+use Nitrapi\Nitrapi;
 use Nitrapi\Payment\PricePart;
 use Nitrapi\Common\Exceptions\NitrapiPaymentException;
 
