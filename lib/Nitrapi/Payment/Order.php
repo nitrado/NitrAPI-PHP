@@ -11,7 +11,7 @@ class Order
     protected $nitrapi = null;
 
     public function __construct(Nitrapi &$nitrapi) {
-        $this->$nitrapi = $nitrapi;
+        $this->nitrapi = $nitrapi;
     }
 
     public function process($rentalTime, array $parts, $imageId, $locationId=2, $type='cloud_server') {
