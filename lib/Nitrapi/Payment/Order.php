@@ -25,6 +25,8 @@ class Order
             'location' => $locationId
         ]);
 
+        var_dump($order);
+
         return $order['status'] == 'success';
     }
 }
