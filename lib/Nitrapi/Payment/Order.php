@@ -16,8 +16,7 @@ class Order
 
     public function process($rentalTime, array $parts, $imageId, $locationId=2, $type='cloud_server') {
         $price = Price::getPriceStructure($this->nitrapi, $type);
-
-        $order = $this->nitrapi->dataPost("order/order/$type", [
+        $this->nitrapi->dataPost("order/order/$type", [
             'price' => $price->getBestPrice($rentalTime, $parts),
             'rental_time' => $rentalTime,
             'parts' => $parts,
