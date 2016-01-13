@@ -24,9 +24,8 @@ class Order
             'image_id' => $imageId,
             'location' => $locationId
         ]);
-
-        var_dump($order);
-
-        return $order['status'] == 'success';
+        
+        // TODO: Proper errors/success on NitrAPI side
+        return true;
     }
 }
