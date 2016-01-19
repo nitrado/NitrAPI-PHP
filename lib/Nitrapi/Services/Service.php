@@ -16,6 +16,7 @@ abstract class Service
     protected $start_date;
     protected $details;
     protected $websocket_token;
+    protected $roles;
 
     public function __construct(Nitrapi &$api, array &$data) {
         $this->setApi($api);
@@ -98,6 +99,15 @@ abstract class Service
      */
     public function getServiceDetails() {
         return (array)$this->details;
+    }
+
+    /**
+     * Returns the roles of the service
+     *
+     * @return array
+     */
+    public function getRoles() {
+        return (array)$this->roles;
     }
 
     /**
