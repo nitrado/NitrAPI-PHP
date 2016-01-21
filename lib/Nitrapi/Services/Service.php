@@ -11,6 +11,7 @@ abstract class Service
     protected $api;
 
     protected $id;
+    protected $user_id;
     protected $delete_date;
     protected $suspend_date;
     protected $start_date;
