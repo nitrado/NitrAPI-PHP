@@ -24,7 +24,7 @@ class VoiceserverDetails
     }
 
     public function isStopped() {
-        return !$this->$this->isStarted();
+        return !$this->isStarted();
     }
 
     public function getPort() {
