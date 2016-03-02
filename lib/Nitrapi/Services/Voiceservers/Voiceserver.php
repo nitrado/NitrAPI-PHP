@@ -58,7 +58,7 @@ class Voiceserver extends Service
     public function doReinstall() {
         $url = "services/" . $this->getId() . "/voiceservers/reinstall";
         $this->getApi()->dataPost($url);
-        $this->refresh();
+
         return true;
     }
 }
