@@ -33,7 +33,7 @@ class Gameserver extends Service
     /**
      * Returns informations about the gameserver
      *
-     * @return mixed
+     * @return GameserverDetails
      */
     public function getDetails() {
         return new GameserverDetails($this->info['gameserver']);
