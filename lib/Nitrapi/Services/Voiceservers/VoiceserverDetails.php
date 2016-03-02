@@ -11,8 +11,20 @@ class VoiceserverDetails
         $this->data = $data;
     }
 
+    public function getType() {
+        return (string)$this->data['type'];
+    }
+
     public function getIP() {
         return (string)$this->data['ip'];
+    }
+
+    public function isStarted() {
+        return (bool)$this->data['started'];
+    }
+
+    public function isStopped() {
+        return !$this->$this->isStarted();
     }
 
     public function getPort() {
