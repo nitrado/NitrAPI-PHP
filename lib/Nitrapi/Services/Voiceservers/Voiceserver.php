@@ -15,11 +15,11 @@ class Voiceserver extends Service
     }
 
     /**
-     * Returns informations about the gameserver
+     * Returns informations about the voiceserver
      *
      * @return mixed
      */
     public function getDetails() {
-        return new GameserverDetails($this->info['voiceserver']);
+        return new VoiceserverDetails($this->info['voiceserver']);
     }
 }
