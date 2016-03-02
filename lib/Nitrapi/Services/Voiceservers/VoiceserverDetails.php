@@ -34,4 +34,8 @@ class VoiceserverDetails
     public function getSlots() {
         return (int)$this->data['slots'];
     }
+
+    public function getSpecificInformation() {
+        return $this->data['specific'];
+    }
 }
