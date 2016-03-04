@@ -35,6 +35,10 @@ class VoiceserverDetails
         return (int)$this->data['slots'];
     }
 
+    public function getSettingKeys() {
+        return $this->data['setting_keys'];
+    }
+
     public function getSpecificInformation() {
         return $this->data['specific'];
     }
