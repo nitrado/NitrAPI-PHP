@@ -112,6 +112,16 @@ abstract class Service
     }
 
     /**
+     * Returns the ddos history
+     *
+     * @return array
+     */
+    public function getDDoSHistory() {
+        $url = "services/" . $this->getId() . "/ddos";
+        return $this->getApi()->dataGet($url);
+    }
+
+    /**
      * @param array $data
      */
     protected function loadData(array $data) {
