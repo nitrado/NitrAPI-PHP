@@ -146,10 +146,11 @@ abstract class Service
      */
     public function addLog($category, $message) {
         $url = "services/" . $this->getId() . "/logs";
-        return $this->getApi()->dataPost($url, [
+        $this->getApi()->dataPost($url, [
             'category' => $category,
             'message' => $message
         ]);
+        return true;
     }
 
     /**
