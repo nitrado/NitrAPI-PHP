@@ -122,6 +122,37 @@ abstract class Service
     }
 
     /**
+     * Returns the last log entries. You can optionally
+     * provide a page number.
+     *
+     * @param int $hours
+     * @return array
+     */
+    public function getLogs($page = 1) {
+        $url = "services/" . $this->getId() . "/logs";
+        return $this->getApi()->dataGet($url, null, [
+            'query' => [
+                'page' => $page
+            ]
+        ]);
+    }
+
+    /**
+     * Adds a new log entry to your service
+     *
+     * @param string $category
+     * @param string $message
+     * @return array
+     */
+    public function addLog($category, $message) {
+        $url = "services/" . $this->getId() . "/logs";
+        return $this->getApi()->dataPost($url, [
+            'category' => $category,
+            'message' => $message
+        ]);
+    }
+
+    /**
      * @param array $data
      */
     protected function loadData(array $data) {

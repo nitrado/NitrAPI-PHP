@@ -335,22 +335,6 @@ class Gameserver extends Service
     }
 
     /**
-     * Returns the last log entries. You can optionally
-     * provide a page number.
-     *
-     * @param int $hours
-     * @return array
-     */
-    public function getLogs($page = 1) {
-        $url = "services/" . $this->getId() . "/gameservers/logs";
-        return $this->getApi()->dataGet($url, null, [
-            'query' => [
-                'page' => $page
-            ]
-        ]);
-    }
-
-    /**
      * Sends a command directly into the game server
      *
      * @param $command
