@@ -37,8 +37,10 @@ class Teamspeak3 extends Type
      */
     public function addToken($groupId) {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/token";
-        return $this->service->getApi()->dataPost($url, [
-            'sgid' => $groupId
+        return $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'sgid' => $groupId
+            ]
         ])['token'];
     }
 
