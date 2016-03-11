@@ -27,7 +27,7 @@ class ServiceCollection
                     $this->services[] = ServiceFactory::factory($this->getApi(), array(
                         'id' => $service['id'],
                     ));
-                } catch (\Exception) {}
+                } catch (\Exception $e) {}
             }
         }
     }
