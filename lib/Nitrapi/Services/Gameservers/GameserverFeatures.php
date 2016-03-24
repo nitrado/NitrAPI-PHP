@@ -38,4 +38,8 @@ class GameserverFeatures
     public function hasRestartMessageSupport() {
         return $this->data['has_restart_message_support'];
     }
+
+    public function hasFTP() {
+        return $this->data['has_ftp'];
+    }
 }
