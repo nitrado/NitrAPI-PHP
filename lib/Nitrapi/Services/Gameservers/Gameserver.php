@@ -39,6 +39,15 @@ class Gameserver extends Service
         return new GameserverDetails($this->info['gameserver']);
     }
 
+    /**
+     * Returns available features from the gameserver
+     *
+     * @return GameserverFeatures
+     */
+    public function getFeatures() {
+        return new GameserverFeatures($this->info['gameserver']['game_specific']['features']);
+    }
+
     public function getCustomerSettings() {
         return new CustomerSettings($this, $this->info['gameserver']['settings']);
     }
