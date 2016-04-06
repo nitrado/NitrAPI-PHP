@@ -374,4 +374,20 @@ class Gameserver extends Service
 
         return new $class($this);
     }
+
+    /**
+     * Updates a managed root setting
+     *
+     * @param $key
+     * @param $value
+     * @return bool
+     */
+    public function changeManagedRootSetting($key, $value) {
+        $url = "services/" . $this->getId() . "/gameservers/managed_root/" . $key;
+        $this->getApi()->dataPost($url, [
+            $key => $value
+        ]);
+
+        return true;
+    }
 }
