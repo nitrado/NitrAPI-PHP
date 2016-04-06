@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\Voiceservers;
 
+use Nitrapi\Common\Exceptions\NitrapiServiceTypeNotFoundException;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
 
@@ -152,5 +153,18 @@ class Voiceserver extends Service
 
         $this->refresh();
         return $result;
+    }
+
+    /**
+     * Returns a voiceserver type instance
+     **/
+    public function getVoiceserverTypeInstance() {
+        $class = "Nitrapi\\Services\\Voiceservers\\Types\\" . ucfirst($this->getDetails()->getType());
+
+        if (!class_exists($class)) {
+            throw new NitrapiServiceTypeNotFoundException("Voiceserver Type " . $this->getDetails()->getType() . " not found");
+        }
+
+        return new $class($this);
     }
 }

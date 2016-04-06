@@ -39,6 +39,15 @@ class Gameserver extends Service
         return new GameserverDetails($this->info['gameserver']);
     }
 
+    /**
+     * Returns available features from the gameserver
+     *
+     * @return GameserverFeatures
+     */
+    public function getFeatures() {
+        return new GameserverFeatures($this->info['gameserver']['game_specific']['features']);
+    }
+
     public function getCustomerSettings() {
         return new CustomerSettings($this, $this->info['gameserver']['settings']);
     }
@@ -332,22 +341,6 @@ class Gameserver extends Service
                 'hours' => $hours
             ]
         ])['stats'];
-    }
-
-    /**
-     * Returns the last log entries. You can optionally
-     * provide a page number.
-     *
-     * @param int $hours
-     * @return array
-     */
-    public function getLogs($page = 1) {
-        $url = "services/" . $this->getId() . "/gameservers/logs";
-        return $this->getApi()->dataGet($url, null, [
-            'query' => [
-                'page' => $page
-            ]
-        ]);
     }
 
     /**
