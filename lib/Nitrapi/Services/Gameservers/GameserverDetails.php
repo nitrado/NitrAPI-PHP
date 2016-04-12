@@ -21,6 +21,21 @@ class GameserverDetails
     }
 
     /**
+     * @return bool
+     */
+    public function isManagedRoot() {
+        return isset($this->data['managed_root']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getManagedRoot() {
+        if (!$this->isManagedRoot()) return [];
+        return $this->data['managed_root'];
+    }
+
+    /**
      * Returns the username
      *
      * @return string
