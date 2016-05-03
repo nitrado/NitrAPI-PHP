@@ -19,12 +19,6 @@ class Voiceserver extends Service
         $url = "services/" . $this->getId() . "/voiceservers";
         $this->info = $this->getApi()->dataGet($url);
     }
-    
-    public function status() {
-        $url = "services/" . $this->getId() . "/voiceservers/teamspeak3/status";
-        $status = $this->getApi()->dataGet($url)['status'];
-        return $status;
-    }
 
     /**
      * Returns informations about the voiceserver
