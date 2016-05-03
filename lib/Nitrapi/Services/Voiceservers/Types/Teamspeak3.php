@@ -110,4 +110,32 @@ class Teamspeak3 extends Type
 
         return true;
     }
+
+    /**
+     * Shows all available teamspeak 3 hostsystems
+     *
+     * @admin
+     * @return array
+     */
+    public function getHostsystems() {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/servers";
+        return $this->service->getApi()->dataGet($url)['servers'];
+    }
+
+    /**
+     * Switches a teamspeak 3 instance to a new hostsystem
+     * Except files and icons, these are not migrated
+     *
+     * @admin
+     * @return bool
+     */
+    public function doSwitch($hostname) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/switch";
+        $this->service->getApi()->dataPost($url, [
+            'server' => $hostname
+        ]);
+
+        return true;
+    }
+
 }
