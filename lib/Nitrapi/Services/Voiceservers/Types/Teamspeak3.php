@@ -41,6 +41,11 @@ class Teamspeak3 extends Type
         return true;
     }
     
+    public function enableLogView() {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/enable_log_view";
+        return $this->service->getApi()->dataPost($url, []);
+    }
+    
     /**
      * Send commands to voiceserver
      * 
