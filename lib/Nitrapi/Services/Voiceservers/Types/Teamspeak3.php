@@ -46,6 +46,19 @@ class Teamspeak3 extends Type
         return $this->service->getApi()->dataPost($url, []);
     }
     
+    public function cleanupUsers($groups, $days) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/cleanup_users";
+        return $this->service->getApi()->dataPost($url, [
+            'groups' => $groups,
+            'days' => $days
+        ])['cleanup'];
+    }
+    
+    public function info() {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/info";
+        return $this->service->getApi()->dataGet($url, null)['info'];
+    }
+    
     /**
      * Send commands to voiceserver
      * 
