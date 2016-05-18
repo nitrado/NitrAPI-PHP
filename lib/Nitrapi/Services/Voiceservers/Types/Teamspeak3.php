@@ -4,6 +4,77 @@ namespace Nitrapi\Services\Voiceservers\Types;
 
 class Teamspeak3 extends Type
 {
+    public function status($show_icons = false) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/status";
+        $params = [];
+        if($show_icons) {
+            $params["show_icons"] = true;
+        }
+        $status = $this->service->getApi()->dataGet($url, null, ["query" => $params])['status'];
+        return $status;
+    }
+    
+    public function icon($icon_id) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/icon";
+        $icon = $this->service->getApi()->dataGet($url, null, ["query" => ["icon_id" => $icon_id]])['icon'];
+        return $icon;
+    }
+    
+    public function getWhitelist() {
+        $url = "services/" . $this->service->getId() . "/voiceservers/whitelist";
+        return $this->service->getApi()->dataGet($url, null)['list'];
+    }
+    
+    public function addWhitelist($ip, $comment) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/whitelist";
+        return $this->service->getApi()->dataPost($url, [
+            'ip' => $ip,
+            'comment' => $comment
+        ])['entry'];
+    }
+    
+    public function deleteWhitelist($id) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/whitelist";
+        $this->service->getApi()->dataDelete($url, [
+            'id' => $id
+        ]);
+        return true;
+    }
+    
+    public function enableLogView() {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/enable_log_view";
+        return $this->service->getApi()->dataPost($url, []);
+    }
+    
+    public function cleanupUsers($groups, $days) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/cleanup_users";
+        return $this->service->getApi()->dataPost($url, [
+            'groups' => $groups,
+            'days' => $days
+        ])['cleanup'];
+    }
+    
+    public function info() {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/info";
+        return $this->service->getApi()->dataGet($url, null)['info'];
+    }
+    
+    /**
+     * Send commands to voiceserver
+     * 
+     * @param array $commands
+     * @return array
+     */
+    public function query($commands) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/query";
+        $response = $this->service->getApi()->dataPost($url, null, null, [
+            'json' => [
+                'commands' => $commands
+            ]
+        ]);
+        return $response['query'];
+    }
+    
     /**
      * Creates a new Admin Group
      *
