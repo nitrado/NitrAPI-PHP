@@ -9,7 +9,7 @@ use Nitrapi\Services\Service;
 use Nitrapi\Services\ServiceCollection;
 use Nitrapi\Services\ServiceFactory;
 
-define('NITRAPI_LIVE_URL', 'http://10.10.0.6:9000/');
+define('NITRAPI_LIVE_URL', 'https://api.nitrado.net/');
 
 class Nitrapi extends Client
 {
