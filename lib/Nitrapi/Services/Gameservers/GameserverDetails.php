@@ -269,6 +269,15 @@ class GameserverDetails
     public function getPath() {
         return $this->data['game_specific']['path'];
     }
+    
+    /**
+     * Return gameserver game path status
+     * 
+     * @return boolean
+     */
+    public function isPathAvailable() {
+        return $this->data['game_specific']['path_available'];
+    }
 
     /**
      * Returns the log files of the server
