@@ -9,7 +9,7 @@ abstract class DimensionPricing extends Pricing {
             'query' => [
                 'location' => $location_id
             ]
-        ]);
+        ])['prices'];
     }
     
 }
