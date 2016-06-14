@@ -11,13 +11,11 @@ abstract class Service
     protected $api;
 
     protected $id;
-    protected $user_id;
     protected $delete_date;
     protected $suspend_date;
     protected $start_date;
     protected $details;
     protected $websocket_token;
-    protected $roles;
 
     public function __construct(Nitrapi &$api, array &$data) {
         $this->setApi($api);
@@ -100,57 +98,6 @@ abstract class Service
      */
     public function getServiceDetails() {
         return (array)$this->details;
-    }
-
-    /**
-     * Returns the roles of the service
-     *
-     * @return array
-     */
-    public function getRoles() {
-        return (array)$this->roles;
-    }
-
-    /**
-     * Returns the ddos history
-     *
-     * @return array
-     */
-    public function getDDoSHistory() {
-        $url = "services/" . $this->getId() . "/ddos";
-        return $this->getApi()->dataGet($url);
-    }
-
-    /**
-     * Returns the last log entries. You can optionally
-     * provide a page number.
-     *
-     * @param int $hours
-     * @return array
-     */
-    public function getLogs($page = 1) {
-        $url = "services/" . $this->getId() . "/logs";
-        return $this->getApi()->dataGet($url, null, [
-            'query' => [
-                'page' => $page
-            ]
-        ]);
-    }
-
-    /**
-     * Adds a new log entry to your service
-     *
-     * @param string $category
-     * @param string $message
-     * @return array
-     */
-    public function addLog($category, $message) {
-        $url = "services/" . $this->getId() . "/logs";
-        $this->getApi()->dataPost($url, [
-            'category' => $category,
-            'message' => $message
-        ]);
-        return true;
     }
 
     /**

@@ -23,12 +23,6 @@ class Nitrapi extends Client
         if (isset($options['user_id']) && !empty($options['user_id']))
             $query['user_id'] = (int)$options['user_id'];
 
-        if (isset($options['user_ip']) && filter_var($options['user_ip'], FILTER_VALIDATE_IP))
-            $query['user_ip'] = $options['user_ip'];
-
-        if (isset($options['locale']) && !empty($options['locale']))
-            $query['locale'] = (string)$options['locale'];
-
         $options['query'] = $query;
         parent::__construct($url, $options);
     }

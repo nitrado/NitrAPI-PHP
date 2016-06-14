@@ -23,11 +23,9 @@ class ServiceCollection
         $_services = $this->getApi()->dataGet("services", null, $options);
         if (count($_services['services']) > 0) {
             foreach ($_services['services'] as $service) {
-                try {
-                    $this->services[] = ServiceFactory::factory($this->getApi(), array(
-                        'id' => $service['id'],
-                    ));
-                } catch (\Exception $e) {}
+                $this->services[] = ServiceFactory::factory($this->getApi(), array(
+                    'id' => $service['id'],
+                ));
             }
         }
     }

@@ -33,19 +33,10 @@ class Gameserver extends Service
     /**
      * Returns informations about the gameserver
      *
-     * @return GameserverDetails
+     * @return mixed
      */
     public function getDetails() {
         return new GameserverDetails($this->info['gameserver']);
-    }
-
-    /**
-     * Returns available features from the gameserver
-     *
-     * @return GameserverFeatures
-     */
-    public function getFeatures() {
-        return new GameserverFeatures($this->info['gameserver']['game_specific']['features']);
     }
 
     public function getCustomerSettings() {
@@ -309,6 +300,16 @@ class Gameserver extends Service
     }
 
     /**
+     * Returns the ddos history
+     *
+     * @return array
+     */
+    public function getDDoSHistory() {
+        $url = "services/" . $this->getId() . "/gameservers/ddos";
+        return $this->getApi()->dataGet($url);
+    }
+
+    /**
      * Returns the task manager
      *
      * @return TaskManager
@@ -341,6 +342,22 @@ class Gameserver extends Service
                 'hours' => $hours
             ]
         ])['stats'];
+    }
+
+    /**
+     * Returns the last log entries. You can optionally
+     * provide a page number.
+     *
+     * @param int $hours
+     * @return array
+     */
+    public function getLogs($page = 1) {
+        $url = "services/" . $this->getId() . "/gameservers/logs";
+        return $this->getApi()->dataGet($url, null, [
+            'query' => [
+                'page' => $page
+            ]
+        ]);
     }
 
     /**

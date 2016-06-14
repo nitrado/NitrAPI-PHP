@@ -4,6 +4,7 @@ namespace Nitrapi\Services\CloudServers;
 
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
+use Nitrapi\Services\CloudServers\Iamge;
 
 class CloudServer extends Service
 {
@@ -27,5 +28,13 @@ class CloudServer extends Service
      */
     public function getDetails() {
         return new CloudServerDetails($this->info['cloud_server']);
+    }
+
+    public static function getAvailableImages(Nitrapi &$nitrapi) {
+        $images = $nitrapi->dataGet('/information/cloud_servers/images');
+        $imgs = [];
+        foreach ($images['images'] as $image)
+            $imgs[] = new Image($image['id'], $image['name'], $image['is_windows']);
+        return $imgs;
     }
 }

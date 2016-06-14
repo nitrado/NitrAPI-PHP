@@ -21,21 +21,6 @@ class GameserverDetails
     }
 
     /**
-     * @return bool
-     */
-    public function isManagedRoot() {
-        return isset($this->data['managed_root']);
-    }
-
-    /**
-     * @return array
-     */
-    public function getManagedRoot() {
-        if (!$this->isManagedRoot()) return [];
-        return $this->data['managed_root'];
-    }
-
-    /**
      * Returns the username
      *
      * @return string
@@ -259,32 +244,5 @@ class GameserverDetails
      */
     public function getWebsocketToken() {
         return $this->data['websocket_token'];
-    }
-
-    /**
-     * Returns the gameserver game path
-     *
-     * @return string
-     */
-    public function getPath() {
-        return $this->data['game_specific']['path'];
-    }
-
-    /**
-     * Returns the log files of the server
-     *
-     * @return array
-     */
-    public function getLogFiles() {
-        return $this->data['game_specific']['log_files'];
-    }
-
-    /**
-     * Returns the config files of the server
-     *
-     * @return array
-     */
-    public function getConfigFiles() {
-        return $this->data['game_specific']['config_files'];
     }
 }
