@@ -3,6 +3,7 @@
 namespace Nitrapi\Order\Pricing;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\Service;
 
 abstract class Pricing implements PricingInterface {
 
@@ -57,6 +58,48 @@ abstract class Pricing implements PricingInterface {
         return $this->prices[$this->location_id];
     }
 
+    /**
+     * Extends a existing service
+     * 
+     * @param Service $service
+     * @param $rentalTime
+     */
+    public function getExtendPriceForService(Service &$service, $rentalTime) {
+        return $this->prices[$this->location_id] = $this->nitrapi->dataGet("/order/pricing/service", null, [
+            'query' => [
+                'service_id' => $service->getId(),
+                'rental_time' => $rentalTime
+            ]
+        ])['price'];
+    }
+
+    /**
+     * Extends the specific service about the specific rental time
+     *
+     * @param Service $service
+     * @param $rentalTime
+     * @return bool
+     */
+    public function doExtendService(Service &$service, $rentalTime) {
+        $price = $this->getExtendPriceForService($service, $rentalTime);
+        $orderArray = [
+            'price' => $price,
+            'rental_time' => $rentalTime,
+            'service_id' => $service->getId(),
+            'method' => 'extend'
+        ];
+
+        $this->nitrapi->dataPost("order/order/" . $this->product, $orderArray);
+
+        return true;
+    }
+
+    /**
+     * Orders the specified service
+     *
+     * @param $rentalTime
+     * @return bool
+     */
     public function orderService($rentalTime) {
         if ($this instanceof PartPricing) {
             $this->checkDependencies();
