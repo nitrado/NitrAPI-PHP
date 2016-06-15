@@ -3,6 +3,8 @@
 namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\Gameservers\Addons\AddonManager;
+use Nitrapi\Services\Gameservers\Addons\Addons;
 use Nitrapi\Services\Gameservers\ApplicationServer\ApplicationServer;
 use Nitrapi\Services\Service;
 use Nitrapi\Services\Gameservers\Games\Game;
@@ -288,6 +290,15 @@ class Gameserver extends Service
      */
     public function getApplicationServer() {
         return new ApplicationServer($this);
+    }
+
+    /**
+     * Get access to the addons, if the gameserver has any.
+     * 
+     * @return Addons
+     */
+    public function getAddons() {
+        return new AddonManager($this);
     }
 
     /**
