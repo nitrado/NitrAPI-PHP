@@ -7,14 +7,16 @@ use Nitrapi\Common\Exceptions\NitrapiErrorException;
 class Addon {
     /**
      * Addon constructor.
+     * @param Service $serviced
      * @param Addon $name
      * @param Description $description
      * @param Status $status
      */
-    public function __construct($name, $description, $status) {
+    public function __construct($service, $name, $description, $status) {
         $this->name = $name;
         $this->description = $description;
         $this->status = $status;
+        $this->service = $service;
     }
     
     public function getName() {
