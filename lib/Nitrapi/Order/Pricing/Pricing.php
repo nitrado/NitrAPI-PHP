@@ -31,12 +31,12 @@ abstract class Pricing implements PricingInterface {
      *
      * @var int
      */
-    protected $location_id;
+    protected $locationId;
 
-    public function __construct(Nitrapi $nitrapi, $location_id)
+    public function __construct(Nitrapi $nitrapi, $locationId)
     {
         $this->nitrapi = $nitrapi;
-        $this->location_id = $location_id;
+        $this->locationId = $locationId;
     }
 
     /**
@@ -45,14 +45,14 @@ abstract class Pricing implements PricingInterface {
      * @return mixed
      */
     public function getPrices(Service &$service = null) {
-        $cacheName = $this->location_id;
+        $cacheName = $this->locationId;
         if ($service instanceof Service) $cacheName .= "/" . $service->getId();
         if (isset($this->prices[$cacheName])) {
             return $this->prices[$cacheName];
         }
 
         $query = [
-            'location' => $this->location_id
+            'location' => $this->locationId
         ];
 
         if ($service instanceof Service) {
@@ -73,7 +73,7 @@ abstract class Pricing implements PricingInterface {
      * @param $rentalTime
      */
     public function getExtendPriceForService(Service &$service, $rentalTime) {
-        return $this->prices[$this->location_id] = $this->nitrapi->dataGet("/order/pricing/service", null, [
+        return $this->prices[$this->locationId] = $this->nitrapi->dataGet("/order/pricing/service", null, [
             'query' => [
                 'service_id' => $service->getId(),
                 'rental_time' => $rentalTime
@@ -114,7 +114,7 @@ abstract class Pricing implements PricingInterface {
             $orderArray = [
                 'price' => $this->getPrice($rentalTime),
                 'rental_time' => $rentalTime,
-                'location' => $this->location_id,
+                'location' => $this->locationId,
                 'parts' => $this->getParts(),
                 'additionals' => $this->additionals
             ];
@@ -122,7 +122,7 @@ abstract class Pricing implements PricingInterface {
             $orderArray = [
                 'price' => $this->getPrice($rentalTime),
                 'rental_time' => $rentalTime,
-                'location' => $this->location_id,
+                'location' => $this->locationId,
                 'dimensions' => $this->getDimensions(),
                 'additionals' => $this->additionals
             ];
@@ -160,7 +160,7 @@ abstract class Pricing implements PricingInterface {
             $orderArray = [
                 'price' => $this->getSwitchPrice($rentalTime, $service),
                 'rental_time' => $rentalTime,
-                'location' => $this->location_id,
+                'location' => $this->locationId,
                 'parts' => $this->getParts(),
                 'additionals' => $this->additionals,
                 'method' => 'switch',
@@ -170,7 +170,7 @@ abstract class Pricing implements PricingInterface {
             $orderArray = [
                 'price' => $this->getSwitchPrice($rentalTime, $service),
                 'rental_time' => $rentalTime,
-                'location' => $this->location_id,
+                'location' => $this->locationId,
                 'dimensions' => $this->getDimensions(),
                 'additionals' => $this->additionals,
                 'method' => 'switch',
