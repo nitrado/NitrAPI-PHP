@@ -2,6 +2,8 @@
 
 namespace Nitrapi\Order\Pricing;
 
+use Nitrapi\Services\Service;
+
 abstract class PartPricing extends Pricing {
     
     protected $parts = null;
@@ -30,9 +32,9 @@ abstract class PartPricing extends Pricing {
         return $this->parts;
     }
 
-    public function getPrice($rentalTime) {
+    public function getPrice($rentalTime, Service &$service = null) {
         $this->checkDependencies();
-        $prices = $this->getPrices();
+        $prices = $this->getPrices($service);
         $parts = $this->getParts();
 
         $totalPrice = 0;

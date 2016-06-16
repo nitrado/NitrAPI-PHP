@@ -2,6 +2,8 @@
 
 namespace Nitrapi\Order\Pricing;
 
+use Nitrapi\Services\Service;
+
 abstract class DimensionPricing extends Pricing {
 
     protected $dimensions = null;
@@ -30,8 +32,8 @@ abstract class DimensionPricing extends Pricing {
         return $this->dimensions;
     }
     
-    public function getPrice($rentalTime) {
-        $information = $this->getPrices();
+    public function getPrice($rentalTime, Service &$service = null) {
+        $information = $this->getPrices($service);
         $dimensions = $this->getDimensions();
         $dimensions['rental_time'] = $rentalTime;
 

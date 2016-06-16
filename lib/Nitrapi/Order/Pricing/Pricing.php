@@ -44,18 +44,26 @@ abstract class Pricing implements PricingInterface {
      *
      * @return mixed
      */
-    public function getPrices() {
-        if (isset($this->prices[$this->location_id])) {
-            return $this->prices[$this->location_id];
+    public function getPrices(Service &$service = null) {
+        $cacheName = $this->location_id;
+        if ($service instanceof Service) $cacheName .= "/" . $service->getId();
+        if (isset($this->prices[$cacheName])) {
+            return $this->prices[$cacheName];
         }
 
-        $this->prices[$this->location_id] = $this->nitrapi->dataGet("/order/pricing/" . $this->product, null, [
-            'query' => [
-                'location' => $this->location_id
-            ]
+        $query = [
+            'location' => $this->location_id
+        ];
+
+        if ($service instanceof Service) {
+            $query['sale_service'] = $service->getId();
+        }
+
+        $this->prices[$cacheName] = $this->nitrapi->dataGet("/order/pricing/" . $this->product, null, [
+            'query' => $query
         ])['prices'];
 
-        return $this->prices[$this->location_id];
+        return $this->prices[$cacheName];
     }
 
     /**
@@ -117,6 +125,56 @@ abstract class Pricing implements PricingInterface {
                 'location' => $this->location_id,
                 'dimensions' => $this->getDimensions(),
                 'additionals' => $this->additionals
+            ];
+        } else {
+            throw new PricingException("Unknown pricing calculation type.");
+        }
+
+        $this->nitrapi->dataPost("order/order/" . $this->product, $orderArray);
+
+        //if no exception appears, order was successful
+        return true;
+    }
+
+    /**
+     * Returns the price for swichting
+     * 
+     * @param $rentalTime
+     * @param Service $service
+     * @return mixed
+     */
+    public function getSwitchPrice($rentalTime, Service &$service) {
+        return $this->getPrice($rentalTime, $service);
+    }
+
+    /**
+     * Switches the product of a specific service
+     *
+     * @param Service $service
+     * @param $rentalTime
+     * @return bool
+     */
+    public function switchService($rentalTime, Service &$service) {
+        if ($this instanceof PartPricing) {
+            $this->checkDependencies();
+            $orderArray = [
+                'price' => $this->getSwitchPrice($rentalTime, $service),
+                'rental_time' => $rentalTime,
+                'location' => $this->location_id,
+                'parts' => $this->getParts(),
+                'additionals' => $this->additionals,
+                'method' => 'switch',
+                'service_id' => $service->getId(),
+            ];
+        } elseif ($this instanceof DimensionPricing) {
+            $orderArray = [
+                'price' => $this->getSwitchPrice($rentalTime, $service),
+                'rental_time' => $rentalTime,
+                'location' => $this->location_id,
+                'dimensions' => $this->getDimensions(),
+                'additionals' => $this->additionals,
+                'method' => 'switch',
+                'service_id' => $service->getId(),
             ];
         } else {
             throw new PricingException("Unknown pricing calculation type.");
