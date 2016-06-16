@@ -28,7 +28,7 @@ class AddonManager {
 
         $addonInstances = [];
         foreach ($addons['addons'] as $addon => $params)
-            $addonInstances[] = new Addon($addon, $params['description'], $params['status']);
+            $addonInstances[] = new Addon($this->service, $addon, $params['description'], $params['status']);
         return $addonInstances;
     }
 }
