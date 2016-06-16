@@ -4,7 +4,6 @@ namespace Nitrapi\Services\CloudServers;
 
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
-use Nitrapi\Services\CloudServers\Iamge;
 
 class CloudServer extends Service
 {
