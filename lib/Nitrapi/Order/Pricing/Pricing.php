@@ -7,6 +7,8 @@ use Nitrapi\Services\Service;
 
 abstract class Pricing implements PricingInterface {
 
+    protected static $product = null;
+
     /**
      * @var Nitrapi
      */
@@ -22,8 +24,7 @@ abstract class Pricing implements PricingInterface {
     /**
      * Will be overwritten by parents
      */
-    protected $product = null;
-    
+
     protected $additionals = [];
 
     /**
@@ -33,12 +34,38 @@ abstract class Pricing implements PricingInterface {
      */
     protected $locationId;
 
-    public function __construct(Nitrapi $nitrapi, $locationId)
+    public function __construct(Nitrapi &$nitrapi, $locationId)
     {
         $this->nitrapi = $nitrapi;
         $this->locationId = $locationId;
     }
 
+    /**
+     * Changes the location id
+     *
+     * @param $locationId
+     */
+    public function setLocationId($locationId) {
+        $this->locationId = $locationId;
+    }
+
+    /**
+     * @param Nitrapi $nitrapi
+     * @return mixed
+     */
+    public static function getLocations(Nitrapi &$nitrapi) {
+        if (static::$product === null) {
+            throw new PricingException("You can not use the Pricing() class. Please use a product class.");
+        }
+        $locations = $nitrapi->dataGet("/order/order/locations")['locations'];
+        foreach ($locations as $key => $location) {
+            if (!isset($location['products'][static::$product])) unset($locations[$key]);
+            if ($location['products'][static::$product] !== true) unset($locations[$key]);
+        }
+
+        return $locations;
+    }
+    
     /**
      * Get full price list for specified product
      *
@@ -59,7 +86,7 @@ abstract class Pricing implements PricingInterface {
             $query['sale_service'] = $service->getId();
         }
 
-        $this->prices[$cacheName] = $this->nitrapi->dataGet("/order/pricing/" . $this->product, null, [
+        $this->prices[$cacheName] = $this->nitrapi->dataGet("/order/pricing/" . $this->getProduct(), null, [
             'query' => $query
         ])['prices'];
 
@@ -97,7 +124,7 @@ abstract class Pricing implements PricingInterface {
             'method' => 'extend'
         ];
 
-        $this->nitrapi->dataPost("order/order/" . $this->product, $orderArray);
+        $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
 
         return true;
     }
@@ -130,7 +157,7 @@ abstract class Pricing implements PricingInterface {
             throw new PricingException("Unknown pricing calculation type.");
         }
 
-        $this->nitrapi->dataPost("order/order/" . $this->product, $orderArray);
+        $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
 
         //if no exception appears, order was successful
         return true;
@@ -180,9 +207,13 @@ abstract class Pricing implements PricingInterface {
             throw new PricingException("Unknown pricing calculation type.");
         }
 
-        $this->nitrapi->dataPost("order/order/" . $this->product, $orderArray);
+        $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
 
         //if no exception appears, order was successful
         return true;
+    }
+
+    protected function getProduct() {
+        return static::$product;
     }
 }

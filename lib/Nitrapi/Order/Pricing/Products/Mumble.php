@@ -5,6 +5,7 @@ namespace Nitrapi\Order\Pricing\Products;
 use Nitrapi\Order\Pricing\PartPricing;
 
 class Mumble extends PartPricing {
+
+    protected static $product = 'mumble';
     
-    protected $product = "mumble";
 }
