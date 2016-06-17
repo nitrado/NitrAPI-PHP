@@ -94,14 +94,15 @@ abstract class Pricing implements PricingInterface {
     }
 
     /**
-     * Extends a existing service
+     * Returns the price for extending a specific service
      * 
      * @param Service $service
      * @param $rentalTime
      */
     public function getExtendPriceForService(Service &$service, $rentalTime) {
-        return $this->prices[$this->locationId] = $this->nitrapi->dataGet("/order/pricing/service", null, [
+        return $this->prices[$this->locationId] = $this->nitrapi->dataGet("/order/pricing/" . $this->getProduct(), null, [
             'query' => [
+                'method' => 'extend',
                 'service_id' => $service->getId(),
                 'rental_time' => $rentalTime
             ]
