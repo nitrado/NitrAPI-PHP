@@ -126,9 +126,8 @@ abstract class Pricing implements PricingInterface {
             'query' => [
                 'method' => 'extend',
                 'service_id' => $service->getId(),
-                'rental_time' => $rentalTime
             ]
-        ])['price'];
+        ])['extend']['prices'][$rentalTime];
     }
 
     /**
@@ -138,7 +137,7 @@ abstract class Pricing implements PricingInterface {
      * @param $rentalTime
      * @return bool
      */
-    public function doExtendService(Service &$service, $rentalTime) {
+    public function extendService(Service &$service, $rentalTime) {
         $price = $this->getExtendPriceForService($service, $rentalTime);
         $orderArray = [
             'price' => $price,
