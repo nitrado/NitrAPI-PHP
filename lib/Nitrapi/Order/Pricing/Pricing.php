@@ -34,10 +34,10 @@ abstract class Pricing implements PricingInterface {
      */
     protected $locationId;
 
-    public function __construct(Nitrapi &$nitrapi, $locationId)
+    public function __construct(Nitrapi &$nitrapi, Location $location)
     {
         $this->nitrapi = $nitrapi;
-        $this->locationId = $locationId;
+        $this->locationId = $location->getId();
     }
 
     /**
@@ -57,13 +57,35 @@ abstract class Pricing implements PricingInterface {
         if (static::$product === null) {
             throw new PricingException("You can not use the Pricing() class. Please use a product class.");
         }
-        $locations = $nitrapi->dataGet("/order/order/locations")['locations'];
-        foreach ($locations as $key => $location) {
-            if (!isset($location['products'][static::$product])) unset($locations[$key]);
-            if ($location['products'][static::$product] !== true) unset($locations[$key]);
+        $_locations = $nitrapi->dataGet("/order/order/locations")['locations'];
+        $locations = [];
+        foreach ($_locations as $key => $location) {
+            if (!isset($location['products'][static::$product])) continue;
+            if ($location['products'][static::$product] !== true) continue;
+            $locations[] = new Location($location);
         }
 
         return $locations;
+    }
+
+    /**
+     * @param Nitrapi $nitrapi
+     * @param int $id
+     * @return mixed
+     */
+    public static function getLocation(Nitrapi &$nitrapi, $id) {
+        if (static::$product === null) {
+            throw new PricingException("You can not use the Pricing() class. Please use a product class.");
+        }
+        $_locations = $nitrapi->dataGet("/order/order/locations")['locations'];
+        foreach ($_locations as $key => $location) {
+            if (!isset($location['products'][static::$product])) continue;
+            if ($location['products'][static::$product] !== true) continue;
+            if ($location['id'] !== $id) continue;
+            return new Location($location);
+        }
+
+        throw new PricingException("Location " . $id . " not found or product not supported");
     }
     
     /**
