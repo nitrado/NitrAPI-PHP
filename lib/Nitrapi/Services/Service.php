@@ -3,23 +3,38 @@
 namespace Nitrapi\Services;
 
 use Nitrapi\Nitrapi;
-use Nitrapi\Payment\Price;
-use Nitrapi\Payment\PricePart;
 
 abstract class Service
 {
     protected $api;
 
     protected $id;
+    protected $status;
     protected $delete_date;
     protected $suspend_date;
     protected $start_date;
     protected $details;
     protected $websocket_token;
+    
+    const SERVICE_STATUS_INSTALLING = 1;
+    const SERVICE_STATUS_ACTIVE = 2;
+    const SERVICE_STATUS_SUSPENDED = 3;
+    const SERVICE_STATUS_DELETED = 4;
+    const SERVICE_STATUS_ADMINLOCKED = 5;
+    const SERVICE_STATUS_ADMINLOCKED_SUSPENDED = 6;
 
     public function __construct(Nitrapi &$api, array &$data) {
         $this->setApi($api);
         $this->loadData($data);
+    }
+
+    /**
+     * Returns the service status
+     * 
+     * @return mixed
+     */
+    public function getStatus() {
+        return $this->status;
     }
 
     /**
