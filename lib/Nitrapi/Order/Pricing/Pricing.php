@@ -192,7 +192,7 @@ abstract class Pricing implements PricingInterface {
      * @param Service $service
      * @return mixed
      */
-    public function getSwitchPrice($rentalTime, Service &$service) {
+    public function getSwitchPrice(Service &$service, $rentalTime) {
         return $this->getPrice($rentalTime, $service);
     }
 
@@ -203,11 +203,11 @@ abstract class Pricing implements PricingInterface {
      * @param $rentalTime
      * @return bool
      */
-    public function switchService($rentalTime, Service &$service) {
+    public function switchService(Service &$service, $rentalTime) {
         if ($this instanceof PartPricing) {
             $this->checkDependencies();
             $orderArray = [
-                'price' => $this->getSwitchPrice($rentalTime, $service),
+                'price' => $this->getSwitchPrice($service, $rentalTime),
                 'rental_time' => $rentalTime,
                 'location' => $this->locationId,
                 'parts' => $this->getParts(),
@@ -217,7 +217,7 @@ abstract class Pricing implements PricingInterface {
             ];
         } elseif ($this instanceof DimensionPricing) {
             $orderArray = [
-                'price' => $this->getSwitchPrice($rentalTime, $service),
+                'price' => $this->getSwitchPrice($service, $rentalTime),
                 'rental_time' => $rentalTime,
                 'location' => $this->locationId,
                 'dimensions' => $this->getDimensions(),
