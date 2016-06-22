@@ -87,9 +87,6 @@ class FileServer
      * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
      */
     public function writeFile($path, $name, $content) {
-        if (empty($content)) {
-            throw new NitrapiErrorException('Not content provided.');
-        }
         $upload = $this->uploadToken($path, $name);
 
         try {

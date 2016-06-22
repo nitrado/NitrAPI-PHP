@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Customer;
 
+use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 use Nitrapi\Nitrapi;
 
 class Customer {
@@ -60,5 +61,30 @@ class Customer {
     public function get($field = null) {
         if($field === null) return $this->data['user'];
         return $this->data['user'][$field];
+    }
+
+    /**
+     * Returns a webinterface token
+     *
+     * @return string
+     */
+    public function getWebinterfaceToken() {
+        $token = $this->api->dataGet('user/webinterface_token');
+        return $token['token']['token'];
+    }
+
+    /**
+     * Deletes all webinterface tokens. This logs out all users from your webinterface.
+     *
+     * @return string
+     */
+    public function deleteWebinterfaceTokens() {
+        try {
+            $this->api->dataDelete('user/webinterface_token');
+        } catch (NitrapiHttpErrorException $e) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -16,45 +16,29 @@ class PluginSystem
     }
 
     public function doInstall() {
-        try {
-            $url = "/services/".$this->service->getId()."/gameservers/plugin_system/install";
-            $this->service->getApi()->dataPost($url);
-        } catch (\Exception $e) {
-            return false;
-        }
+        $url = "/services/".$this->service->getId()."/gameservers/plugin_system/install";
+        $this->service->getApi()->dataPost($url);
 
         return true;
     }
 
     public function doUninstall() {
-        try {
-            $url = "/services/".$this->service->getId()."/gameservers/plugin_system/uninstall";
-            $this->service->getApi()->dataDelete($url);
-        } catch (\Exception $e) {
-            return false;
-        }
+        $url = "/services/".$this->service->getId()."/gameservers/plugin_system/uninstall";
+        $this->service->getApi()->dataDelete($url);
 
         return true;
     }
 
     public function doStop() {
-        try {
-            $url = "/services/".$this->service->getId()."/gameservers/plugin_system/stop";
-            $this->service->getApi()->dataPost($url);
-        } catch (\Exception $e) {
-            return false;
-        }
+        $url = "/services/".$this->service->getId()."/gameservers/plugin_system/stop";
+        $this->service->getApi()->dataPost($url);
 
         return true;
     }
 
     public function doRestart() {
-        try {
-            $url = "/services/".$this->service->getId()."/gameservers/plugin_system/restart";
-            $this->service->getApi()->dataPost($url);
-        } catch (\Exception $e) {
-            return false;
-        }
+        $url = "/services/".$this->service->getId()."/gameservers/plugin_system/restart";
+        $this->service->getApi()->dataPost($url);
 
         return true;
     }
