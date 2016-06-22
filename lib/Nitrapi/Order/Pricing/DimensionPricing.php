@@ -39,6 +39,7 @@ abstract class DimensionPricing extends Pricing {
 
         $prices = $information['prices'];
         foreach ($dimensions as $key => $value) {
+            if ($value === null) continue;
             if (array_key_exists($value, $prices)) {
                 $prices = $prices[$value];
             } else {
