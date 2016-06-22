@@ -24,12 +24,14 @@ class Gameserver extends Service
 
     public function __construct(Nitrapi &$api, &$data) {
         parent::__construct($api, $data);
-        $this->info = $this->getApi()->dataGet("services/" . $this->getId() . "/gameservers");
+        $this->refresh();
     }
 
     public function refresh() {
-        $url = "services/" . $this->getId() . "/gameservers";
-        $this->info = $this->getApi()->dataGet($url);
+        if ($this->getStatus() == self::SERVICE_STATUS_ACTIVE) {
+            $url = "services/" . $this->getId() . "/gameservers";
+            $this->info = $this->getApi()->dataGet($url);
+        }
     }
 
     /**
