@@ -18,12 +18,12 @@ abstract class Service
     protected $websocket_token;
     protected $roles;
 
-    const SERVICE_STATUS_INSTALLING = 1;
-    const SERVICE_STATUS_ACTIVE = 2;
-    const SERVICE_STATUS_SUSPENDED = 3;
-    const SERVICE_STATUS_DELETED = 4;
-    const SERVICE_STATUS_ADMINLOCKED = 5;
-    const SERVICE_STATUS_ADMINLOCKED_SUSPENDED = 6;
+    const SERVICE_STATUS_INSTALLING = 'installing';
+    const SERVICE_STATUS_ACTIVE = 'active';
+    const SERVICE_STATUS_SUSPENDED = 'suspended';
+    const SERVICE_STATUS_DELETED = 'deleted';
+    const SERVICE_STATUS_ADMINLOCKED = 'adminlocked';
+    const SERVICE_STATUS_ADMINLOCKED_SUSPENDED = 'adminlocked_suspended';
 
     public function __construct(Nitrapi &$api, array &$data) {
         $this->setApi($api);
