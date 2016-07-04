@@ -41,9 +41,11 @@ class Teamspeak3 extends Type
         return true;
     }
     
-    public function enableLogView() {
+    public function enableLogView($group) {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/enable_log_view";
-        return $this->service->getApi()->dataPost($url, []);
+        return $this->service->getApi()->dataPost($url, [
+            'group' => $group
+        ]);
     }
     
     public function cleanupUsers($groups, $days) {
