@@ -30,21 +30,30 @@ class CloudServerDetails
     }
 
     /**
-     * Returns the Cloud Server ip
+     * Returns the Cloud Server ips
      *
-     * @return string
+     * @return array
      */
-    public function getIP() {
-        return (string)$this->data['ip'];
+    public function getIPs() {
+        return (array)$this->data['ips'];
     }
 
     /**
-     * Returns the initial admin password
+     * Returns the Hardware information
      *
-     * @return string
+     * @return array
      */
-    public function getInitialPassword() {
-        return (string)$this->data['initial_password'];
+    public function getHardwareInfo() {
+        return (array)$this->data['hardware'];
+    }
+
+    /**
+     * Return true if the initial password is available
+     *
+     * @return boolean
+     */
+    public function isPasswordAvailable() {
+        return (bool)$this->data['password_available'];
     }
 
 }

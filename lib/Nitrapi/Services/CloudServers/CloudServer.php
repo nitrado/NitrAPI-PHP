@@ -25,10 +25,28 @@ class CloudServer extends Service
     /**
      * Returns informations about the gameserver
      *
-     * @return mixed
+     * @return CloudServerDetails
      */
     public function getDetails() {
         return new CloudServerDetails($this->info['cloud_server']);
+    }
+
+    /**
+     * Returns the password if it's still available.
+     * After the password has been received it will
+     * be permanently deleted from the Nitrado database.
+     *
+     * @return mixed
+     */
+    public function getInitialPassword() {
+        $url = "services/" . $this->getId() . "/cloud_servers/password";
+        $password = $this->getApi()->dataGet($url);
+
+        if (isset($password['password'])) {
+            return $password['password'];
+        }
+
+        return null;
     }
 
     public static function getAvailableImages(Nitrapi &$nitrapi) {
