@@ -3,6 +3,8 @@
 namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\Gameservers\Addons\AddonManager;
+use Nitrapi\Services\Gameservers\Addons\Addons;
 use Nitrapi\Services\Gameservers\ApplicationServer\ApplicationServer;
 use Nitrapi\Services\Service;
 use Nitrapi\Services\Gameservers\Games\Game;
@@ -22,12 +24,14 @@ class Gameserver extends Service
 
     public function __construct(Nitrapi &$api, &$data) {
         parent::__construct($api, $data);
-        $this->info = $this->getApi()->dataGet("services/" . $this->getId() . "/gameservers");
+        $this->refresh();
     }
 
     public function refresh() {
-        $url = "services/" . $this->getId() . "/gameservers";
-        $this->info = $this->getApi()->dataGet($url);
+        if ($this->getStatus() == self::SERVICE_STATUS_ACTIVE) {
+            $url = "services/" . $this->getId() . "/gameservers";
+            $this->info = $this->getApi()->dataGet($url);
+        }
     }
 
     /**
@@ -37,6 +41,15 @@ class Gameserver extends Service
      */
     public function getDetails() {
         return new GameserverDetails($this->info['gameserver']);
+    }
+
+    /**
+     * Returns available features from the gameserver
+     *
+     * @return GameserverFeatures
+     */
+    public function getFeatures() {
+        return new GameserverFeatures($this->info['gameserver']['game_specific']['features']);
     }
 
     public function getCustomerSettings() {
@@ -282,6 +295,15 @@ class Gameserver extends Service
     }
 
     /**
+     * Get access to the addons, if the gameserver has any.
+     * 
+     * @return Addons
+     */
+    public function getAddons() {
+        return new AddonManager($this);
+    }
+
+    /**
      * Returns a plugin system object
      *
      * @return PluginSystem
@@ -364,5 +386,21 @@ class Gameserver extends Service
         }
 
         return new $class($this);
+    }
+
+    /**
+     * Updates a managed root setting
+     *
+     * @param $key
+     * @param $value
+     * @return bool
+     */
+    public function changeManagedRootSetting($key, $value) {
+        $url = "services/" . $this->getId() . "/gameservers/managed_root/" . $key;
+        $this->getApi()->dataPost($url, [
+            $key => $value
+        ]);
+
+        return true;
     }
 }

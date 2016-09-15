@@ -21,6 +21,21 @@ class GameserverDetails
     }
 
     /**
+     * @return bool
+     */
+    public function isManagedRoot() {
+        return isset($this->data['managed_root']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getManagedRoot() {
+        if (!$this->isManagedRoot()) return [];
+        return $this->data['managed_root'];
+    }
+
+    /**
      * Returns the username
      *
      * @return string
@@ -244,5 +259,65 @@ class GameserverDetails
      */
     public function getWebsocketToken() {
         return $this->data['websocket_token'];
+    }
+
+    /**
+     * Returns the gameserver game path
+     *
+     * @return string
+     */
+    public function getPath() {
+        return $this->data['game_specific']['path'];
+    }
+    
+    /**
+     * Return gameserver game path status
+     * 
+     * @return boolean
+     */
+    public function isPathAvailable() {
+        return $this->data['game_specific']['path_available'];
+    }
+
+    /**
+     * Returns the log files of the server
+     *
+     * @return array
+     */
+    public function getLogFiles() {
+        return $this->data['game_specific']['log_files'];
+    }
+
+    /**
+     * Returns the config files of the server
+     *
+     * @return array
+     */
+    public function getConfigFiles() {
+        return $this->data['game_specific']['config_files'];
+    }
+
+    /**
+     * Returns the last update status
+     *
+     * @return string
+     */
+    public function getUpdateStatus() {
+        return $this->data['game_specific']['update_status'];
+    }
+
+    /**
+     * Returns the last update status
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdate() {
+        if (empty($this->data['game_specific']['last_update'])) {
+            return null;
+        }
+
+        $dateTime = new \DateTime();
+        $dateTime->setTimestamp(strtotime($this->data['game_specific']['last_update']));
+        return $dateTime;
     }
 }
