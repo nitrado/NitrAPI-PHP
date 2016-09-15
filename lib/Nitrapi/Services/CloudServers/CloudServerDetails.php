@@ -30,6 +30,21 @@ class CloudServerDetails
     }
 
     /**
+     * Returns the main ip address of the server
+     *
+     * @return string
+     */
+    public function getMainIP() {
+        foreach ($this->getIPs() as $ip) {
+            if ($ip['main']) {
+                return $ip['address'];
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the Cloud Server ips
      *
      * @return array
