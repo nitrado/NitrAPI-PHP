@@ -36,7 +36,7 @@ class CloudServerDetails
      */
     public function getMainIP() {
         foreach ($this->getIPs() as $ip) {
-            if ($ip['main']) {
+            if ($ip['main_ip']) {
                 return $ip['address'];
             }
         }
