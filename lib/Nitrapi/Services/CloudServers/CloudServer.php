@@ -66,4 +66,24 @@ class CloudServer extends Service
             $imgs[] = new Image($image['id'], $image['name'], $image['is_windows']);
         return $imgs;
     }
+
+    /**
+     * Triggers a reinstallation.
+     * Optional you can pass a new image.
+     *
+     * DANGER! This deletes all your data!
+     *
+     * @param Image|null $image
+     */
+    public function doReinstall(Image $image = null) {
+        $url = "services/" . $this->getId() . "/cloud_servers/reinstall";
+
+        $data = [];
+        if ($image instanceof Image) {
+            $data['image_id'] = $image->getId();
+        }
+
+        $this->getApi()->dataPost($url, $data);
+        return true;
+    }
 }
