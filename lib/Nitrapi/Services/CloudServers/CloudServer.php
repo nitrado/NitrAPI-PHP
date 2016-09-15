@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\CloudServers;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
 
@@ -50,7 +51,7 @@ class CloudServer extends Service
     }
 
     /**
-     * Returns the noVNC console endpoint
+     * Returns the noVNC console endpoint.
      *
      * @return array
      */
@@ -59,6 +60,12 @@ class CloudServer extends Service
         return $this->getApi()->dataGet($url);
     }
 
+    /**
+     * Returns a full list with all available images.
+     *
+     * @param Nitrapi $nitrapi
+     * @return array
+     */
     public static function getAvailableImages(Nitrapi &$nitrapi) {
         $images = $nitrapi->dataGet('/information/cloud_servers/images');
         $imgs = [];
@@ -80,6 +87,10 @@ class CloudServer extends Service
 
         $data = [];
         if ($image instanceof Image) {
+            if ($image->isWindows() && !$this->getDetails()->getHardwareInfo()['windows']) {
+                throw new NitrapiException("You need to rent the windows option to install a windows image.");
+            }
+
             $data['image_id'] = $image->getId();
         }
 
