@@ -49,6 +49,16 @@ class CloudServer extends Service
         return null;
     }
 
+    /**
+     * Returns the noVNC console endpoint
+     *
+     * @return array
+     */
+    public function getConsole() {
+        $url = "services/" . $this->getId() . "/cloud_servers/console";
+        return $this->getApi()->dataGet($url);
+    }
+
     public static function getAvailableImages(Nitrapi &$nitrapi) {
         $images = $nitrapi->dataGet('/information/cloud_servers/images');
         $imgs = [];
