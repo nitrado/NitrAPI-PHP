@@ -201,6 +201,30 @@ class FileServer
     }
 
     /**
+     * Reads a part from a specific file
+     *
+     * @param $file
+     * @param $offset
+     * @param $count
+     * @return string
+     */
+    public function readPartFromFile($file, $offset = 0, $count = null) {
+        $download = $this->downloadToken($file);
+
+        // Here we use the GuzzleClient API directly. This is intended, but
+        // should remain a special case. Don't copy this code.
+        $response = $this->service->getApi()->request('GET', $download['token']['url'], [
+            'query' => [
+                'token' => $download['token']['token'],
+                'offset' => $offset,
+                'count' => $count,
+            ]
+        ]);
+
+        return $response->getBody()->getContents();
+    }
+
+    /**
      * Reads a specific file
      *
      * @param $file
@@ -233,6 +257,22 @@ class FileServer
         ));
 
         return true;
+    }
+
+    /**
+     * Returns stat infos by file array
+     *
+     * @param $files
+     * @return array
+     */
+    public function statFiles(array $files) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/stat";
+
+        return $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'files' => $files
+            ]
+        ])['entries'];
     }
 
     /**
