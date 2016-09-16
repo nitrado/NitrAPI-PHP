@@ -51,6 +51,51 @@ class CloudServer extends Service
     }
 
     /**
+     * Boots a turned down server.
+     *
+     * @return bool
+     */
+    public function doBoot() {
+        $url = "services/" . $this->getId() . "/cloud_servers/boot";
+        $this->getApi()->dataPost($url);
+        return true;
+    }
+
+    /**
+     * Sends a shutdown command via ACPI.
+     *
+     * @return bool
+     */
+    public function doShutdown() {
+        $url = "services/" . $this->getId() . "/cloud_servers/shutdown";
+        $this->getApi()->dataPost($url);
+        return true;
+    }
+
+    /**
+     * Sends a reboot command via ACPI.
+     *
+     * @return bool
+     */
+    public function doReboot() {
+        $url = "services/" . $this->getId() . "/cloud_servers/reboot";
+        $this->getApi()->dataPost($url);
+        return true;
+    }
+
+    /**
+     * This method resets your server immediately.
+     * This action might result in data loss.
+     *
+     * @return bool
+     */
+    public function doHardReset() {
+        $url = "services/" . $this->getId() . "/cloud_servers/hard_reset";
+        $this->getApi()->dataPost($url);
+        return true;
+    }
+
+    /**
      * Returns the noVNC console endpoint.
      *
      * @return array
