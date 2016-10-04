@@ -121,6 +121,21 @@ class CloudServer extends Service
     }
 
     /**
+     * Changes the hostname of the server.
+     * If no hostname has been provided, it will be reset to default.
+     *
+     * @param string $hostname
+     * @return bool
+     */
+    public function changeHostname($hostname = null) {
+        $url = "services/" . $this->getId() . "/cloud_servers/hostname";
+        $this->getApi()->dataPost($url, [
+            'hostname' => $hostname
+        ]);
+        return true;
+    }
+
+    /**
      * Returns a full list with all available images.
      *
      * @param Nitrapi $nitrapi
