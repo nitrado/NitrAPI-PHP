@@ -106,6 +106,21 @@ class CloudServer extends Service
     }
 
     /**
+     * Changes the PTR record of a specific IPv4 address.
+     *
+     * @param string $ip
+     * @param string $hostname
+     * @return bool
+     */
+    public function changePTRRecord($ip, $hostname) {
+        $url = "services/" . $this->getId() . "/cloud_servers/ptr/" . $ip;
+        $this->getApi()->dataPost($url, [
+            'hostname' => $hostname
+        ]);
+        return true;
+    }
+
+    /**
      * Returns a full list with all available images.
      *
      * @param Nitrapi $nitrapi
