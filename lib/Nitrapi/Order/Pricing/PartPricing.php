@@ -59,6 +59,9 @@ abstract class PartPricing extends Pricing {
             $totalPrice += $bestPrice;
         }
 
+        //100%
+        $totalPrice -= $prices['advice'];
+
         return $totalPrice;
     }
 
