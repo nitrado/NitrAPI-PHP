@@ -49,7 +49,7 @@ abstract class DimensionPricing extends Pricing {
 
         if (is_array($prices) && isset($prices['price'])) {
             $price = (int)$prices['price'];
-            $advice = $prices['advice'];
+            $advice = $information['advice'];
 
             if ($advice > $price) {
                 $advice -= (($advice - $price) * (50.0 / 100));
