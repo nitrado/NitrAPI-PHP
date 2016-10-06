@@ -9,6 +9,7 @@ abstract class Service
     protected $api;
 
     protected $id;
+    protected $location_id;
     protected $status;
     protected $user_id;
     protected $username;
@@ -29,6 +30,15 @@ abstract class Service
     public function __construct(Nitrapi &$api, array &$data) {
         $this->setApi($api);
         $this->loadData($data);
+    }
+
+    /**
+     * Returns the current location id
+     *
+     * @return int
+     */
+    public function getLocationId() {
+        return $this->location_id;
     }
 
     /**
