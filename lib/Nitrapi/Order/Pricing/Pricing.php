@@ -110,8 +110,8 @@ abstract class Pricing implements PricingInterface {
      * @return mixed
      */
     public function getPrices(Service &$service = null) {
-        $cacheName = $this->locationId;
-        if ($service instanceof Service) $cacheName .= "/" . $service->getId() . "/" . $this->currency;
+        $cacheName = $this->locationId . "/" . $this->currency;
+        if ($service instanceof Service) $cacheName .= "/" . $service->getId();
         if (isset($this->prices[$cacheName])) {
             return $this->prices[$cacheName];
         }
