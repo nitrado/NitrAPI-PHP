@@ -57,7 +57,7 @@ abstract class Service
      */
     public function getSuspendDate() {
         $datetime = new \DateTime();
-        $datetime->setTimestamp((int)$this->suspend_date);
+        $datetime->setTimestamp(strtotime($this->suspend_date));
         return $datetime;
     }
 
@@ -68,7 +68,7 @@ abstract class Service
      */
     public function getDeleteDate() {
         $datetime = new \DateTime();
-        $datetime->setTimestamp((int)$this->delete_date);
+        $datetime->setTimestamp(strtotime($this->delete_date));
         return $datetime;
     }
 
@@ -79,7 +79,7 @@ abstract class Service
      */
     public function getStartDate() {
         $datetime = new \DateTime();
-        $datetime->setTimestamp((int)$this->start_date);
+        $datetime->setTimestamp(strtotime($this->start_date));
         return $datetime;
     }
 
