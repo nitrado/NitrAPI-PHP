@@ -71,4 +71,13 @@ class CloudServerDetails
         return (bool)$this->data['password_available'];
     }
 
+    /**
+     * Return true if the bandwdith is currently limited
+     *
+     * @return boolean
+     */
+    public function isBandwidthLimited() {
+        return (bool)$this->data['bandwidth_limited'];
+    }
+
 }
