@@ -150,6 +150,16 @@ class CloudServer extends Service
     }
 
     /**
+     * Returns the daily traffic usage of the last 30 days.
+     *
+     * @return array
+     */
+    public function getTrafficStatistics() {
+        $url = "services/" . $this->getId() . "/cloud_servers/traffic";
+        return $this->getApi()->dataGet($url)['traffic'];
+    }
+
+    /**
      * Triggers a reinstallation.
      * Optional you can pass a new image.
      *
