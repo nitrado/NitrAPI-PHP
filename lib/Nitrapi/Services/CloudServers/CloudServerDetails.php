@@ -80,4 +80,22 @@ class CloudServerDetails
         return (bool)$this->data['bandwidth_limited'];
     }
 
+    /**
+     * Returns the ID of the currently installed image.
+     *
+     * @return int
+     */
+    public function getImageId() {
+        return $this->data['image']['id'];
+    }
+
+    /**
+     * Returns the name of the currently installed image, as displayed to the user.
+     *
+     * @return string
+     */
+    public function getImageName() {
+        return $this->data['image']['name'];
+    }
+
 }
