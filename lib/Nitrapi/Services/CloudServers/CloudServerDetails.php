@@ -30,21 +30,72 @@ class CloudServerDetails
     }
 
     /**
-     * Returns the Cloud Server ip
+     * Returns the main ip address of the server
      *
      * @return string
      */
-    public function getIP() {
-        return (string)$this->data['ip'];
+    public function getMainIP() {
+        foreach ($this->getIPs() as $ip) {
+            if ($ip['main_ip'] && $ip['version'] == 4) {
+                return $ip['address'];
+            }
+        }
+
+        return null;
     }
 
     /**
-     * Returns the initial admin password
+     * Returns the Cloud Server ips
+     *
+     * @return array
+     */
+    public function getIPs() {
+        return (array)$this->data['ips'];
+    }
+
+    /**
+     * Returns the Hardware information
+     *
+     * @return array
+     */
+    public function getHardwareInfo() {
+        return (array)$this->data['hardware'];
+    }
+
+    /**
+     * Return true if the initial password is available
+     *
+     * @return boolean
+     */
+    public function isPasswordAvailable() {
+        return (bool)$this->data['password_available'];
+    }
+
+    /**
+     * Return true if the bandwdith is currently limited
+     *
+     * @return boolean
+     */
+    public function isBandwidthLimited() {
+        return (bool)$this->data['bandwidth_limited'];
+    }
+
+    /**
+     * Returns the ID of the currently installed image.
+     *
+     * @return int
+     */
+    public function getImageId() {
+        return $this->data['image']['id'];
+    }
+
+    /**
+     * Returns the name of the currently installed image, as displayed to the user.
      *
      * @return string
      */
-    public function getInitialPassword() {
-        return (string)$this->data['initial_password'];
+    public function getImageName() {
+        return $this->data['image']['name'];
     }
 
 }

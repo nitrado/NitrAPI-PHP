@@ -48,7 +48,16 @@ abstract class DimensionPricing extends Pricing {
         }
 
         if (is_array($prices) && isset($prices['price'])) {
-            return (int)$prices['price'];
+            $price = (int)$prices['price'];
+            $advice = $information['advice'];
+
+            if ($advice > $price) {
+                $advice -= (($advice - $price) * (50.0 / 100));
+            }
+
+            $price -= $advice;
+
+            return $price;
         }
 
         throw new PricingException("No price for selected dimensions not found.");

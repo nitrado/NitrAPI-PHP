@@ -22,6 +22,13 @@ abstract class Pricing implements PricingInterface {
     protected $prices = null;
 
     /**
+     * Currency for price calculation
+     *
+     * @var array
+     */
+    protected $currency = null;
+
+    /**
      * Will be overwritten by parents
      */
 
@@ -38,6 +45,15 @@ abstract class Pricing implements PricingInterface {
     {
         $this->nitrapi = $nitrapi;
         $this->locationId = $location->getId();
+    }
+
+    /**
+     * This can be used only for pricing information
+     *
+     * @var $currency
+     */
+    public function setCurrency($currency = null) {
+        $this->currency = $currency;
     }
 
     /**
@@ -94,7 +110,7 @@ abstract class Pricing implements PricingInterface {
      * @return mixed
      */
     public function getPrices(Service &$service = null) {
-        $cacheName = $this->locationId;
+        $cacheName = $this->locationId . "/" . $this->currency;
         if ($service instanceof Service) $cacheName .= "/" . $service->getId();
         if (isset($this->prices[$cacheName])) {
             return $this->prices[$cacheName];
@@ -106,6 +122,10 @@ abstract class Pricing implements PricingInterface {
 
         if ($service instanceof Service) {
             $query['sale_service'] = $service->getId();
+        }
+
+        if (!empty($this->currency) && (!($service instanceof Service))) {
+            $query['currency'] = $this->currency;
         }
 
         $this->prices[$cacheName] = $this->nitrapi->dataGet("/order/pricing/" . $this->getProduct(), null, [
@@ -122,6 +142,7 @@ abstract class Pricing implements PricingInterface {
      * @param $rentalTime
      */
     public function getExtendPriceForService(Service &$service, $rentalTime) {
+        $this->setCurrency(null); //use user currency
         return $this->prices[$this->locationId] = $this->nitrapi->dataGet("/order/pricing/" . $this->getProduct(), null, [
             'query' => [
                 'method' => 'extend',
@@ -138,6 +159,7 @@ abstract class Pricing implements PricingInterface {
      * @return bool
      */
     public function extendService(Service &$service, $rentalTime) {
+        $this->setCurrency(null); //use user currency
         $price = $this->getExtendPriceForService($service, $rentalTime);
         $orderArray = [
             'price' => $price,
@@ -158,6 +180,7 @@ abstract class Pricing implements PricingInterface {
      * @return bool
      */
     public function orderService($rentalTime) {
+        $this->setCurrency(null); //use user currency
         if ($this instanceof PartPricing) {
             $this->checkDependencies();
             $orderArray = [
@@ -193,6 +216,7 @@ abstract class Pricing implements PricingInterface {
      * @return mixed
      */
     public function getSwitchPrice(Service &$service, $rentalTime) {
+        $this->setCurrency(null); //use user currency
         return $this->getPrice($rentalTime, $service);
     }
 
@@ -204,6 +228,7 @@ abstract class Pricing implements PricingInterface {
      * @return bool
      */
     public function switchService(Service &$service, $rentalTime) {
+        $this->setCurrency(null); //use user currency
         if ($this instanceof PartPricing) {
             $this->checkDependencies();
             $orderArray = [

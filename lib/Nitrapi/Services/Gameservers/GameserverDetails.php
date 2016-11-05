@@ -296,4 +296,28 @@ class GameserverDetails
     public function getConfigFiles() {
         return $this->data['game_specific']['config_files'];
     }
+
+    /**
+     * Returns the last update status
+     *
+     * @return string
+     */
+    public function getUpdateStatus() {
+        return $this->data['game_specific']['update_status'];
+    }
+
+    /**
+     * Returns the last update status
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdate() {
+        if (empty($this->data['game_specific']['last_update'])) {
+            return null;
+        }
+
+        $dateTime = new \DateTime();
+        $dateTime->setTimestamp(strtotime($this->data['game_specific']['last_update']));
+        return $dateTime;
+    }
 }

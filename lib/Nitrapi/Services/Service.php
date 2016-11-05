@@ -9,8 +9,10 @@ abstract class Service
     protected $api;
 
     protected $id;
+    protected $location_id;
     protected $status;
     protected $user_id;
+    protected $username;
     protected $delete_date;
     protected $suspend_date;
     protected $start_date;
@@ -18,16 +20,25 @@ abstract class Service
     protected $websocket_token;
     protected $roles;
 
-    const SERVICE_STATUS_INSTALLING = 1;
-    const SERVICE_STATUS_ACTIVE = 2;
-    const SERVICE_STATUS_SUSPENDED = 3;
-    const SERVICE_STATUS_DELETED = 4;
-    const SERVICE_STATUS_ADMINLOCKED = 5;
-    const SERVICE_STATUS_ADMINLOCKED_SUSPENDED = 6;
+    const SERVICE_STATUS_INSTALLING = 'installing';
+    const SERVICE_STATUS_ACTIVE = 'active';
+    const SERVICE_STATUS_SUSPENDED = 'suspended';
+    const SERVICE_STATUS_DELETED = 'deleted';
+    const SERVICE_STATUS_ADMINLOCKED = 'adminlocked';
+    const SERVICE_STATUS_ADMINLOCKED_SUSPENDED = 'adminlocked_suspended';
 
     public function __construct(Nitrapi &$api, array &$data) {
         $this->setApi($api);
         $this->loadData($data);
+    }
+
+    /**
+     * Returns the current location id
+     *
+     * @return int
+     */
+    public function getLocationId() {
+        return $this->location_id;
     }
 
     /**
@@ -46,7 +57,7 @@ abstract class Service
      */
     public function getSuspendDate() {
         $datetime = new \DateTime();
-        $datetime->setTimestamp((int)$this->suspend_date);
+        $datetime->setTimestamp(strtotime($this->suspend_date));
         return $datetime;
     }
 
@@ -57,7 +68,7 @@ abstract class Service
      */
     public function getDeleteDate() {
         $datetime = new \DateTime();
-        $datetime->setTimestamp((int)$this->delete_date);
+        $datetime->setTimestamp(strtotime($this->delete_date));
         return $datetime;
     }
 
@@ -68,7 +79,7 @@ abstract class Service
      */
     public function getStartDate() {
         $datetime = new \DateTime();
-        $datetime->setTimestamp((int)$this->start_date);
+        $datetime->setTimestamp(strtotime($this->start_date));
         return $datetime;
     }
 
