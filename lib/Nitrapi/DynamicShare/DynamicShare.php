@@ -36,7 +36,7 @@ class DynamicShare {
 
     public function shares($host) {
         $url = "dynamic_share/shares";
-        return $this->getApi()->dataGet($url, [
+        return $this->getApi()->dataGet($url, null, [
             'query' => [
                 "host" => $host
             ]
