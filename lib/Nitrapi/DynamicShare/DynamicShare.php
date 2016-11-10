@@ -34,6 +34,15 @@ class DynamicShare {
         ])['share'];
     }
 
+    public function shares($host) {
+        $url = "dynamic_share/shares";
+        return $this->getApi()->dataGet($url, [
+            'query' => [
+                "host" => $host
+            ]
+        ])['shares'];
+    }
+
     /**
      * @param Nitrapi $api
      */
