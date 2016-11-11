@@ -3,6 +3,7 @@
     "description": "PHP SDK for Nitrapi",
     "keywords": ["nitrapi", "nitrado", "marbis", "api"],
     "type": "library",
+    "license": "MIT",
     "authors": [
         {
             "name": "Alexander Birkner",
