@@ -17,7 +17,7 @@ class DynamicShare {
      * @return string token
      */
     public function create($pattern = null, $service_id = 0) {
-        $url = "dynamic_share";
+        $url = "hostsystem/dynamic_share";
         return $this->getApi()->dataPost($url, [
             "pattern" => $pattern,
             "service_id" => $service_id
@@ -25,7 +25,7 @@ class DynamicShare {
     }
 
     public function share($token, $service_id = 0) {
-        $url = "dynamic_share";
+        $url = "hostsystem/dynamic_share";
         return $this->getApi()->dataGet($url, null, [
             'query' => [
                 "token" => $token,
@@ -35,7 +35,7 @@ class DynamicShare {
     }
 
     public function shares($host) {
-        $url = "dynamic_share/shares";
+        $url = "hostsystem/dynamic_share/shares";
         return $this->getApi()->dataGet($url, null, [
             'query' => [
                 "host" => $host
