@@ -24,6 +24,15 @@ class DynamicShare {
         ])['share']['token'];
     }
 
+    public function attach($token, $user, $password) {
+        $url = "hostsystem/dynamic_share/attach";
+        return $this->getApi()->dataPost($url, [
+            "token" => $token,
+            "user" => $user,
+            "password" => $password
+        ])['share'];
+    }
+
     public function share($token, $service_id = 0) {
         $url = "hostsystem/dynamic_share";
         return $this->getApi()->dataGet($url, null, [
