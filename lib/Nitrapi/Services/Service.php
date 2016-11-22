@@ -148,6 +148,55 @@ abstract class Service
     }
 
     /**
+     * Lists all changelog items, which are available for the service.
+     * A changelog item consists of a message with additional information.
+     * This items will be used to show game updates and other notification
+     * type messages to the service. A changelog item has the following
+     * attributes:
+     *
+     * category     Which category the item will be (default "Game")
+     * created      When the item is created
+     * status
+     *      name    What status the item has (e.g. "Update")
+     *      icon    Icon name to use for display purpose
+     *      button_class CSS Class to use for display purpose
+     * text         The actual message to display
+     * game         The full game name
+     * alert        If the message is an alert message
+     *
+     * If the first parameter is set to true, changelog items for all
+     * games will be returned. With the second parameter you can
+     * suppress all non alert messages.
+     *
+     * @param boolean true if you need items from all games
+     * @param boolean true if only alerts should be shown
+     *
+     * @return array a list of changelog items
+     */
+    public function getChangelogItems($allGames = false, $onlyAlerts = false) {
+        $changelogs = $this->getApi()->dataGet('/changelogs');
+        if (!isset($changelogs['changelogs'])) return [];
+
+        $filteredChangelogs = $changelogs['changelogs'];
+
+        // Filter out all non current game related items
+        if (!$allGames) {
+            $details = $this->getServiceDetails();
+            if (!isset($details['game'])) return [];
+            foreach ($filteredChangelogs as $i => $changelog)
+                if (!isset($changelog['game']) || $changelog['game'] != $details['game'])
+                    unset($filteredChangelogs[$i]);
+        }
+
+        // Filter out all normal items (only alerts)
+        if ($onlyAlerts)
+            foreach ($filteredChangelogs as $i => $changelog)
+                if (!$changelog['alert']) unset($filteredChangelogs[$i]);
+
+        return $filteredChangelogs;
+    }
+
+    /**
      * Returns the last log entries. You can optionally
      * provide a page number.
      *
