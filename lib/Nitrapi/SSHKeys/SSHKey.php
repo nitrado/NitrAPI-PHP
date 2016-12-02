@@ -23,6 +23,15 @@ class SSHKey {
     }
 
     /**
+     * Return the SSH Key ID
+     *
+     * @return int
+     */
+    public function getId() {
+        return (int)$this->data['id'];
+    }
+
+    /**
      * Return the SSH Key type
      *
      * @return string
