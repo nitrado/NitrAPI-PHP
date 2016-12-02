@@ -23,6 +23,24 @@ class SSHKey {
     }
 
     /**
+     * Return the SSH Key type
+     *
+     * @return string
+     */
+    public function getType() {
+        return $this->data['type'];
+    }
+
+    /**
+     * Returns the SSH Key Comment
+     *
+     * @return string
+     */
+    public function getComment() {
+        return $this->data['comment'];
+    }
+
+    /**
      * Returns the full SSH public key
      *
      * @return string
