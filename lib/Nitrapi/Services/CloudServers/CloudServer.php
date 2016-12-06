@@ -160,6 +160,20 @@ class CloudServer extends Service
     }
 
     /**
+     * Returns the Cloud Server resources usages.
+     *
+     * @return array
+     */
+    public function getResources($time = '4h') {
+        $url = "services/" . $this->getId() . "/cloud_servers/resources";
+        return $this->getApi()->dataGet($url, null, [
+            'query' => [
+                'time' => $time
+            ]
+        ])['resources'];
+    }
+
+    /**
      * Triggers a reinstallation.
      * Optional you can pass a new image.
      *
