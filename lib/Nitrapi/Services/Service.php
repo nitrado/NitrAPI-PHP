@@ -10,6 +10,7 @@ abstract class Service
 
     protected $id;
     protected $location_id;
+    protected $comment;
     protected $status;
     protected $user_id;
     protected $username;
@@ -48,6 +49,15 @@ abstract class Service
      */
     public function getStatus() {
         return $this->status;
+    }
+
+    /**
+     * Return the service comment
+     *
+     * @return mixed
+     */
+    public function getComment() {
+        return $this->comment;
     }
 
     /**
