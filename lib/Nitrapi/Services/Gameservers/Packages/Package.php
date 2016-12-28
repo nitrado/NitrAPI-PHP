@@ -1,14 +1,14 @@
 <?php
 
-namespace Nitrapi\Services\Gameservers\Addons;
+namespace Nitrapi\Services\Gameservers\Packages;
 
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
 
-class Addon {
+class Package {
     /**
-     * Addon constructor.
+     * Package constructor.
      * @param Service $serviced
-     * @param Addon $name
+     * @param Package $name
      * @param Description $description
      * @param Status $status
      */
@@ -49,9 +49,9 @@ class Addon {
         if (!in_array($action, $actions))
             throw new NitrapiErrorException("The action #{action} can't be executed.");
 
-        $url = "/services/".$this->service->getId()."/gameservers/addons/".$action;
+        $url = "/services/".$this->service->getId()."/gameservers/packages/".$action;
         return $this->service->getApi()->dataPost($url, array(
-            "addon" => $this->name
+            "package" => $this->name
         ));
     }
 }
