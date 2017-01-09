@@ -12,11 +12,13 @@ class Package {
      * @param Description $description
      * @param Status $status
      */
-    public function __construct($service, $name, $description, $status) {
+    public function __construct($service, $name, $description, $status, $version, $patches) {
         $this->name = $name;
         $this->description = $description;
         $this->status = $status;
         $this->service = $service;
+        $this->version = $version;
+        $this->patches = $patches;
     }
     
     public function getName() {
@@ -31,25 +33,29 @@ class Package {
         return $this->status;
     }
 
-    public function install() {
-        // TODO: Update status
-        return $this->perform_action('install');
+    public function getVersion() {
+        return $this->version;
+    }
+
+    public function getPatches() {
+        return $this->patches;
+    }
+
+    public function install($version) {
+        $url = "/services/".$this->service->getId()."/gameservers/packages/install";
+        return $this->service->getApi()->dataPost($url, array(
+            "package" => $this->name,
+            "version" => $version
+        ));
     }
     public function uninstall() {
-        // TODO: Update status
-        return $this->perform_action('uninstall');
+        $url = "/services/".$this->service->getId()."/gameservers/packages/uninstall";
+        return $this->service->getApi()->dataPost($url, array(
+            "package" => $this->name
+        ));
     }
     public function reinstall() {
-        // TODO: Update status
-        return $this->perform_action('reinstall');
-    }
-
-    private function perform_action($action) {
-        $actions = array('install', 'uninstall', 'reinstall');
-        if (!in_array($action, $actions))
-            throw new NitrapiErrorException("The action #{action} can't be executed.");
-
-        $url = "/services/".$this->service->getId()."/gameservers/packages/".$action;
+        $url = "/services/".$this->service->getId()."/gameservers/packages/reinstall";
         return $this->service->getApi()->dataPost($url, array(
             "package" => $this->name
         ));

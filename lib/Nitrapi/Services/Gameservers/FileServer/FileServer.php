@@ -146,6 +146,32 @@ class FileServer
     }
 
     /**
+     * Returns the seek token and url for a file
+     *
+     * @param $file
+     * @return array
+     * @throws \Nitrapi\Common\Exceptions\NitrapiErrorException
+     */
+    public function seekToken($file, $offset, $length, $mode) {
+        $url = "/services/".$this->service->getId()."/gameservers/file_server/seek";
+        $seek = $this->service->getApi()->dataGet($url, null, [
+            'query' => [
+                'file' => $file,
+                'offset' => $offset,
+                'length' => $length,
+                'mode' => $mode
+            ]
+        ]);
+
+        $token = $seek['token'];
+        if (empty($token['token']) || empty($token['url'])) {
+            throw new NitrapiErrorException('Unknown error while getting download token');
+        }
+
+        return $seek;
+    }
+
+    /**
      * Returns the download token and url for a file
      *
      * @param $file
@@ -242,6 +268,51 @@ class FileServer
         ]);
 
         return $response->getBody()->getContents();
+    }
+
+    /**
+     * Seek a specific
+     *
+     * @param $file
+     * @param $offset
+     * @param $length
+     * @param $mode [raw|lines]
+     * @return string
+     */
+    public function seekFile($file, $offset, $length = 4048, $mode = 'raw') {
+        $download = $this->seekToken($file, $offset, $length, $mode);
+
+        // Here we use the GuzzleClient API directly. This is intended, but
+        // should remain a special case. Don't copy this code.
+        $response = $this->service->getApi()->request('GET', $download['token']['url'], [
+            'query' => [
+                'token' => $download['token']['token']
+            ]
+        ]);
+
+        return $response->getBody()->getContents();
+    }
+
+    /**
+     * Reads x bytes from file head
+     *
+     * @param $file
+     * @param length
+     * @return string
+     */
+    public function headFile($file, $length) {
+        return $this->seekFile($file, 0, $length);
+    }
+
+    /**
+     * Reads x bytes from file tail
+     *
+     * @param $file
+     * @param length
+     * @return string
+     */
+    public function tailFile($file, $length) {
+        return $this->seekFile($file, -($length), $length);
     }
 
     /**
