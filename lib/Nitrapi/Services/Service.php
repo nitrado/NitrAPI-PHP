@@ -227,7 +227,7 @@ abstract class Service
      *
      * @param string $category
      * @param string $message
-     * @return array
+     * @return boolean
      */
     public function addLog($category, $message) {
         $url = "services/" . $this->getId() . "/logs";
@@ -235,6 +235,17 @@ abstract class Service
             'category' => $category,
             'message' => $message
         ]);
+        return true;
+    }
+
+    /**
+     * This can be used to force delete a suspended service.
+     *
+     * @return boolean
+     */
+    public function doDelete() {
+        $url = "services/" . $this->getId();
+        $this->getApi()->dataDelete($url);
         return true;
     }
 
