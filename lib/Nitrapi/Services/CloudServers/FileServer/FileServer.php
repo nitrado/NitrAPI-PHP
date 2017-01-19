@@ -78,6 +78,19 @@ class FileServer
     }
 
     /**
+     * Returns a list with Bookmarks for easier Navigation.
+     *
+     * @return array
+     */
+    public function getBookmarks() {
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/bookmarks";
+
+        $entries = $this->service->getApi()->dataGet($url);
+
+        return $entries['bookmarks'];
+    }
+
+    /**
      * Writes a specific file. File will be overwritten if it's already existing.
      *
      * @param $path
