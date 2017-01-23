@@ -104,7 +104,7 @@ class CloudServerDetails
      * @return bool
      */
     public function hasDaemonSupport() {
-        return $this->data['image']['daemon'];
+        return $this->data['daemon_available'];
     }
 
 }
