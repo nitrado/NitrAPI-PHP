@@ -250,6 +250,28 @@ abstract class Service
     }
 
     /**
+     * Returns the sale price for the specified service.
+     *
+     * @return integer
+     */
+    public function getSalePrice() {
+        $url = "services/" . $this->getId() . "/sale_price";
+        return $this->getApi()->dataGet($url)['sale_price']['price'];
+    }
+
+    /**
+     * This can be used to force suspend a service.
+     * The sale price will be added as credit to your account.
+     *
+     * @return boolean
+     */
+    public function doCancel() {
+        $url = "services/" . $this->getId() . "/cancel";
+        $this->getApi()->dataPost($url);
+        return true;
+    }
+
+    /**
      * @param array $data
      */
     protected function loadData(array $data) {
