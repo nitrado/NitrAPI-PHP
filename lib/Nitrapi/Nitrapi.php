@@ -68,7 +68,7 @@ class Nitrapi extends Client
      * @return Customer
      */
     public function getCustomer() {
-        return new Customer($this, $this->getAccessToken());
+        return new Customer($this);
     }
 
     protected function setAccessToken($accessToken) {
