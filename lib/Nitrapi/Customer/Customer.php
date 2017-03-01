@@ -154,6 +154,15 @@ class Customer
     }
 
     /**
+     * Returns a array with the enabled Two Factor Methods.
+     *
+     * @return array
+     */
+    public function getTwoFactorMethods() {
+        return $this->data['two_factor'];
+    }
+
+    /**
      * Returns the personal details of the user.
      *
      * @return array
