@@ -145,6 +145,15 @@ class Customer
     }
 
     /**
+     * Returns the User Phone censored Number and Status
+     *
+     * @return array
+     */
+    public function getPhone() {
+        return $this->data['phone'];
+    }
+
+    /**
      * Returns the personal details of the user.
      *
      * @return array
