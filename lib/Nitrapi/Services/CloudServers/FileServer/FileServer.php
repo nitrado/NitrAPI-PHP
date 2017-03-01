@@ -1,21 +1,21 @@
 <?php
 
-namespace Nitrapi\Services\Gameservers\FileServer;
+namespace Nitrapi\Services\CloudServers\FileServer;
 
 use GuzzleHttp\Exception\RequestException;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
-use Nitrapi\Services\Gameservers\Gameserver;
+use Nitrapi\Services\CloudServers\CloudServer;
 
 class FileServer
 {
     /**
-     * @var Gameserver $service
+     * @var CloudServer $service
      */
     protected $service;
 
     protected $lastError = null;
 
-    public function __construct(Gameserver &$service) {
+    public function __construct(CloudServer &$service) {
         $this->service = $service;
     }
 
@@ -28,11 +28,12 @@ class FileServer
      * @throws NitrapiErrorException
      * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
      */
-    public function uploadToken($path, $name) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/upload";
+    public function uploadToken($path, $name, $username = null) {
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/upload";
         $upload = $this->service->getApi()->dataPost($url, array(
             'path' => $path,
-            'file' => $name
+            'file' => $name,
+            'username' => $username
         ));
 
         $token = $upload['token'];
@@ -82,7 +83,7 @@ class FileServer
      * @return array
      */
     public function getBookmarks() {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/bookmarks";
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/bookmarks";
 
         $entries = $this->service->getApi()->dataGet($url);
 
@@ -99,8 +100,8 @@ class FileServer
      * @throws NitrapiErrorException
      * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
      */
-    public function writeFile($path, $name, $content) {
-        $upload = $this->uploadToken($path, $name);
+    public function writeFile($path, $name, $content, $username = null) {
+        $upload = $this->uploadToken($path, $name, $username);
 
         try {
             $this->service->getApi()->dataPost($upload['url'], null, null, array(
@@ -125,8 +126,8 @@ class FileServer
      * @return array
      * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
      */
-    public function getFileList($dir) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
+    public function getFileList($dir = null) {
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/list";
 
         $entries = $this->service->getApi()->dataGet($url, null, [
             'query' => [
@@ -146,7 +147,7 @@ class FileServer
      * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
      */
     public function doFileSearch($dir, $search) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/list";
 
         $entries = $this->service->getApi()->dataGet($url, null, [
             'query' => [
@@ -159,32 +160,6 @@ class FileServer
     }
 
     /**
-     * Returns the seek token and url for a file
-     *
-     * @param $file
-     * @return array
-     * @throws \Nitrapi\Common\Exceptions\NitrapiErrorException
-     */
-    public function seekToken($file, $offset, $length, $mode) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/seek";
-        $seek = $this->service->getApi()->dataGet($url, null, [
-            'query' => [
-                'file' => $file,
-                'offset' => $offset,
-                'length' => $length,
-                'mode' => $mode
-            ]
-        ]);
-
-        $token = $seek['token'];
-        if (empty($token['token']) || empty($token['url'])) {
-            throw new NitrapiErrorException('Unknown error while getting download token');
-        }
-
-        return $seek;
-    }
-
-    /**
      * Returns the download token and url for a file
      *
      * @param $file
@@ -192,7 +167,7 @@ class FileServer
      * @throws \Nitrapi\Common\Exceptions\NitrapiErrorException
      */
     public function downloadToken($file) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/download";
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/download";
         $download = $this->service->getApi()->dataGet($url, null, [
             'query' => [
                 'file' => $file
@@ -284,58 +259,13 @@ class FileServer
     }
 
     /**
-     * Seek a specific
-     *
-     * @param $file
-     * @param $offset
-     * @param $length
-     * @param $mode [raw|lines]
-     * @return string
-     */
-    public function seekFile($file, $offset, $length = 4048, $mode = 'raw') {
-        $download = $this->seekToken($file, $offset, $length, $mode);
-
-        // Here we use the GuzzleClient API directly. This is intended, but
-        // should remain a special case. Don't copy this code.
-        $response = $this->service->getApi()->request('GET', $download['token']['url'], [
-            'query' => [
-                'token' => $download['token']['token']
-            ]
-        ]);
-
-        return $response->getBody()->getContents();
-    }
-
-    /**
-     * Reads x bytes from file head
-     *
-     * @param $file
-     * @param length
-     * @return string
-     */
-    public function headFile($file, $length) {
-        return $this->seekFile($file, 0, $length);
-    }
-
-    /**
-     * Reads x bytes from file tail
-     *
-     * @param $file
-     * @param length
-     * @return string
-     */
-    public function tailFile($file, $length) {
-        return $this->seekFile($file, -($length), $length);
-    }
-
-    /**
      * Deletes a file from server
      *
      * @param $file
      * @return bool
      */
     public function deleteFile($file) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/delete";
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/delete";
         $this->service->getApi()->dataDelete($url, array(
             'path' => $file
         ));
@@ -350,7 +280,7 @@ class FileServer
      * @return array
      */
     public function statFiles(array $files) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/stat";
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/stat";
 
         return $this->service->getApi()->dataGet($url, null, [
             'query' => [
@@ -366,7 +296,7 @@ class FileServer
      * @return int
      */
     public function pathSize($path) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/size";
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/size";
         $result = $this->service->getApi()->dataGet($url, null, [
             'query' => [
                 'path' => $path
@@ -392,14 +322,16 @@ class FileServer
      * @param $sourceFile
      * @param $targetDir
      * @param $fileName
+     * @param $username
      * @return bool
      */
-    public function moveFile($sourceFile, $targetDir, $fileName) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/move";
+    public function moveFile($sourceFile, $targetDir, $fileName, $username = null) {
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/move";
         $this->service->getApi()->dataPost($url, array(
             'source_path' => $sourceFile,
             'target_path' => $targetDir,
-            'target_filename' => $fileName
+            'target_filename' => $fileName,
+            'username' => $username,
         ));
         return true;
     }
@@ -409,13 +341,15 @@ class FileServer
      *
      * @param $source
      * @param $target
+     * @param $username
      * @return bool
      */
-    public function moveDirectory($source, $target) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/move";
+    public function moveDirectory($source, $target, $username = null) {
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/move";
         $this->service->getApi()->dataPost($url, array(
             'source_path' => $source,
-            'target_path' => $target
+            'target_path' => $target,
+            'username' => $username
         ));
         return true;
     }
@@ -426,14 +360,16 @@ class FileServer
      * @param $source
      * @param $targetDir
      * @param $fileName
+     * @param $username
      * @return bool
      */
-    public function copyFile($source, $targetDir, $fileName) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/copy";
+    public function copyFile($source, $targetDir, $fileName, $username = null) {
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/copy";
         $this->service->getApi()->dataPost($url, array(
             'source_path' => $source,
             'target_path' => $targetDir,
-            'target_name' => $fileName
+            'target_name' => $fileName,
+            'username' => $username
         ));
         return true;
     }
@@ -445,10 +381,11 @@ class FileServer
      * @param $source
      * @param $targetDir
      * @param $dirName
+     * @param $username
      * @return bool
      */
-    public function copyDirectory($source, $targetDir, $dirName) {
-        return $this->copyFile($source, $targetDir, $dirName);
+    public function copyDirectory($source, $targetDir, $dirName, $username = null) {
+        return $this->copyFile($source, $targetDir, $dirName, $username);
     }
 
     /**
@@ -456,13 +393,53 @@ class FileServer
      *
      * @param $path
      * @param $name
+     * @param $username
      * @return bool
      */
-    public function createDirectory($path, $name) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/mkdir";
+    public function createDirectory($path, $name, $username = null) {
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/mkdir";
         $this->service->getApi()->dataPost($url, array(
             'path' => $path,
-            'name' => $name
+            'name' => $name,
+            'username' => $username
+        ));
+        return true;
+    }
+
+    /**
+     * Chowns a specified path
+     *
+     * @param $path
+     * @param $username
+     * @param $group
+     * @param $recursive
+     * @return bool
+     */
+    public function chown($path, $username, $group, $recursive = false) {
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/chown";
+        $this->service->getApi()->dataPost($url, array(
+            'path' => $path,
+            'username' => $username,
+            'group' => $group,
+            'recursive' => ($recursive ? 'true' : 'false')
+        ));
+        return true;
+    }
+
+    /**
+     * Chmods a specified path
+     *
+     * @param $path
+     * @param $chmod
+     * @param $recursive
+     * @return bool
+     */
+    public function chmod($path, $chmod, $recursive = false) {
+        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/chmod";
+        $this->service->getApi()->dataPost($url, array(
+            'path' => $path,
+            'chmod' => $chmod,
+            'recursive' => ($recursive ? 'true' : 'false')
         ));
         return true;
     }

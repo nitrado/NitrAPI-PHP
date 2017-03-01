@@ -10,6 +10,7 @@ abstract class Service
 
     protected $id;
     protected $location_id;
+    protected $comment;
     protected $status;
     protected $user_id;
     protected $username;
@@ -48,6 +49,15 @@ abstract class Service
      */
     public function getStatus() {
         return $this->status;
+    }
+
+    /**
+     * Return the service comment
+     *
+     * @return mixed
+     */
+    public function getComment() {
+        return $this->comment;
     }
 
     /**
@@ -217,7 +227,7 @@ abstract class Service
      *
      * @param string $category
      * @param string $message
-     * @return array
+     * @return boolean
      */
     public function addLog($category, $message) {
         $url = "services/" . $this->getId() . "/logs";
@@ -225,6 +235,39 @@ abstract class Service
             'category' => $category,
             'message' => $message
         ]);
+        return true;
+    }
+
+    /**
+     * This can be used to force delete a suspended service.
+     *
+     * @return boolean
+     */
+    public function doDelete() {
+        $url = "services/" . $this->getId();
+        $this->getApi()->dataDelete($url);
+        return true;
+    }
+
+    /**
+     * Returns the sale price for the specified service.
+     *
+     * @return integer
+     */
+    public function getSalePrice() {
+        $url = "services/" . $this->getId() . "/sale_price";
+        return $this->getApi()->dataGet($url)['sale_price']['price'];
+    }
+
+    /**
+     * This can be used to force suspend a service.
+     * The sale price will be added as credit to your account.
+     *
+     * @return boolean
+     */
+    public function doCancel() {
+        $url = "services/" . $this->getId() . "/cancel";
+        $this->getApi()->dataPost($url);
         return true;
     }
 

@@ -11,4 +11,8 @@ class Gameserver extends DimensionPricing {
     public function setGame($game) {
         $this->additionals['game'] = $game;
     }
+
+    public function setModpack($modpack) {
+        $this->additionals['modpack'] = $modpack;
+    }
 }

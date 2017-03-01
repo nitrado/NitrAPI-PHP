@@ -14,4 +14,8 @@ class CloudServer extends PartPricing  {
         $this->additionals['image_id'] = $image->getId();
     }
 
+    public function setHostname($hostname) {
+        $this->additionals['hostname'] = $hostname;
+    }
+
 }

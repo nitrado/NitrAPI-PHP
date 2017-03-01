@@ -98,4 +98,13 @@ class CloudServerDetails
         return $this->data['image']['name'];
     }
 
+    /**
+     * Returns true if the Cloud Server has a Nitrapi Daemon instance running.
+     *
+     * @return bool
+     */
+    public function hasDaemonSupport() {
+        return $this->data['daemon_available'];
+    }
+
 }

@@ -24,12 +24,26 @@ class CloudServer extends Service
     }
 
     /**
-     * Returns informations about the gameserver
+     * Return information about the Cloud Server.
      *
      * @return CloudServerDetails
      */
     public function getDetails() {
         return new CloudServerDetails($this->info['cloud_server']);
+    }
+
+    /**
+     * List all the users (with groups) on a Cloud Server. This users
+     * are located in the /etc/passwd. All newly creates users on the
+     * system are included in this array.
+     *
+     * @return array
+     */
+    public function getUsers() {
+        $url = "services/" . $this->getId() . "/cloud_servers/user";
+        $users = $this->getApi()->dataGet($url);
+        if (isset($users['users']['users'])) return $users['users']['users'];
+        return [];
     }
 
     /**
@@ -157,6 +171,20 @@ class CloudServer extends Service
     public function getTrafficStatistics() {
         $url = "services/" . $this->getId() . "/cloud_servers/traffic";
         return $this->getApi()->dataGet($url)['traffic'];
+    }
+
+    /**
+     * Returns the Cloud Server resources usages.
+     *
+     * @return array
+     */
+    public function getResources($time = '4h') {
+        $url = "services/" . $this->getId() . "/cloud_servers/resources";
+        return $this->getApi()->dataGet($url, null, [
+            'query' => [
+                'time' => $time
+            ]
+        ])['resources'];
     }
 
     /**
