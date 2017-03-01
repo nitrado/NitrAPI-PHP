@@ -14,20 +14,36 @@ define('NITRAPI_LIVE_URL', 'https://api.nitrado.net/');
 class Nitrapi extends Client
 {
     protected $accessToken;
+    protected $oAuthClientId;
+    protected $oAuthClientSecret;
 
     public function __construct($accessToken, $options = array(), $url = NITRAPI_LIVE_URL) {
         $this->setAccessToken($accessToken);
 
         $query = array();
-        if (!empty($accessToken)) $query['access_token'] = $accessToken;
-        if (isset($options['user_id']) && !empty($options['user_id']))
+        if (!empty($accessToken)) {
+            $query['access_token'] = $accessToken;
+        }
+
+        if (!empty($options['user_id'])) {
             $query['user_id'] = (int)$options['user_id'];
+        }
 
-        if (isset($options['user_ip']) && filter_var($options['user_ip'], FILTER_VALIDATE_IP))
+        if (isset($options['user_ip']) && filter_var($options['user_ip'], FILTER_VALIDATE_IP)) {
             $query['user_ip'] = $options['user_ip'];
+        }
 
-        if (isset($options['locale']) && !empty($options['locale']))
+        if (!empty($options['locale'])) {
             $query['locale'] = (string)$options['locale'];
+        }
+
+        if (!empty($options['oAuthClientId'])) {
+            $this->oAuthClientId = $options['oAuthClientId'];
+        }
+
+        if (!empty($options['oAuthClientSecret'])) {
+            $this->oAuthClientSecret = $options['oAuthClientSecret'];
+        }
 
         $options['query'] = $query;
         parent::__construct($url, $options);
@@ -69,6 +85,14 @@ class Nitrapi extends Client
      */
     public function getCustomer() {
         return new Customer($this, $this->getAccessToken());
+    }
+
+    public function registerUser($userName, $email, $password, $recaptchaResponse = null, $currency = null, $language = null, $timezone = null) {
+        return new \Nitrapi\Customer\Registration($this, $this->oAuthClientId, $this->oAuthClientSecret, $userName, $email, $password, $recaptchaResponse, $currency, $language, $timezone);
+    }
+
+    public function getRecaptchaSiteKey() {
+        return \Nitrapi\Customer\Registration::getRecaptchaSiteKey($this);
     }
 
     protected function setAccessToken($accessToken) {
