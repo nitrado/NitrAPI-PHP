@@ -48,7 +48,7 @@ class Client extends GuzzleClient
 
             $response = $this->request('GET', $url, $options);
             $this->checkErrors($response);
-            $json = json_decode($response->getBody(), true);
+            $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $response = json_decode($e->getResponse()->getBody(), true);
@@ -88,7 +88,7 @@ class Client extends GuzzleClient
 
             $response = $this->request('POST', $url, $options);
             $this->checkErrors($response);
-            $json = json_decode($response->getBody(), true);
+            $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $response = json_decode($e->getResponse()->getBody(), true);
@@ -135,6 +135,7 @@ class Client extends GuzzleClient
             }
             $response = $this->request('DELETE', $url, $options);
             $this->checkErrors($response);
+            $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $response = json_decode($e->getResponse()->getBody(), true);
@@ -148,6 +149,14 @@ class Client extends GuzzleClient
                 throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());
+        }
+
+        if (isset($json['data']) && is_array($json['data'])) {
+            return $json['data'];
+        }
+
+        if (!empty($json['message'])) {
+            return $json['message'];
         }
 
         return true;
