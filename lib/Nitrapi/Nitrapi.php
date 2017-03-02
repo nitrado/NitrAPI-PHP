@@ -19,7 +19,6 @@ class Nitrapi extends Client
         $this->setAccessToken($accessToken);
 
         $query = array();
-        if (!empty($accessToken)) $query['access_token'] = $accessToken;
         if (isset($options['user_id']) && !empty($options['user_id']))
             $query['user_id'] = (int)$options['user_id'];
 
@@ -29,6 +28,9 @@ class Nitrapi extends Client
         if (isset($options['locale']) && !empty($options['locale']))
             $query['locale'] = (string)$options['locale'];
 
+        if (!empty($this->accessToken)) {
+            $options['access_token'] = $this->accessToken;
+        }
         $options['query'] = $query;
         parent::__construct($url, $options);
     }
