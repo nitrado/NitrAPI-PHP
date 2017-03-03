@@ -84,7 +84,7 @@ class Nitrapi extends Client
      * @return Customer
      */
     public function getCustomer() {
-        return new Customer($this, $this->getAccessToken());
+        return new Customer($this);
     }
 
     public function registerUser($userName, $email, $password, $recaptchaResponse = null, $currency = null, $language = null, $timezone = null) {

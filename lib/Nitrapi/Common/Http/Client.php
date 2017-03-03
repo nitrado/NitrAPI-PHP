@@ -16,6 +16,8 @@ class Client extends GuzzleClient
 
     protected $defaultQuery = [];
 
+    protected $accessToken = null;
+
     public function __construct($baseUrl = '', $config = null) {
         if (PHP_VERSION < self::MINIMUM_PHP_VERSION) {
             throw new NitrapiException(sprintf(
@@ -24,6 +26,9 @@ class Client extends GuzzleClient
             ));
         }
 
+        if (isset($config['access_token'])) {
+            $this->accessToken = $config['access_token'];
+        }
         if (isset($config['query'])) {
             $this->defaultQuery = $config['query'];
         }
@@ -39,8 +44,12 @@ class Client extends GuzzleClient
      */
     public function dataGet($url, $headers = null, $options = array()) {
         try {
+            $options['headers'] = [];
             if (is_array($headers)) {
-                $options['headers'] = $headers;
+                $options['headers'] = array_merge($options['headers'], $headers);
+            }
+            if (!empty($this->accessToken)) {
+                $options['headers']['Authorization'] = 'Bearer ' . $this-> accessToken;
             }
             if (is_array($options) && isset($options['query'])) {
                 $options['query'] = array_merge($options['query'], $this->defaultQuery);
@@ -48,7 +57,7 @@ class Client extends GuzzleClient
 
             $response = $this->request('GET', $url, $options);
             $this->checkErrors($response);
-            $json = json_decode($response->getBody(), true);
+            $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $response = json_decode($e->getResponse()->getBody(), true);
@@ -79,8 +88,12 @@ class Client extends GuzzleClient
             if (is_array($body)) {
                 $options['form_params'] = $body;
             }
+            $options['headers'] = [];
             if (is_array($headers)) {
-                $options['headers'] = $headers;
+                $options['headers'] = array_merge($options['headers'], $headers);
+            }
+            if (!empty($this->accessToken)) {
+                $options['headers']['Authorization'] = 'Bearer ' . $this-> accessToken;
             }
             if (is_array($options) && isset($options['query'])) {
                 $options['query'] = array_merge($options['query'], $this->defaultQuery);
@@ -88,7 +101,7 @@ class Client extends GuzzleClient
 
             $response = $this->request('POST', $url, $options);
             $this->checkErrors($response);
-            $json = json_decode($response->getBody(), true);
+            $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $response = json_decode($e->getResponse()->getBody(), true);
@@ -127,14 +140,19 @@ class Client extends GuzzleClient
             if (is_array($body)) {
                 $options['form_params'] = $body;
             }
+            $options['headers'] = [];
             if (is_array($headers)) {
-                $options['headers'] = $headers;
+                $options['headers'] = array_merge($options['headers'], $headers);
+            }
+            if (!empty($this->accessToken)) {
+                $options['headers']['Authorization'] = 'Bearer ' . $this-> accessToken;
             }
             if (is_array($options) && isset($options['query'])) {
                 $options['query'] = array_merge($options['query'], $this->defaultQuery);
             }
             $response = $this->request('DELETE', $url, $options);
             $this->checkErrors($response);
+            $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $response = json_decode($e->getResponse()->getBody(), true);
@@ -148,6 +166,14 @@ class Client extends GuzzleClient
                 throw new NitrapiHttpErrorException($msg);
             }
             throw new NitrapiHttpErrorException($e->getMessage());
+        }
+
+        if (isset($json['data']) && is_array($json['data'])) {
+            return $json['data'];
+        }
+
+        if (!empty($json['message'])) {
+            return $json['message'];
         }
 
         return true;
