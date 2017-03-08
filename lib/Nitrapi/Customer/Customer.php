@@ -169,7 +169,7 @@ class Customer
      */
     public function getPersonalData()
     {
-        return $this->data['user']['profile'];
+        return $this->data['profile'];
     }
 
     /**
