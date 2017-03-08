@@ -163,13 +163,36 @@ class Customer
     }
 
     /**
-     * Returns the personal details of the user.
-     *
-     * @return array
+     * @deprecated
      */
     public function getPersonalData()
     {
+        return $this->getProfile();
+    }
+
+    /**
+     * Returns the Customer profile information.
+     *
+     * @return array
+     */
+    public function getProfile() {
         return $this->data['profile'];
+    }
+
+    /**
+     * Update the Customer profile information.
+     *
+     * @param $updateToken
+     * @param array $profile
+     * @return bool
+     */
+    public function updateProfile($updateToken, array $profile) {
+        $data = [];
+        $data['token'] = $updateToken;
+        $data['profile'] = $profile;
+
+        $this->api->dataPost('user', $data);
+        return true;
     }
 
     /**
