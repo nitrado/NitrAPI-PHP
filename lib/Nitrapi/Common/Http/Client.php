@@ -44,7 +44,9 @@ class Client extends GuzzleClient
      */
     public function dataGet($url, $headers = null, $options = array()) {
         try {
-            $options['headers'] = [];
+            if (!isset($options['headers'])) {
+                $options['headers'] = [];
+            }
             if (is_array($headers)) {
                 $options['headers'] = array_merge($options['headers'], $headers);
             }
@@ -88,7 +90,9 @@ class Client extends GuzzleClient
             if (is_array($body)) {
                 $options['form_params'] = $body;
             }
-            $options['headers'] = [];
+            if (!isset($options['headers'])) {
+                $options['headers'] = [];
+            }
             if (is_array($headers)) {
                 $options['headers'] = array_merge($options['headers'], $headers);
             }
@@ -104,7 +108,6 @@ class Client extends GuzzleClient
             $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
-                $response = json_decode($e->getResponse()->getBody(), true);
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
                 if ($e->getResponse()->getStatusCode() == 503) {
                     throw new NitrapiMaintenanceException($msg);
@@ -140,7 +143,9 @@ class Client extends GuzzleClient
             if (is_array($body)) {
                 $options['form_params'] = $body;
             }
-            $options['headers'] = [];
+            if (!isset($options['headers'])) {
+                $options['headers'] = [];
+            }
             if (is_array($headers)) {
                 $options['headers'] = array_merge($options['headers'], $headers);
             }
