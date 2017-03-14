@@ -28,7 +28,7 @@ class PackageManager {
 
         $packageInstances = [];
         foreach ($packages['packages'] as $package => $params)
-            $packageInstances[] = new Package($this->service, $package, $params['description'], $params['status'], $params['version'], $params['patches']);
+            $packageInstances[] = new Package($this->service, $package, $params['description'], $params['status'], $params['version'], $params['patches'], $params['dependencies']);
         return $packageInstances;
     }
 }
