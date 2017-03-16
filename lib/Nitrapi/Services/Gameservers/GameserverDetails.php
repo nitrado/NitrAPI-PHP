@@ -63,6 +63,24 @@ class GameserverDetails
     }
 
     /**
+     * Returns the gameserver query port
+     *
+     * @return int
+     */
+    public function getQueryPort() {
+        return (int)$this->data['query_port'];
+    }
+
+    /**
+     * Returns the gameserver rcon port
+     *
+     * @return int
+     */
+    public function getRconPort() {
+        return (int)$this->data['rcon_port'];
+    }
+
+    /**
      * Returns true if the gameserver is in minecraft mode
      *
      * @return bool
