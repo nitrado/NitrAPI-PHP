@@ -5,9 +5,9 @@ namespace Nitrapi\Order\Pricing\Products;
 use Nitrapi\Order\Pricing\PartPricing;
 use Nitrapi\Services\CloudServers\Image;
 
-class CloudServer extends PartPricing  {
+class CloudServerDynamic extends PartPricing  {
 
-    protected static $product = 'cloud_server';
+    protected static $product = 'cloud_server_dynamic';
 
     public function setImage(Image $image) {
         $this->additionals['image_id'] = $image->getId();
