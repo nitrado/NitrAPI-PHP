@@ -51,13 +51,7 @@ abstract class DimensionPricing extends Pricing {
             $price = (int)$prices['price'];
             $advice = $information['advice'];
 
-            if ($advice > $price) {
-                $advice -= (($advice - $price) * (50.0 / 100));
-            }
-
-            $price -= $advice;
-
-            return $price;
+            return $this->calcAdvicePrice($price, $advice);
         }
 
         throw new PricingException("No price for selected dimensions not found.");

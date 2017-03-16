@@ -59,10 +59,7 @@ abstract class PartPricing extends Pricing {
             $totalPrice += $bestPrice;
         }
 
-        //100%
-        $totalPrice -= $prices['advice'];
-
-        return $totalPrice;
+        return $this->calcAdvicePrice($totalPrice, $prices['advice']);
     }
 
     protected function checkDependencies() {

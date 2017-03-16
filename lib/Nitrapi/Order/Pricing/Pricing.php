@@ -3,6 +3,7 @@
 namespace Nitrapi\Order\Pricing;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Order\Pricing\Products\CloudServerDynamic;
 use Nitrapi\Services\Service;
 
 abstract class Pricing implements PricingInterface {
@@ -258,6 +259,19 @@ abstract class Pricing implements PricingInterface {
 
         //if no exception appears, order was successful
         return true;
+    }
+
+    protected function calcAdvicePrice($price, $advice) {
+        //Cloud Servers are always returning 100% of advice.
+        if ($this instanceof CloudServerDynamic) {
+            return ($price - $advice);
+        }
+
+        if ($advice > $price) {
+            $advice -= (($advice - $price) * (50.0 / 100));
+        }
+
+        return ($price - $advice);
     }
 
     protected function getProduct() {
