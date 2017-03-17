@@ -30,6 +30,15 @@ class CloudServerDetails
     }
 
     /**
+     * Returns the Dynamic Cloud Server
+     *
+     * @return string
+     */
+    public function isDynamic() {
+        return (bool)$this->data['dynamic'];
+    }
+
+    /**
      * Returns the main ip address of the server
      *
      * @return string
