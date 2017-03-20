@@ -108,6 +108,7 @@ class Client extends GuzzleClient
             $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
             if ($e->hasResponse()) {
+                $response = json_decode($e->getResponse()->getBody(), true);
                 $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
                 if ($e->getResponse()->getStatusCode() == 503) {
                     throw new NitrapiMaintenanceException($msg);
