@@ -8,7 +8,7 @@ abstract class DimensionPricing extends Pricing {
 
     protected $dimensions = null;
 
-    public function addDimenstion($dimension, $value) {
+    public function addDimension($dimension, $value) {
         if ($this->dimensions === null) {
             $this->getDimensions();
         }
@@ -18,6 +18,13 @@ abstract class DimensionPricing extends Pricing {
         }
 
         $this->dimensions[$dimension] = $value;
+    }
+
+    /**
+     * @deprecated Use addDimension($dimension, $value) instead.
+     */
+    public function addDimenstion($dimension, $value) {
+        $this->addDimension($dimension, $value);
     }
 
     public function getDimensions() {
