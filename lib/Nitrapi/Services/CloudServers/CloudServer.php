@@ -158,8 +158,9 @@ class CloudServer extends Service
     public static function getAvailableImages(Nitrapi &$nitrapi) {
         $images = $nitrapi->dataGet('/information/cloud_servers/images');
         $imgs = [];
-        foreach ($images['images'] as $image)
-            $imgs[] = new Image($image['id'], $image['name'], $image['is_windows']);
+        foreach ($images['images'] as $image) {
+            $imgs[] = new Image($image['id'], $image['name'], $image['is_windows'], $image['default']);
+        }
         return $imgs;
     }
 
