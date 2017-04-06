@@ -37,7 +37,18 @@ abstract class PartPricing extends Pricing {
         $prices = $this->getPrices($service);
         $parts = $this->getParts();
 
+        $multiply = 0;
         $totalPrice = 0;
+
+        // Dynamic rental times
+        if ($prices['rental_times'] === null) {
+            if(($rentalTime % $prices['min_rental_time']) !== 0) {
+                throw new PricingException("Rental time " . $rentalTime . " is invalid (Modulu ".$prices['min_rental_time'].").");
+            }
+
+            $multiply = $rentalTime / $prices['min_rental_time'];
+            $rentalTime = $prices['min_rental_time'];
+        }
 
         foreach ($prices['parts'] as $part) {
             $amount = $parts[$part['type']];
@@ -58,6 +69,9 @@ abstract class PartPricing extends Pricing {
             if (!is_int($bestPrice)) throw new PricingException("No valid price found for part {$part['type']}.");
             $totalPrice += $bestPrice;
         }
+
+        // Multiple by rental time if dynamic rental times
+        $totalPrice *= $multiply;
 
         return $this->calcAdvicePrice($totalPrice, $prices['advice']);
     }
