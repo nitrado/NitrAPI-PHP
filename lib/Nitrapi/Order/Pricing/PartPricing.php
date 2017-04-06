@@ -37,7 +37,7 @@ abstract class PartPricing extends Pricing {
         $prices = $this->getPrices($service);
         $parts = $this->getParts();
 
-        $multiply = 0;
+        $multiply = 1;
         $totalPrice = 0;
 
         // Dynamic rental times
