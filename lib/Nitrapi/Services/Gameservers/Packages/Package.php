@@ -55,13 +55,13 @@ class Package {
     }
     public function uninstall() {
         $url = "/services/".$this->service->getId()."/gameservers/packages/uninstall";
-        return $this->service->getApi()->dataPost($url, array(
+        return $this->service->getApi()->dataDelete($url, array(
             "package" => $this->name
         ));
     }
     public function reinstall() {
         $url = "/services/".$this->service->getId()."/gameservers/packages/reinstall";
-        return $this->service->getApi()->dataPost($url, array(
+        return $this->service->getApi()->dataPut($url, array(
             "package" => $this->name
         ));
     }
