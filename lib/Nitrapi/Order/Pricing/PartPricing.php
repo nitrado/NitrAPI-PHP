@@ -66,14 +66,14 @@ abstract class PartPricing extends Pricing {
                         if ($price['count'] === $amount)
                             $bestPrice = $price['price'];
 
-            if (!is_int($bestPrice)) throw new PricingException("No valid price found for part {$part['type']}.");
+            if (!is_float($bestPrice) && !is_int($bestPrice)) throw new PricingException("No valid price found for part {$part['type']}.");
             $totalPrice += $bestPrice;
         }
 
         // Multiple by rental time if dynamic rental times
         $totalPrice *= $multiply;
 
-        return $this->calcAdvicePrice($totalPrice, $prices['advice']);
+        return $this->calcAdvicePrice(round($totalPrice, 0), $prices['advice']);
     }
 
     protected function checkDependencies() {
