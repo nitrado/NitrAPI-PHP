@@ -15,6 +15,10 @@ class GameserverFeatures
         return $this->data['has_backups'];
     }
 
+    public function hasPackages() {
+        return $this->data['has_packages'];
+    }
+
     public function hasApplicationServer() {
         return $this->data['has_application_server'];
     }
