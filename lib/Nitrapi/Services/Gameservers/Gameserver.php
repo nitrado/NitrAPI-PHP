@@ -10,7 +10,6 @@ use Nitrapi\Services\Service;
 use Nitrapi\Services\Gameservers\Games\Game;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
 use Nitrapi\Services\Gameservers\FileServer\FileServer;
-use Nitrapi\Services\Gameservers\TaskManager\TaskManager;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
 use Nitrapi\Services\Gameservers\PluginSystem\PluginSystem;
 use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
@@ -319,15 +318,6 @@ class Gameserver extends Service
      */
     public function getCallbackHandler() {
         return new CallbackHandler($this);
-    }
-
-    /**
-     * Returns the task manager
-     *
-     * @return TaskManager
-     */
-    public function getTaskManager() {
-        return new TaskManager($this);
     }
 
     /**

@@ -1,14 +1,14 @@
 <?php
 
-namespace Nitrapi\Services\Gameservers\TaskManager;
+namespace Nitrapi\Services\TaskManager;
 
-use Nitrapi\Services\Gameservers\Gameserver;
+use Nitrapi\Services\Service;
 use Nitrapi\Services\ServiceItem;
 
 class Task extends ServiceItem
 {
     /**
-     * @var Gameserver $service
+     * @var Service $service
      */
     protected $service;
     /**
@@ -126,7 +126,7 @@ class Task extends ServiceItem
 
     public function reloadData() {
         if (!empty($this->id)) {
-            $url = "services/" . $this->getService()->getId() . "/gameservers/tasks";
+            $url = "services/" . $this->getService()->getId() . "/tasks";
             $_tasks = $this->getService()->getApi()->dataGet($url);
 
             foreach ($_tasks['tasks'] as $task) {

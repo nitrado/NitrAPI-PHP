@@ -1,15 +1,15 @@
 <?php
 
-namespace Nitrapi\Services\Gameservers\TaskManager;
+namespace Nitrapi\Services\TaskManager;
 
-use Nitrapi\Services\Gameservers\Gameserver;
+use Nitrapi\Services\Service;
 
 class TaskManager
 {
     protected $service;
     protected $tasks = [];
 
-    public function __construct(Gameserver &$service) {
+    public function __construct(Service &$service) {
         $this->service = $service;
         $this->reloadTasks();
     }
@@ -27,6 +27,11 @@ class TaskManager
         return $this->tasks;
     }
 
+    public function getTaskList() {
+        $url = "services/" . $this->getService()->getId() . "/tasks/list";
+        return $this->getService()->getApi()->dataGet($url)['tasks'];
+    }
+
     /**
      * Persists a task
      *
@@ -38,10 +43,10 @@ class TaskManager
 
         if (empty($id)) {
             //create new task
-            $url = "services/" . $this->getService()->getId() . "/gameservers/tasks";
+            $url = "services/" . $this->getService()->getId() . "/tasks";
         } else {
             //save task
-            $url = "services/" . $this->getService()->getId() . "/gameservers/tasks/" . $id;
+            $url = "services/" . $this->getService()->getId() . "/tasks/" . $id;
         }
 
         $this->getService()->getApi()->dataPost($url, [
@@ -72,7 +77,7 @@ class TaskManager
             throw new TaskException("This is not a persistent task, no delete needed");
         }
 
-        $url = "services/" . $this->getService()->getId() . "/gameservers/tasks/" . $id;
+        $url = "services/" . $this->getService()->getId() . "/tasks/" . $id;
         $this->getService()->getApi()->dataDelete($url);
 
         unset($this->tasks[$id]);
@@ -82,7 +87,7 @@ class TaskManager
 
 
     public function reloadTasks() {
-        $url = "services/" . $this->getService()->getId() . "/gameservers/tasks";
+        $url = "services/" . $this->getService()->getId() . "/tasks";
         $_tasks = $this->getService()->getApi()->dataGet($url);
 
         $this->tasks = [];

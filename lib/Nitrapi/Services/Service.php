@@ -3,6 +3,7 @@
 namespace Nitrapi\Services;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\TaskManager\TaskManager;
 
 abstract class Service
 {
@@ -269,6 +270,15 @@ abstract class Service
         $url = "services/" . $this->getId() . "/cancel";
         $this->getApi()->dataPost($url);
         return true;
+    }
+
+    /**
+     * Returns the task manager
+     *
+     * @return TaskManager
+     */
+    public function getTaskManager() {
+        return new TaskManager($this);
     }
 
     /**
