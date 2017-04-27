@@ -148,6 +148,7 @@ abstract class Pricing implements PricingInterface {
             'query' => [
                 'method' => 'extend',
                 'service_id' => $service->getId(),
+                'rental_time' => $rentalTime
             ]
         ])['extend']['prices'][$rentalTime];
     }
