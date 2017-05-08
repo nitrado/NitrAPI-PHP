@@ -36,7 +36,7 @@ class OAuth {
         $_clients = $this->api->dataGet('/oauth')['clients'];
 
         foreach ($_clients as $_client) {
-            new Client($this->api, $_client);
+            $clients[] = new Client($this->api, $_client);
         }
 
         return $clients;
