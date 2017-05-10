@@ -17,7 +17,7 @@ class CloudServer extends Service
     }
 
     public function refresh() {
-        if ($this->getStatus() == self::SERVICE_STATUS_ACTIVE) {
+        if (in_array($this->getStatus(), [self::SERVICE_STATUS_ACTIVE, self::SERVICE_STATUS_SUSPENDED])) {
             $url = "services/" . $this->getId() . "/cloud_servers";
             $this->info = $this->getApi()->dataGet($url);
         }
