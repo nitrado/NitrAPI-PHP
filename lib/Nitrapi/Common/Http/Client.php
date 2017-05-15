@@ -12,7 +12,7 @@ use Nitrapi\Common\Exceptions\NitrapiMaintenanceException;
 
 class Client extends GuzzleClient
 {
-    const MINIMUM_PHP_VERSION = '5.4.0';
+    const MINIMUM_PHP_VERSION = '5.5.0';
 
     protected $defaultQuery = [];
 
@@ -61,18 +61,7 @@ class Client extends GuzzleClient
             $this->checkErrors($response);
             $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
-            if ($e->hasResponse()) {
-                $response = json_decode($e->getResponse()->getBody(), true);
-                $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
-                if ($e->getResponse()->getStatusCode() == 503) {
-                    throw new NitrapiMaintenanceException($msg);
-                }
-                if ($e->getResponse()->getStatusCode() == 428) {
-                    throw new NitrapiConcurrencyException($msg);
-                }
-                throw new NitrapiHttpErrorException($msg);
-            }
-            throw new NitrapiHttpErrorException($e->getMessage());
+            $this->handleException($e);
         }
 
         return (isset($json['data'])) ? $json['data'] : $json['message'];
@@ -101,18 +90,7 @@ class Client extends GuzzleClient
             $this->checkErrors($response);
             $json = json_decode($response->getBody(), true);
         } catch (RequestException $e) {
-            if ($e->hasResponse()) {
-                $response = json_decode($e->getResponse()->getBody(), true);
-                $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
-                if ($e->getResponse()->getStatusCode() == 503) {
-                    throw new NitrapiMaintenanceException($msg);
-                }
-                if ($e->getResponse()->getStatusCode() == 428) {
-                    throw new NitrapiConcurrencyException($msg);
-                }
-                throw new NitrapiHttpErrorException($msg);
-            }
-            throw new NitrapiHttpErrorException($e->getMessage());
+            $this->handleException($e);
         }
 
         if (isset($json['data']) && is_array($json['data'])) {
@@ -155,18 +133,7 @@ class Client extends GuzzleClient
             $this->checkErrors($response);
             $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
-            if ($e->hasResponse()) {
-                $response = json_decode($e->getResponse()->getBody(), true);
-                $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
-                if ($e->getResponse()->getStatusCode() == 503) {
-                    throw new NitrapiMaintenanceException($msg);
-                }
-                if ($e->getResponse()->getStatusCode() == 428) {
-                    throw new NitrapiConcurrencyException($msg);
-                }
-                throw new NitrapiHttpErrorException($msg);
-            }
-            throw new NitrapiHttpErrorException($e->getMessage());
+            $this->handleException($e);
         }
 
         if (isset($json['data']) && is_array($json['data'])) {
@@ -208,18 +175,7 @@ class Client extends GuzzleClient
             $this->checkErrors($response);
             $json = @json_decode($response->getBody(), true);
         } catch (RequestException $e) {
-            if ($e->hasResponse()) {
-                $response = json_decode($e->getResponse()->getBody(), true);
-                $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
-                if ($e->getResponse()->getStatusCode() == 503) {
-                    throw new NitrapiMaintenanceException($msg);
-                }
-                if ($e->getResponse()->getStatusCode() == 428) {
-                    throw new NitrapiConcurrencyException($msg);
-                }
-                throw new NitrapiHttpErrorException($msg);
-            }
-            throw new NitrapiHttpErrorException($e->getMessage());
+            $this->handleException($e);
         }
 
         if (isset($json['data']) && is_array($json['data'])) {
@@ -233,6 +189,31 @@ class Client extends GuzzleClient
         return true;
     }
 
+    protected function handleException(RequestException $e) {
+        if ($e->hasResponse()) {
+            $response = json_decode($e->getResponse()->getBody(), true);
+            $errorId = $e->getResponse()->getHeader('X-Raven-Event-ID');
+
+            $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
+            if ($e->getResponse()->getStatusCode() == 503) {
+                $exception = new NitrapiMaintenanceException($msg);
+                if (!empty($errorId)) $exception->setErrorId($errorId);
+                throw $exception;
+            }
+            if ($e->getResponse()->getStatusCode() == 428) {
+                $exception = new NitrapiConcurrencyException($msg);
+                if (!empty($errorId)) $exception->setErrorId($errorId);
+                throw $exception;
+            }
+            $exception = new NitrapiHttpErrorException($msg);
+            if (!empty($errorId)) $exception->setErrorId($errorId);
+            throw $exception;
+        }
+        $exception = new NitrapiHttpErrorException($e->getMessage());
+        if (!empty($errorId)) $exception->setErrorId($errorId);
+        throw $exception;
+    }
+
     protected function checkErrors(Response $response, $responseCode = 200) {
         $json = @json_decode($response->getBody(), true);
 
@@ -242,7 +223,7 @@ class Client extends GuzzleClient
 
         $allowedPorts = array();
         $allowedPorts[] = $responseCode;
-        if ($responseCode = 200) {
+        if ($responseCode == 200) {
             $allowedPorts[] = 201;
         }
 
