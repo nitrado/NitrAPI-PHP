@@ -20,18 +20,20 @@ class DataMissingException extends \Exception {}
  * @method string getParsedCmd()
  * @method array getParameters()
  * @method array getConfigurations()
+ * @method array getPorts()
  *
- * @method string setAppName()
- * @method string setAppType()
- * @method string setDescription()
- * @method string setStatus()
- * @method string setSystemdPath()
- * @method string setSystemdConfig()
- * @method string setSystemdModified()
- * @method string setCmd()
- * @method string setParsedCmd()
- * @method array setParameters()
- * @method array setConfigurations()
+ * @method App setAppName()
+ * @method App setAppType()
+ * @method App setDescription()
+ * @method App setStatus()
+ * @method App setSystemdPath()
+ * @method App setSystemdConfig()
+ * @method App setSystemdModified()
+ * @method App setCmd()
+ * @method App setParsedCmd()
+ * @method App setParameters()
+ * @method App setConfigurations()
+ * @method App setPorts()
  */
 class App {
     /**
@@ -43,6 +45,10 @@ class App {
     public function __construct(AppManager $appManager, array $data) {
         $this->appManager = $appManager;
         $this->data = $data;
+
+        if (!isset($this->data['ports'])) {
+            $this->data['ports'] = [];
+        }
     }
 
     /**
@@ -94,7 +100,8 @@ class App {
     public function install() {
         $this->_api()->dataPut($this->_url(''), [
             'app_type' => $this->getAppType(),
-            'app_name' => $this->getAppName()
+            'app_name' => $this->getAppName(),
+            'ports' => $this->getPorts()
         ]);
 
         /**
