@@ -75,9 +75,12 @@ abstract class PartPricing extends Pricing {
         $totalPrice *= $multiply;
 
         // Remove 50% of advice if the old service is not a Cloud Server Dynamic
-        if (!($service instanceof CloudServer && $service->getDetails()->isDynamic())) {
-            $totalPrice = $this->calcAdvicePrice(round($totalPrice, 0), $prices['advice']);
+        $removePercent = 50;
+        if ($service instanceof CloudServer && $service->getDetails()->isDynamic()) {
+            $removePercent = 0;
         }
+
+        $totalPrice = $this->calcAdvicePrice(round($totalPrice, 0), $prices['advice'], $removePercent);
 
         return $totalPrice;
     }

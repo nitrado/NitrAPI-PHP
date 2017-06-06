@@ -263,15 +263,16 @@ abstract class Pricing implements PricingInterface {
     }
 
     /**
-     * Removes 50% of the advice if the advice is higher then the price.
+     * Removes X% of the advice if the advice is higher then the price.
      *
-     * @param $price
-     * @param $advice
+     * @param $price int
+     * @param $advice int
+     * @param $removePercent float
      * @return int
      */
-    protected function calcAdvicePrice($price, $advice) {
+    protected function calcAdvicePrice($price, $advice, $removePercent) {
         if ($advice > $price) {
-            $advice -= (($advice - $price) * (50.0 / 100));
+            $advice -= (($advice - $price) * ($removePercent / 100));
         }
 
         return ($price - $advice);

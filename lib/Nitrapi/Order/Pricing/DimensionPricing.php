@@ -67,11 +67,12 @@ abstract class DimensionPricing extends Pricing {
             $advice = $information['advice'];
 
             // Remove 50% of advice if the old service is not a Cloud Server Dynamic
-            if (!($service instanceof CloudServer && $service->getDetails()->isDynamic())) {
-                $price = $this->calcAdvicePrice($price, $advice);;
+            $removePercent = 50.0;
+            if ($service instanceof CloudServer && $service->getDetails()->isDynamic()) {
+                $removePercent = 0.0;
             }
 
-            return $price;
+            return $this->calcAdvicePrice($price, $advice, $removePercent);
         }
 
         throw new PricingException("No price for selected dimensions not found.");
