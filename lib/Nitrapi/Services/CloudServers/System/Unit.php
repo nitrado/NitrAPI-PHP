@@ -50,6 +50,7 @@ class Unit {
      * @param array $_ params, which are not used
      * @return mixed The resulting value from $data
      * @throws DataMissingException if the key in $data does not exist.
+     * @throws \BadMethodCallException if the method does not exits.
      */
     public function __call($name, $_) {
         if (in_array($name, ['enable', 'disable', 'mask', 'umask'], true)) {
@@ -64,12 +65,14 @@ class Unit {
             return $apiResponse['job'];
         }
 
-        $method = strtolower($name[3]) . substr($name, 4); // Remove "get..."
+        if (preg_match('/get(.+)/', $name) === 0) {
+            throw new \BadMethodCallException("Method $name not found.");
+        }
+        $method = strtolower($name[3]) . substr($name, 4);
         $key = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $method));
         if (isset($this->data[$key])) return $this->data[$key];
         throw new DataMissingException('The key ' . $key . ' does not exist. Please set first.');
     }
-
 
     /**
      * Resets the failure state of a unit back to normal.
