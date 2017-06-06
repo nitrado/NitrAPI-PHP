@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Order\Pricing;
 
+use Nitrapi\Services\CloudServers\CloudServer;
 use Nitrapi\Services\Service;
 
 abstract class DimensionPricing extends Pricing {
@@ -38,7 +39,14 @@ abstract class DimensionPricing extends Pricing {
 
         return $this->dimensions;
     }
-    
+
+    /**
+     * Returns the price for the service.
+     *
+     * @param $rentalTime
+     * @param Service|null $service
+     * @return int
+     */
     public function getPrice($rentalTime, Service &$service = null) {
         $information = $this->getPrices($service);
         $dimensions = $this->getDimensions();
@@ -58,7 +66,12 @@ abstract class DimensionPricing extends Pricing {
             $price = (int)$prices['price'];
             $advice = $information['advice'];
 
-            return $this->calcAdvicePrice($price, $advice);
+            // Remove 50% of advice if the old service is not a Cloud Server Dynamic
+            if (!($service instanceof CloudServer && $service->getDetails()->isDynamic())) {
+                $price = $this->calcAdvicePrice($price, $advice);;
+            }
+
+            return $price;
         }
 
         throw new PricingException("No price for selected dimensions not found.");

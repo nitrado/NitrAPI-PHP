@@ -215,7 +215,7 @@ abstract class Pricing implements PricingInterface {
      * 
      * @param $rentalTime
      * @param Service $service
-     * @return mixed
+     * @return int
      */
     public function getSwitchPrice(Service &$service, $rentalTime) {
         $this->setCurrency(null); //use user currency
@@ -262,12 +262,14 @@ abstract class Pricing implements PricingInterface {
         return true;
     }
 
+    /**
+     * Removes 50% of the advice if the advice is higher then the price.
+     *
+     * @param $price
+     * @param $advice
+     * @return int
+     */
     protected function calcAdvicePrice($price, $advice) {
-        //Cloud Servers are always returning 100% of advice.
-        if ($this instanceof CloudServerDynamic) {
-            return ($price - $advice);
-        }
-
         if ($advice > $price) {
             $advice -= (($advice - $price) * (50.0 / 100));
         }

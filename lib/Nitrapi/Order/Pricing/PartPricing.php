@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Order\Pricing;
 
+use Nitrapi\Services\CloudServers\CloudServer;
 use Nitrapi\Services\Service;
 
 abstract class PartPricing extends Pricing {
@@ -73,10 +74,15 @@ abstract class PartPricing extends Pricing {
         // Multiple by rental time if dynamic rental times
         $totalPrice *= $multiply;
 
-        return $this->calcAdvicePrice(round($totalPrice, 0), $prices['advice']);
+        // Remove 50% of advice if the old service is not a Cloud Server Dynamic
+        if (!($service instanceof CloudServer && $service->getDetails()->isDynamic())) {
+            $totalPrice = $this->calcAdvicePrice(round($totalPrice, 0), $prices['advice']);
+        }
+
+        return $totalPrice;
     }
 
-    protected function checkDependencies() {
+    public function checkDependencies() {
         $prices = $this->getPrices();
         $parts = $this->getParts();
         foreach ($prices['parts'] as $part) {
