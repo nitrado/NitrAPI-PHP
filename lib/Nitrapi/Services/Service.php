@@ -3,6 +3,8 @@
 namespace Nitrapi\Services;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\CloudServers\Apps\AppManager;
+use Nitrapi\Services\CloudServers\CloudServer;
 use Nitrapi\Services\TaskManager\TaskManager;
 
 abstract class Service
@@ -279,6 +281,17 @@ abstract class Service
      */
     public function getTaskManager() {
         return new TaskManager($this);
+    }
+
+    /**
+     * Returns the app manager.
+     *
+     * @return AppManager|bool
+     */
+    public function getAppManager() {
+        if ($this instanceof CloudServer)
+            return new AppManager($this);
+        return false;
     }
 
     /**
