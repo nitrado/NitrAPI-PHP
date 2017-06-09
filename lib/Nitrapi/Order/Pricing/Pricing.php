@@ -272,7 +272,7 @@ abstract class Pricing implements PricingInterface {
      */
     protected function calcAdvicePrice($price, $advice, $removePercent) {
         if ($advice > $price) {
-            $advice -= round(($advice - $price) * ($removePercent / 100));
+            $advice -= (($advice - $price) * ($removePercent / 100));
         }
 
         return ($price - $advice);

@@ -3,8 +3,10 @@
 namespace Nitrapi\Services\CloudServers;
 
 use Nitrapi\Common\Exceptions\NitrapiException;
+use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
+use Nitrapi\Services\SupportAuthorization;
 
 class CloudServer extends Service
 {
@@ -209,6 +211,41 @@ class CloudServer extends Service
         }
 
         $this->getApi()->dataPost($url, $data);
+        return true;
+    }
+
+    public function getSupportAuthorization() {
+        $url = "services/" . $this->getId() . "/support_authorization";
+
+        try {
+            $result = new SupportAuthorization($this->getApi(), $this->getApi()->dataGet($url));
+        } catch (NitrapiHttpErrorException $e) {
+            // No SupportAuthorization exists
+            $result = null;
+        }
+
+
+        return $result;
+
+    }
+
+    public function createSupportAuthorization() {
+        $url = "services/" . $this->getId() . "/support_authorization";
+
+        $result = new SupportAuthorization($this->getApi(), $this->getApi()->dataPost($url));
+
+        return $result;
+    }
+
+    public function deleteSupportAuthorization() {
+        $url = "services/" . $this->getId() . "/support_authorization";
+
+        try {
+            $this->getApi()->dataDelete($url);
+        } catch (NitrapiHttpErrorException $e) {
+            return false;
+        }
+
         return true;
     }
 }

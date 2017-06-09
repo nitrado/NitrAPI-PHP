@@ -5,9 +5,10 @@ namespace Nitrapi\Services;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\CloudServers\Apps\AppManager;
 use Nitrapi\Services\CloudServers\CloudServer;
+use Nitrapi\Common\NitrapiObject;
 use Nitrapi\Services\TaskManager\TaskManager;
 
-abstract class Service
+abstract class Service extends NitrapiObject
 {
     protected $api;
 
@@ -32,7 +33,7 @@ abstract class Service
     const SERVICE_STATUS_ADMINLOCKED_SUSPENDED = 'adminlocked_suspended';
 
     public function __construct(Nitrapi &$api, array &$data) {
-        $this->setApi($api);
+        parent::__construct($api);
         $this->loadData($data);
     }
 
@@ -313,17 +314,15 @@ abstract class Service
         }
     }
 
-    /**
-     * @param Nitrapi $api
-     */
-    protected function setApi(Nitrapi $api) {
-        $this->api = $api;
+    public function getSupportAuthorization() {
+        return null;
     }
 
-    /**
-     * @return Nitrapi
-     */
-    public function getApi() {
-        return $this->api;
+    public function createSupportAuthorization() {
+        throw new NitrapiErrorException("Support Authorizations aren't supported for this service type.");
+    }
+
+    public function deleteSupportAuthorization() {
+        throw new NitrapiErrorException("Support Authorizations aren't supported for this service type.");
     }
 }

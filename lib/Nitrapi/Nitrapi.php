@@ -25,10 +25,6 @@ class Nitrapi extends Client
             $query['access_token'] = $accessToken;
         }
 
-        if (!empty($options['user_id'])) {
-            $query['user_id'] = (int)$options['user_id'];
-        }
-
         if (isset($options['user_ip']) && filter_var($options['user_ip'], FILTER_VALIDATE_IP)) {
             $query['user_ip'] = $options['user_ip'];
         }
