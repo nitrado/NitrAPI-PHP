@@ -56,6 +56,54 @@ abstract class Service extends NitrapiObject
     }
 
     /**
+     * Returns if the service is currently installing.
+     * @return bool
+     */
+    public function isInstalling() {
+        return $this->getStatus() === self::SERVICE_STATUS_INSTALLING;
+    }
+
+    /**
+     * Returns if the service is currently active.
+     * @return bool
+     */
+    public function isActive() {
+        return $this->getStatus() === self::SERVICE_STATUS_ACTIVE;
+    }
+
+    /**
+     * Returns if the service is currently suspended.
+     * @return bool
+     */
+    public function isSuspended() {
+        return $this->getStatus() === self::SERVICE_STATUS_SUSPENDED;
+    }
+
+    /**
+     * Returns if the service is currently deleted.
+     * @return bool
+     */
+    public function isDeleted() {
+        return $this->getStatus() === self::SERVICE_STATUS_DELETED;
+    }
+
+    /**
+     * Returns if the service is currently admin locked.
+     * @return bool
+     */
+    public function isAdminLocked() {
+        return $this->getStatus() === self::SERVICE_STATUS_ADMINLOCKED;
+    }
+
+    /**
+     * Returns if the service is currently admin locked and suspended.
+     * @return bool
+     */
+    public function isAdminLockedSuspended() {
+        return $this->getStatus() === self::SERVICE_STATUS_ADMINLOCKED_SUSPENDED;
+    }
+
+    /**
      * Return the service comment
      *
      * @return mixed
