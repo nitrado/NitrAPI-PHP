@@ -196,34 +196,7 @@ class Customer
     }
 
     /**
-     * Returns a webinterface token
-     *
-     * @return string
-     */
-    public function getWebinterfaceToken()
-    {
-        $token = $this->api->dataGet('user/webinterface_token');
-        return $token['token']['token'];
-    }
-
-    /**
-     * Deletes all webinterface tokens. This logs out all users from your webinterface.
-     *
-     * @return string
-     */
-    public function deleteWebinterfaceTokens()
-    {
-        try {
-            $this->api->dataDelete('user/webinterface_token');
-        } catch (NitrapiHttpErrorException $e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns a update token for this user.
+     * Returns an update token for this user.
      *
      * @param $password
      * @return array|bool

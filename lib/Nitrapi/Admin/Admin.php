@@ -3,15 +3,12 @@
 namespace Nitrapi\Admin;
 
 use Nitrapi\Nitrapi;
+use Nitrapi\Common\NitrapiObject;
+use Nitrapi\Customer\AccessToken;
 use Nitrapi\Admin\Servers\ServerManager;
 
-class Admin
+class Admin extends NitrapiObject
 {
-    protected $api;
-
-    public function __construct(Nitrapi &$api) {
-        $this->setApi($api);
-    }
 
     /**
      * Returns the ServerManager
@@ -22,17 +19,21 @@ class Admin
         return new ServerManager($this);
     }
 
-    /**
-     * @param Nitrapi $api
-     */
-    protected function setApi(Nitrapi $api) {
-        $this->api = $api;
-    }
+    public function getUserToken($userId, $scopes, $serviceId = null) {
+        $scopeString = $scopes;
+        if (is_array($scopes)) {
+            $scopeString = implode(' ', $scopes);
+        }
 
-    /**
-     * @return Nitrapi
-     */
-    public function getApi() {
-        return $this->api;
+        $payload = [
+            'scope' => $scopeString,
+            'user_id' => $userId
+        ];
+
+        if (!empty($serviceId)) {
+            $payload['service_id'] = $serviceId;
+        }
+
+        return new AccessToken($this->getApi()->dataPost('token/sub', $payload)['token']);
     }
 }
