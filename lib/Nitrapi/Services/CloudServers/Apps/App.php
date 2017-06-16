@@ -91,7 +91,7 @@ class App {
     public function persist() {
         $this->_api()->dataPut($this->_url($this->getAppName()), [
             'cmd' => $this->getCmd(),
-            'parameters' => $this->data
+            'parameters' => $this->getParameters()
         ]);
         return $this;
     }
