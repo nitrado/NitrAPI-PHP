@@ -89,7 +89,7 @@ class App {
      * @return $this
      */
     public function persist() {
-        $this->_api()->dataPost($this->_url($this->getAppName() . '/update'), [
+        $this->_api()->dataPut($this->_url($this->getAppName()), [
             'cmd' => $this->getCmd(),
             'parameters' => $this->data
         ]);
