@@ -3,6 +3,7 @@
 namespace Nitrapi\Customer;
 
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
+use Nitrapi\Common\NitrapiObject;
 use Nitrapi\Nitrapi;
 
 class Customer extends NitrapiObject
@@ -66,7 +67,7 @@ class Customer extends NitrapiObject
      */
     public function setTimezone($updateToken, $newTimezone)
     {
-        $this->api->dataPost('user', [
+        $this->getApi()->dataPost('user', [
             'timezone' => $newTimezone,
             'token' => $updateToken
         ]);
