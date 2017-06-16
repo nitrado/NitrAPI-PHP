@@ -5,16 +5,16 @@ namespace Nitrapi\Customer;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 use Nitrapi\Nitrapi;
 
-class Customer
+class Customer extends NitrapiObject
 {
 
     private $api;
     private $data;
 
-    public function __construct(Nitrapi $api)
+    public function __construct(Nitrapi &$api)
     {
-        $this->api = $api;
-        $this->data = $api->dataGet("user")['user'];
+        parent::__construct($api);
+        $this->data = $this->getApi()->dataGet("user")['user'];
     }
 
     /**
@@ -191,7 +191,7 @@ class Customer
         $data['token'] = $updateToken;
         $data['profile'] = $profile;
 
-        $this->api->dataPost('user', $data);
+        $this->getApi()->dataPost('user', $data);
         return true;
     }
 
@@ -203,7 +203,7 @@ class Customer
      */
     public function getUpdateToken($password)
     {
-        return $this->api->dataPost('user/token', [
+        return $this->getApi()->dataPost('user/token', [
             'password' => $password
         ]);
     }
@@ -217,7 +217,7 @@ class Customer
      */
     public function changePassword($updateToken, $newPassword)
     {
-        $this->api->dataPost('user', [
+        $this->getApi()->dataPost('user', [
             'password' => $newPassword,
             'token' => $updateToken
         ]);
@@ -233,12 +233,45 @@ class Customer
      */
     public function setDonations($updateToken, $newState = true)
     {
-        $this->api->dataPost('user', [
+        $this->getApi()->dataPost('user', [
             'donations' => (($newState) ? 'true' : 'false'),
             'token' => $updateToken
         ]);
         $this->data['donations'] = $newState;
         return true;
+    }
+
+    /**
+     * Requests a sub token for this user. This can be used to drop scopes on the token.
+     *
+     * @param array|string $scopes The scopes for the new token. Can only contain scopes of the current token.
+     * May be passed in as array or space separated string.
+     * @param null|integer $serviceId A serviceID to pin the token to. It won't be possible to access other services with this
+     * token. Passing null allows all services to be accessed.
+     * @param null|integer $expires_in The time in seconds the new token will be valid for. The life time of a sub token
+     * can never exceed the life time of the parent token. Pass in null for taking the parent token's life time.
+     *
+     * @return AccessToken
+     */
+    public function getSubToken($scopes, $serviceId = null, $expires_in = null) {
+        $scopeString = $scopes;
+        if (is_array($scopes)) {
+            $scopeString = implode(' ', $scopes);
+        }
+
+        $payload = [
+            'scope' => $scopeString
+        ];
+
+        if (!empty($serviceId)) {
+            $payload['service_id'] = $serviceId;
+        }
+
+        if (!empty($expires_in)) {
+            $payload['expires_in'] = $expires_in;
+        }
+
+        return new AccessToken($this->getApi()->dataPost('token/sub', $payload)['token']);
     }
 
 }
