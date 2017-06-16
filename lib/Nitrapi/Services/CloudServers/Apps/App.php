@@ -89,9 +89,9 @@ class App {
      * @return $this
      */
     public function persist() {
-        $this->_api()->dataPost($this->_url($this->getAppName() . '/update'), [
+        $this->_api()->dataPut($this->_url($this->getAppName()), [
             'cmd' => $this->getCmd(),
-            'parameters' => $this->data
+            'parameters' => $this->getParameters()
         ]);
         return $this;
     }
@@ -149,7 +149,7 @@ class App {
      * @return $this
      */
     public function restart() {
-        $this->_api()->dataPost($this->_url('restart'));
+        $this->_api()->dataPost($this->_url($this->getAppName() . '/restart'));
         return $this;
     }
 
@@ -159,7 +159,7 @@ class App {
      * @return $this
      */
     public function stop() {
-        $this->_api()->dataPost($this->_url('stop'));
+        $this->_api()->dataPost($this->_url($this->getAppName() . '/stop'));
         return $this;
     }
 
