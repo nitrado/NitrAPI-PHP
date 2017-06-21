@@ -10,9 +10,12 @@ class Voiceserver extends Service
 {
     protected $info = null;
 
-    public function __construct(Nitrapi $api, $id) {
-        parent::__construct($api, $id);
-        $this->info = $this->getApi()->dataGet("services/" . $this->getId() . "/voiceservers");
+    public function __construct(Nitrapi $api, $data) {
+        parent::__construct($api, $data);
+
+        if ($this->isActive()) {
+            $this->info = $this->getApi()->dataGet("services/" . $this->getId() . "/voiceservers");
+        }
     }
 
     public function refresh() {
