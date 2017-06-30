@@ -20,7 +20,7 @@ class CloudServer extends Service
 
     public function refresh() {
         if (in_array($this->getStatus(), [self::SERVICE_STATUS_ACTIVE, self::SERVICE_STATUS_SUSPENDED])) {
-            $url = "services/" . $this->getId() . "/cloud_servers";
+            $url = 'services/' . $this->getId() . '/cloud_servers';
             $this->info = $this->getApi()->dataGet($url);
         }
     }
@@ -42,7 +42,7 @@ class CloudServer extends Service
      * @return array
      */
     public function getUsers() {
-        $url = "services/" . $this->getId() . "/cloud_servers/user";
+        $url = 'services/' . $this->getId() . '/cloud_servers/user';
         $users = $this->getApi()->dataGet($url);
         if (isset($users['users']['users'])) return $users['users']['users'];
         return [];
@@ -56,7 +56,7 @@ class CloudServer extends Service
      * @return mixed
      */
     public function getInitialPassword() {
-        $url = "services/" . $this->getId() . "/cloud_servers/password";
+        $url = 'services/' . $this->getId() . '/cloud_servers/password';
         $password = $this->getApi()->dataGet($url);
 
         if (isset($password['password'])) {
@@ -72,7 +72,7 @@ class CloudServer extends Service
      * @return bool
      */
     public function doBoot() {
-        $url = "services/" . $this->getId() . "/cloud_servers/boot";
+        $url = 'services/' . $this->getId() . '/cloud_servers/boot';
         $this->getApi()->dataPost($url);
         return true;
     }
@@ -83,7 +83,7 @@ class CloudServer extends Service
      * @return bool
      */
     public function doShutdown() {
-        $url = "services/" . $this->getId() . "/cloud_servers/shutdown";
+        $url = 'services/' . $this->getId() . '/cloud_servers/shutdown';
         $this->getApi()->dataPost($url);
         return true;
     }
@@ -94,7 +94,7 @@ class CloudServer extends Service
      * @return bool
      */
     public function doReboot() {
-        $url = "services/" . $this->getId() . "/cloud_servers/reboot";
+        $url = 'services/' . $this->getId() . '/cloud_servers/reboot';
         $this->getApi()->dataPost($url);
         return true;
     }
@@ -106,7 +106,7 @@ class CloudServer extends Service
      * @return bool
      */
     public function doHardReset() {
-        $url = "services/" . $this->getId() . "/cloud_servers/hard_reset";
+        $url = 'services/' . $this->getId() . '/cloud_servers/hard_reset';
         $this->getApi()->dataPost($url);
         return true;
     }
@@ -117,7 +117,7 @@ class CloudServer extends Service
      * @return array
      */
     public function getConsole() {
-        $url = "services/" . $this->getId() . "/cloud_servers/console";
+        $url = 'services/' . $this->getId() . '/cloud_servers/console';
         return $this->getApi()->dataGet($url);
     }
 
@@ -129,7 +129,7 @@ class CloudServer extends Service
      * @return bool
      */
     public function changePTRRecord($ip, $hostname) {
-        $url = "services/" . $this->getId() . "/cloud_servers/ptr/" . $ip;
+        $url = 'services/' . $this->getId() . '/cloud_servers/ptr/' . $ip;
         $this->getApi()->dataPost($url, [
             'hostname' => $hostname
         ]);
@@ -144,7 +144,7 @@ class CloudServer extends Service
      * @return bool
      */
     public function changeHostname($hostname = null) {
-        $url = "services/" . $this->getId() . "/cloud_servers/hostname";
+        $url = 'services/' . $this->getId() . '/cloud_servers/hostname';
         $this->getApi()->dataPost($url, [
             'hostname' => $hostname
         ]);
@@ -172,7 +172,7 @@ class CloudServer extends Service
      * @return array
      */
     public function getTrafficStatistics() {
-        $url = "services/" . $this->getId() . "/cloud_servers/traffic";
+        $url = 'services/' . $this->getId() . '/cloud_servers/traffic';
         return $this->getApi()->dataGet($url)['traffic'];
     }
 
@@ -182,7 +182,7 @@ class CloudServer extends Service
      * @return array
      */
     public function getResources($time = '4h') {
-        $url = "services/" . $this->getId() . "/cloud_servers/resources";
+        $url = 'services/' . $this->getId() . '/cloud_servers/resources';
         return $this->getApi()->dataGet($url, null, [
             'query' => [
                 'time' => $time
@@ -199,12 +199,12 @@ class CloudServer extends Service
      * @param Image|null $image
      */
     public function doReinstall(Image $image = null) {
-        $url = "services/" . $this->getId() . "/cloud_servers/reinstall";
+        $url = 'services/' . $this->getId() . '/cloud_servers/reinstall';
 
         $data = [];
         if ($image instanceof Image) {
             if ($image->isWindows() && !$this->getDetails()->getHardwareInfo()['windows']) {
-                throw new NitrapiException("You need to rent the windows option to install a windows image.");
+                throw new NitrapiException('You need to rent the windows option to install a windows image.');
             }
 
             $data['image_id'] = $image->getId();
@@ -215,30 +215,29 @@ class CloudServer extends Service
     }
 
     public function getSupportAuthorization() {
-        $url = "services/" . $this->getId() . "/support_authorization";
+        $url = 'services/' . $this->getId() . '/support_authorization';
 
         try {
-            $result = new SupportAuthorization($this->getApi(), $this->getApi()->dataGet($url));
+            $nitrapi = $this->getApi();
+            $result = new SupportAuthorization($nitrapi, $nitrapi->dataGet($url));
         } catch (NitrapiHttpErrorException $e) {
             // No SupportAuthorization exists
             $result = null;
         }
-
 
         return $result;
 
     }
 
     public function createSupportAuthorization() {
-        $url = "services/" . $this->getId() . "/support_authorization";
+        $url = 'services/' . $this->getId() . '/support_authorization';
 
-        $result = new SupportAuthorization($this->getApi(), $this->getApi()->dataPost($url));
-
-        return $result;
+        $nitrapi = $this->getApi();
+        return new SupportAuthorization($nitrapi, $nitrapi->dataPost($url));
     }
 
     public function deleteSupportAuthorization() {
-        $url = "services/" . $this->getId() . "/support_authorization";
+        $url = 'services/' . $this->getId() . '/support_authorization';
 
         try {
             $this->getApi()->dataDelete($url);
