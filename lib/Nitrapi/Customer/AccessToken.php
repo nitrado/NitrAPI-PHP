@@ -13,8 +13,8 @@ class AccessToken {
         $this->token = $data['access_token'];
 
         $this->expiresAt = !empty($data['expires_at']) ? $data['expires_at'] : ($data['expires_in'] + time());
-        $this->tokenType = $data['token_type'];
-        $this->scopes = explode(' ', $data['scope']);
+        $this->tokenType = !empty($data['token_type']) ? $data['token_type'] : 'Bearer';
+        $this->scopes = isset($data['scopes']) ? $data['scopes'] : explode(' ', $data['scope']);
 
         if (!empty($data['refresh_token'])) {
             $this->refreshToken = $data['refresh_token'];

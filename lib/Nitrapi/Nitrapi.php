@@ -91,6 +91,14 @@ class Nitrapi extends Client
         return \Nitrapi\Customer\Registration::getRecaptchaSiteKey($this);
     }
 
+    public function getAccessTokenInfo() {
+        return new \Nitrapi\Customer\AccessToken(
+            array_merge(
+                $this->dataGet('/token')['token'],
+                ['access_token' => $this->getAccessToken()]
+            ));
+    }
+
     protected function setAccessToken($accessToken) {
         $this->accessToken = $accessToken;
 
