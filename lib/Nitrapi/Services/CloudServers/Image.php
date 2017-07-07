@@ -8,12 +8,16 @@ class Image
     protected $name = null;
     protected $isWindows = false;
     protected $default = false;
+    protected $hasDaemon = false;
+    protected $isDaemonCompatible = false;
 
-    public function __construct($id, $name, $isWindows, $default) {
+    public function __construct($id, $name, $isWindows, $default, $hasDaemon, $isDaemonCompatible) {
         $this->id = $id;
         $this->name = $name;
         $this->isWindows = $isWindows;
         $this->default = $default;
+        $this->hasDaemon = $hasDaemon;
+        $this->isDaemonCompatible = $isDaemonCompatible;
     }
 
     public function getId() {
@@ -30,5 +34,13 @@ class Image
 
     public function isDefault() {
         return $this->default;
+    }
+
+    public function hasDaemon() {
+        return $this->hasDaemon;
+    }
+
+    public function isDaemonCompatible() {
+        return $this->isDaemonCompatible;
     }
 }

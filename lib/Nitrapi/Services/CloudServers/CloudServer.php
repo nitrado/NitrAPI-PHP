@@ -161,7 +161,7 @@ class CloudServer extends Service
         $images = $nitrapi->dataGet('/information/cloud_servers/images');
         $imgs = [];
         foreach ($images['images'] as $image) {
-            $imgs[] = new Image($image['id'], $image['name'], $image['is_windows'], $image['default']);
+            $imgs[] = new Image($image['id'], $image['name'], $image['is_windows'], $image['default'], $image['has_daemon'], $image['is_daemon_compatible']);
         }
         return $imgs;
     }
