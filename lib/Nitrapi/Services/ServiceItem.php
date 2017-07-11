@@ -22,7 +22,7 @@ abstract class ServiceItem
             if (!isset($data[$property->getName()])) continue;
             if (!$property->isProtected()) continue;
             $value = $data[$property->getName()];
-            if (empty($value)) continue;
+            if ($value === null) continue;
 
             $property->setAccessible(true);
             $property->setValue($this, $value);
