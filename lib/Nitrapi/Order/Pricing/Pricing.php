@@ -158,7 +158,7 @@ abstract class Pricing implements PricingInterface {
      *
      * @param Service $service
      * @param $rentalTime
-     * @return bool
+     * @return int The service's service_id
      */
     public function extendService(Service &$service, $rentalTime) {
         $this->setCurrency(null); //use user currency
@@ -172,14 +172,14 @@ abstract class Pricing implements PricingInterface {
 
         $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
 
-        return true;
+        return $service->getId();
     }
 
     /**
      * Orders the specified service
      *
      * @param $rentalTime
-     * @return bool
+     * @return int The new service's service_id
      */
     public function orderService($rentalTime) {
         $this->setCurrency(null); //use user currency
@@ -204,10 +204,10 @@ abstract class Pricing implements PricingInterface {
             throw new PricingException("Unknown pricing calculation type.");
         }
 
-        $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
+        $result = $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
 
         //if no exception appears, order was successful
-        return true;
+        return $result['order']['service_id'];
     }
 
     /**
@@ -227,7 +227,7 @@ abstract class Pricing implements PricingInterface {
      *
      * @param Service $service
      * @param $rentalTime
-     * @return bool
+     * @return int The service's service_id
      */
     public function switchService(Service &$service, $rentalTime) {
         $this->setCurrency(null); //use user currency
@@ -256,10 +256,10 @@ abstract class Pricing implements PricingInterface {
             throw new PricingException("Unknown pricing calculation type.");
         }
 
-        $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
+        $result = $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
 
         //if no exception appears, order was successful
-        return true;
+        return $result['order']['service_id'];
     }
 
     /**
