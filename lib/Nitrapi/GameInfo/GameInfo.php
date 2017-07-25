@@ -13,6 +13,10 @@ class GameInfo extends NitrapiObject{
         $this->data = $data;
     }
 
+    public function getData() {
+        return $this->data;
+    }
+
     public function getId() {
         return $this->data['id'];
     }
