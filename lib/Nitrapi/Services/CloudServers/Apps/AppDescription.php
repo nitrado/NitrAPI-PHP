@@ -48,4 +48,11 @@ class AppDescription {
     public function getPorts() {
         return $this->data['ports'];
     }
+
+    /**
+     * @return array the minimum requirements the app needs to fullfill.
+     */
+    public function getMinimumRequirements() {
+        return $this->data['minimum_requirements'];
+    }
 }
