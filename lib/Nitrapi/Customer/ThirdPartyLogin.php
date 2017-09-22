@@ -84,6 +84,21 @@ class ThirdPartyLogin
     }
 
     /**
+     * Add a Microsoft Account.
+     * This method returns a URL, you need to redirect the User to this URL.
+     *
+     * @param $updateToken
+     * @param $redirectUrl
+     * @return string
+     */
+    public function addMicrosoft($updateToken, $redirectUrl) {
+        return $this->api->dataPost("/user/third_party/microsoft", [
+            'token' => $updateToken,
+            'redirect_url' => $redirectUrl,
+        ])['url'];
+    }
+
+    /**
      * Deletes a existing Google connection.
      *
      * @param $updateToken
@@ -127,6 +142,18 @@ class ThirdPartyLogin
      */
     public function deleteGithub($updateToken) {
         return $this->api->dataDelete("/user/third_party/github", [
+            'token' => $updateToken
+        ]);
+    }
+
+    /**
+     * Deletes a existing Microsoft connection.
+     *
+     * @param $updateToken
+     * @return bool
+     */
+    public function deleteMicrosoft($updateToken) {
+        return $this->api->dataDelete("/user/third_party/microsoft", [
             'token' => $updateToken
         ]);
     }
