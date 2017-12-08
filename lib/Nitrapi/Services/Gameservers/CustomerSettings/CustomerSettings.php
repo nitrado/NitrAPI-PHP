@@ -13,9 +13,54 @@ class CustomerSettings
 
     protected $settings = null;
 
+    protected $defaults = null;
+
     public function __construct(Gameserver &$service, array &$settings) {
         $this->service = $service;
         $this->settings = $settings;
+    }
+
+    /**
+     * Return the default value for a customer setting. If no parameter is
+     * provided, all defaults (with the appropriate categories) will be returned.
+     * If a category is provided, all settings in this category will be
+     * returned. If category and key is provided, the actual value is
+     * returned.
+     *
+     * @see CustomerSettingsDBSetting::setDefaultValue()
+     *
+     * @param string|null $category The setting category
+     * @param string|null $key The setting key
+     * @return array|string The default values
+     *
+     * @throws CustomerSettingNotFoundException
+     */
+    public function getDefaults($category=null, $key=null) {
+        // Refresh the cache.
+        if ($this->defaults === null) {
+            $this->defaults = $this->service->getApi()->dataGet('services/' . $this->service->getId() . '/gameservers/settings/defaults')['defaults'];
+        }
+
+        if ($category !== null && !isset($this->defaults[$category])) {
+            throw new CustomerSettingNotFoundException('Category "'.$category.'" not found');
+        }
+
+        if ($key !== null && !isset($this->defaults[$category][$key])) {
+            throw new CustomerSettingNotFoundException('Setting "'.$key.'" in category "'.$category.'" not found');
+        }
+
+        // Return a single default value
+        if ($category !== null && $key !== null) {
+            return $this->defaults[$category][$key];
+        }
+
+        // Return a whole category
+        if ($category !== null) {
+            return $this->defaults[$category];
+        }
+
+        // Return all default values with categories
+        return $this->defaults;
     }
 
     public function readSetting($category = null, $key = null) {
