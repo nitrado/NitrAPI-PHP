@@ -38,7 +38,7 @@ class CustomerSettings
     public function getDefaults($category=null, $key=null) {
         // Refresh the cache.
         if ($this->defaults === null) {
-            $this->defaults = $this->service->getApi()->dataGet('services/' . $this->service->getId() . '/gameservers/settings/defaults')['defaults'];
+            $this->defaults = $this->service->getApi()->dataGet('services/' . $this->service->getId() . '/gameservers/settings/defaults')['settings'];
         }
 
         if ($category !== null && !isset($this->defaults[$category])) {
