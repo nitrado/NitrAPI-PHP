@@ -31,10 +31,6 @@ class GameserverFeatures
         return $this->data['has_expert_mode'];
     }
 
-    public function hasPluginSystem() {
-        return $this->data['has_plugin_system'];
-    }
-
     public function hasDatabase() {
         return $this->data['has_database'];
     }

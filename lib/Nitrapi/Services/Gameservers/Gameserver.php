@@ -4,14 +4,12 @@ namespace Nitrapi\Services\Gameservers;
 
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Gameservers\Packages\PackageManager;
-use Nitrapi\Services\Gameservers\Packages\Package;
 use Nitrapi\Services\Gameservers\ApplicationServer\ApplicationServer;
 use Nitrapi\Services\Service;
 use Nitrapi\Services\Gameservers\Games\Game;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDB;
 use Nitrapi\Services\Gameservers\FileServer\FileServer;
 use Nitrapi\Services\Gameservers\MariaDBs\MariaDBFactory;
-use Nitrapi\Services\Gameservers\PluginSystem\PluginSystem;
 use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
 use Nitrapi\Common\Exceptions\NitrapiServiceTypeNotFoundException;
 use Nitrapi\Services\Gameservers\CustomerSettings\CustomerSettings;
@@ -300,15 +298,6 @@ class Gameserver extends Service
      */
     public function getPackages() {
         return new PackageManager($this);
-    }
-
-    /**
-     * Returns a plugin system object
-     *
-     * @return PluginSystem
-     */
-    public function getPluginSystem() {
-        return new PluginSystem($this);
     }
 
     /**
