@@ -21,10 +21,6 @@ class Nitrapi extends Client
         $this->setAccessToken($accessToken);
 
         $query = array();
-        if (!empty($accessToken)) {
-            $query['access_token'] = $accessToken;
-        }
-
         if (isset($options['user_ip']) && filter_var($options['user_ip'], FILTER_VALIDATE_IP)) {
             $query['user_ip'] = $options['user_ip'];
         }
@@ -101,15 +97,5 @@ class Nitrapi extends Client
                 $this->dataGet('/token')['token'],
                 ['access_token' => $this->getAccessToken()]
             ));
-    }
-
-    protected function setAccessToken($accessToken) {
-        $this->accessToken = $accessToken;
-
-        return $this;
-    }
-
-    protected function getAccessToken() {
-        return $this->accessToken;
     }
 }
