@@ -94,7 +94,7 @@ class Client extends GuzzleClient
         $json = @json_decode($response->getBody(), true);
 
         // check for errors in json response
-        if (is_array($json) && isset($json['status']) && $json['status'] == "error") {
+        if (is_array($json) && isset($json['status']) && $json['status'] === 'error') {
             throw new NitrapiHttpErrorException($json["message"]);
         }
 
