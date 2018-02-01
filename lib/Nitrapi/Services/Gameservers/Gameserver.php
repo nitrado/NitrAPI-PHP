@@ -28,6 +28,10 @@ class Gameserver extends Service
         if ($this->getStatus() == self::SERVICE_STATUS_ACTIVE) {
             $url = "services/" . $this->getId() . "/gameservers";
             $this->info = $this->getApi()->dataGet($url);
+
+            // Fetching defaults for settings
+            $url = 'services/' . $this->getId() . '/gameservers/settings/defaults';
+            $this->info['gameserver']['default-settings'] = $this->getApi()->dataGet($url)['settings'];
         }
     }
 

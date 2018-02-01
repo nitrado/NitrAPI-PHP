@@ -15,9 +15,10 @@ class CustomerSettings
 
     protected $defaults = null;
 
-    public function __construct(Gameserver &$service, array &$settings) {
+    public function __construct(Gameserver &$service, array &$settings, array &$defaults) {
         $this->service = $service;
         $this->settings = $settings;
+        $this->defaults = $defaults;
     }
 
     /**
@@ -36,11 +37,6 @@ class CustomerSettings
      * @throws CustomerSettingNotFoundException
      */
     public function getDefaults($category=null, $key=null) {
-        // Refresh the cache.
-        if ($this->defaults === null) {
-            $this->defaults = $this->service->getApi()->dataGet('services/' . $this->service->getId() . '/gameservers/settings/defaults')['settings'];
-        }
-
         if ($category !== null && !isset($this->defaults[$category])) {
             throw new CustomerSettingNotFoundException('Category "'.$category.'" not found');
         }
