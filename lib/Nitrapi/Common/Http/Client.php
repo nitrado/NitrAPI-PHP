@@ -82,6 +82,33 @@ class Client extends GuzzleClient
         }
     }
 
+    public function parseResponse(Response $response) {
+        $contentType = $response->getHeader('Content-Type')[0];
+
+        // Return plain text
+        if (preg_match("/text\\/plain/i", $contentType)) {
+            return $response->getBody()->getContents();
+        }
+
+        // Parse json
+        $json = @json_decode($response->getBody(), true);
+
+        // check for errors in json response
+        if (is_array($json) && isset($json['status']) && $json['status'] == "error") {
+            throw new NitrapiHttpErrorException($json["message"]);
+        }
+
+        if (isset($json['data']) && is_array($json['data'])) {
+            return $json['data'];
+        }
+
+        if (!empty($json['message'])) {
+            return $json['message'];
+        }
+
+        return true;
+    }
+
     /**
      * @param $url
      * @param array $headers
@@ -103,12 +130,10 @@ class Client extends GuzzleClient
 
             $response = $this->request('GET', $url, $options);
             $this->checkErrors($response);
-            $json = @json_decode($response->getBody(), true);
+            return $this->parseResponse($response);
         } catch (RequestException $e) {
             $this->handleException($e);
         }
-
-        return (isset($json['data'])) ? $json['data'] : $json['message'];
     }
 
     /**
@@ -133,20 +158,10 @@ class Client extends GuzzleClient
 
             $response = $this->request('PUT', $url, $options);
             $this->checkErrors($response);
-            $json = json_decode($response->getBody(), true);
+            return $this->parseResponse($response);
         } catch (RequestException $e) {
             $this->handleException($e);
         }
-
-        if (isset($json['data']) && is_array($json['data'])) {
-            return $json['data'];
-        }
-
-        if (!empty($json['message'])) {
-            return $json['message'];
-        }
-
-        return true;
     }
 
     /**
@@ -174,20 +189,10 @@ class Client extends GuzzleClient
 
             $response = $this->request('POST', $url, $options);
             $this->checkErrors($response);
-            $json = @json_decode($response->getBody(), true);
+            return $this->parseResponse($response);
         } catch (RequestException $e) {
             $this->handleException($e);
         }
-
-        if (isset($json['data']) && is_array($json['data'])) {
-            return $json['data'];
-        }
-
-        if (!empty($json['message'])) {
-            return $json['message'];
-        }
-
-        return true;
     }
 
     /**
@@ -215,22 +220,20 @@ class Client extends GuzzleClient
 
             $response = $this->request('DELETE', $url, $options);
             $this->checkErrors($response);
-            $json = @json_decode($response->getBody(), true);
+            return $this->parseResponse($response);
         } catch (RequestException $e) {
             $this->handleException($e);
         }
-
-        if (isset($json['data']) && is_array($json['data'])) {
-            return $json['data'];
-        }
-
-        if (!empty($json['message'])) {
-            return $json['message'];
-        }
-
-        return true;
     }
 
+    /**
+     * Exception handling for Nitrapi
+     *
+     * @param RequestException $e
+     * @throws NitrapiConcurrencyException
+     * @throws NitrapiHttpErrorException
+     * @throws NitrapiMaintenanceException
+     */
     protected function handleException(RequestException $e) {
         if ($e->hasResponse()) {
             $response = json_decode($e->getResponse()->getBody(), true);
@@ -256,13 +259,14 @@ class Client extends GuzzleClient
         throw $exception;
     }
 
+    /**
+     * Checks error responses
+     *
+     * @param Response $response
+     * @param int $responseCode
+     * @throws NitrapiHttpErrorException
+     */
     protected function checkErrors(Response $response, $responseCode = 200) {
-        $json = @json_decode($response->getBody(), true);
-
-        if (is_array($json) && isset($json['status']) && $json['status'] == "error") {
-            throw new NitrapiHttpErrorException($json["message"]);
-        }
-
         $allowedPorts = array();
         $allowedPorts[] = $responseCode;
         if ($responseCode == 200) {
