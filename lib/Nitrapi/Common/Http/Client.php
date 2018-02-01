@@ -18,6 +18,9 @@ class Client extends GuzzleClient
 
     protected $accessToken = null;
 
+    protected $clientCertificate;
+    protected $clientCertificateKey;
+
     public function __construct($baseUrl = '', $config = null) {
         if (PHP_VERSION < self::MINIMUM_PHP_VERSION) {
             throw new NitrapiException(sprintf(
@@ -25,15 +28,58 @@ class Client extends GuzzleClient
                 self::MINIMUM_PHP_VERSION
             ));
         }
-
-        if (isset($config['access_token'])) {
-            $this->accessToken = $config['access_token'];
-        }
         if (isset($config['query'])) {
             $this->defaultQuery = $config['query'];
         }
         $config['base_uri'] = $baseUrl;
         parent::__construct($config);
+    }
+
+    /**
+     * Specifies the path to a client certificate and key in PEM format.
+     *
+     * @param $cert
+     * @param $privateKey
+     * @return $this
+     */
+    public function setClientCertificate($cert, $privateKey) {
+        $this->clientCertificate = $cert;
+        $this->clientCertificateKey = $privateKey;
+
+        return $this;
+    }
+
+    /**
+     * Set a new access token.
+     *
+     * @param $accessToken
+     * @return $this
+     */
+    protected function setAccessToken($accessToken) {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
+
+    /**
+     * Returns the current access token.
+     *
+     * @return null
+     */
+    protected function getAccessToken() {
+        return $this->accessToken;
+    }
+
+    public function fillOptions(&$options) {
+        if (!empty($this->accessToken)) {
+            $options['headers']['Authorization'] = 'Bearer ' . $this-> accessToken;
+        }
+        if (!empty($this->clientCertificate) && file_exists($this->clientCertificate)) {
+            $options[\GuzzleHttp\RequestOptions::CERT] = $this->clientCertificate;
+        }
+        if (!empty($this->clientCertificateKey) && file_exists($this->clientCertificateKey)) {
+            $options[\GuzzleHttp\RequestOptions::SSL_KEY] = $this->clientCertificateKey;
+        }
     }
 
     /**
@@ -50,12 +96,10 @@ class Client extends GuzzleClient
             if (is_array($headers)) {
                 $options['headers'] = array_merge($options['headers'], $headers);
             }
-            if (!empty($this->accessToken)) {
-                $options['headers']['Authorization'] = 'Bearer ' . $this-> accessToken;
-            }
             if (is_array($options) && isset($options['query'])) {
                 $options['query'] = array_merge($options['query'], $this->defaultQuery);
             }
+            $this->fillOptions($options);
 
             $response = $this->request('GET', $url, $options);
             $this->checkErrors($response);
@@ -85,6 +129,7 @@ class Client extends GuzzleClient
             if (is_array($options) && isset($options['query'])) {
                 $options['query'] = array_merge($options['query'], $this->defaultQuery);
             }
+            $this->fillOptions($options);
 
             $response = $this->request('PUT', $url, $options);
             $this->checkErrors($response);
@@ -122,12 +167,10 @@ class Client extends GuzzleClient
             if (is_array($headers)) {
                 $options['headers'] = array_merge($options['headers'], $headers);
             }
-            if (!empty($this->accessToken)) {
-                $options['headers']['Authorization'] = 'Bearer ' . $this-> accessToken;
-            }
             if (is_array($options) && isset($options['query'])) {
                 $options['query'] = array_merge($options['query'], $this->defaultQuery);
             }
+            $this->fillOptions($options);
 
             $response = $this->request('POST', $url, $options);
             $this->checkErrors($response);
@@ -165,12 +208,11 @@ class Client extends GuzzleClient
             if (is_array($headers)) {
                 $options['headers'] = array_merge($options['headers'], $headers);
             }
-            if (!empty($this->accessToken)) {
-                $options['headers']['Authorization'] = 'Bearer ' . $this-> accessToken;
-            }
             if (is_array($options) && isset($options['query'])) {
                 $options['query'] = array_merge($options['query'], $this->defaultQuery);
             }
+            $this->fillOptions($options);
+
             $response = $this->request('DELETE', $url, $options);
             $this->checkErrors($response);
             $json = @json_decode($response->getBody(), true);
