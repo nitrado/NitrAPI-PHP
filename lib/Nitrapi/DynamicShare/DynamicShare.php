@@ -16,11 +16,10 @@ class DynamicShare {
      * @param int $service_id
      * @return string token
      */
-    public function create($pattern = null, $service_id = 0) {
-        $url = "hostsystem/dynamic_share";
+    public function create($pattern = null, $service_id) {
+        $url = "services/" . $service_id . "/gameservers/dynamic_share";
         return $this->getApi()->dataPost($url, [
             "pattern" => $pattern,
-            "service_id" => $service_id
         ])['share']['token'];
     }
 
