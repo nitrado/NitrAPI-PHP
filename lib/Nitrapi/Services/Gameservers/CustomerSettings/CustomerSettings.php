@@ -123,7 +123,7 @@ class CustomerSettings
         return true;
     }
 
-    protected function hasCategory($category) {
+    public function hasCategory($category) {
         if (!isset($this->settings[$category])) {
             return false;
         }
@@ -131,7 +131,7 @@ class CustomerSettings
         return true;
     }
 
-    protected function hasSetting($category, $key) {
+    public function hasSetting($category, $key) {
         if (!$this->hasCategory($category)) {
             return false;
         }
