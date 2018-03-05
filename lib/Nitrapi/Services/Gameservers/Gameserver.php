@@ -2,6 +2,8 @@
 
 namespace Nitrapi\Services\Gameservers;
 
+use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
+use Nitrapi\Common\Exceptions\NitrapiServiceNotActiveException;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Gameservers\Packages\PackageManager;
 use Nitrapi\Services\Gameservers\ApplicationServer\ApplicationServer;
@@ -14,21 +16,62 @@ use Nitrapi\Services\Gameservers\LicenseKeys\LicenseKeyFactory;
 use Nitrapi\Common\Exceptions\NitrapiServiceTypeNotFoundException;
 use Nitrapi\Services\Gameservers\CustomerSettings\CustomerSettings;
 
-class Gameserver extends Service
-{
+class Gameserver extends Service {
     protected $game;
-    protected $info = null;
+    protected $info;
 
-    public function __construct(Nitrapi &$api, &$data) {
+    /**
+     * Gameserver constructor.
+     * Initiate the initial state of the gameserver object in the info array.
+     *
+     *
+     * @param Nitrapi $api The NitrAPI object
+     * @param array $data Data for the service object
+     * @throws NitrapiServiceNotActiveException If the service is gone.
+     * @throws NitrapiHttpErrorException If the initial refresh contains invalid data.
+     */
+    public function __construct(Nitrapi $api, &$data) {
         parent::__construct($api, $data);
-        $this->refresh();
+
+        // The refresh()-call updates the info array, if there is data available.
+        // Initially, we NEED the data in order to get the rest of this class
+        // working. So we do need to throw an exception, if the info array is
+        // not filled properly on the first call (constructor call).
+        if (!$this->refresh()) {
+            throw new NitrapiHttpErrorException('Received invalid data from NitrAPI.');
+        }
     }
 
+    /**
+     * Set the info array initially or update it accordingly. This method calls
+     * the NitrAPI and fetches updated data for the gameserver. If there is fresh
+     * data, the info array is updated. This method is used for the initial state
+     * (see __construct()) and to update the info array continuously on runtime. A
+     * lot of methods in this class (and their dependencies) uses the info array
+     * to instantiate other classes or do something with the data.
+     *
+     * @return boolean If the info array is refreshed.
+     * @throws NitrapiServiceNotActiveException If the service is gone.
+     */
     public function refresh() {
-        if ($this->getStatus() == self::SERVICE_STATUS_ACTIVE) {
-            $url = "services/" . $this->getId() . "/gameservers";
-            $this->info = $this->getApi()->dataGet($url);
+        $status = $this->getStatus();
+
+        if ($status === self::SERVICE_STATUS_ACTIVE) {
+            $url = 'services/' . $this->getId() . '/gameservers';
+            $res = $this->getApi()->dataGet($url);
+            // To make the client more reliable (and work with old data if there is
+            // a problem refreshing data), we change the info array only if we have
+            // valid data. This ensures that the rest is working fine (with old data)
+            // until we get fresh results from the NitrAPI.
+            if ($res !== null) {
+                $this->info = $res;
+                return true;
+            }
+
+            return false;
         }
+
+        throw new NitrapiServiceNotActiveException('Service is not active any more.');
     }
 
     /**
