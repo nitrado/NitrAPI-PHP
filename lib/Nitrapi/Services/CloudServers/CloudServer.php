@@ -124,7 +124,7 @@ class CloudServer extends Service
      *
      * @return string
      */
-    public function doUnescue() {
+    public function doUnrescue() {
         $url = 'services/' . $this->getId() . '/cloud_servers/unrescue';
         return $this->getApi()->dataPost($url);
     }
