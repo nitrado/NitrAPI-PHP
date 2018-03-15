@@ -69,46 +69,64 @@ class CloudServer extends Service
     /**
      * Boots a turned down server.
      *
-     * @return bool
+     * @return string
      */
     public function doBoot() {
         $url = 'services/' . $this->getId() . '/cloud_servers/boot';
-        $this->getApi()->dataPost($url);
-        return true;
+        return $this->getApi()->dataPost($url);
     }
 
     /**
      * Sends a shutdown command via ACPI.
      *
-     * @return bool
+     * @return string
      */
     public function doShutdown() {
         $url = 'services/' . $this->getId() . '/cloud_servers/shutdown';
-        $this->getApi()->dataPost($url);
-        return true;
+        return $this->getApi()->dataPost($url);
     }
 
     /**
      * Sends a reboot command via ACPI.
      *
-     * @return bool
+     * @return string
      */
     public function doReboot() {
         $url = 'services/' . $this->getId() . '/cloud_servers/reboot';
-        $this->getApi()->dataPost($url);
-        return true;
+        return $this->getApi()->dataPost($url);
     }
 
     /**
      * This method resets your server immediately.
      * This action might result in data loss.
      *
-     * @return bool
+     * @return string
      */
     public function doHardReset() {
         $url = 'services/' . $this->getId() . '/cloud_servers/hard_reset';
-        $this->getApi()->dataPost($url);
-        return true;
+        return $this->getApi()->dataPost($url);
+    }
+
+    /**
+     * This method reboots your server in rescue mode.
+     * This action might result in data loss.
+     *
+     * @return string
+     */
+    public function doRescue() {
+        $url = 'services/' . $this->getId() . '/cloud_servers/rescue';
+        return $this->getApi()->dataPost($url);
+    }
+
+    /**
+     * This method leaves the rescue mode and reboots the server.
+     * This action might result in data loss.
+     *
+     * @return string
+     */
+    public function doUnescue() {
+        $url = 'services/' . $this->getId() . '/cloud_servers/unrescue';
+        return $this->getApi()->dataPost($url);
     }
 
     /**
