@@ -164,6 +164,33 @@ class Customer extends NitrapiObject
     }
 
     /**
+     * A user can have various permissions associated to it. This can be used to
+     * limit functionality on the UI or add additional features if the user has
+     * a certain permission. The permission reflect also the capability of the
+     * API endpoints. If the user do not have the permission to order domains, the
+     * order domains endpoint results in an error. The list of all possible
+     * permissions can be changed over time, so there exist no final list of them.
+     *
+     * @return array The permissions associated to the user
+     */
+    public function getPermissions() {
+        return $this->data['permissions'];
+    }
+
+    /**
+     * Check if the user has the given permission. The permission is a string
+     * (all uppercase).
+     *
+     * @see Customer::getPermissions()
+     *
+     * @param $permission
+     * @return bool
+     */
+    public function hasPermission($permission) {
+        return in_array($permission, $this->getPermissions(), true);
+    }
+
+    /**
      * @deprecated
      */
     public function getPersonalData()
