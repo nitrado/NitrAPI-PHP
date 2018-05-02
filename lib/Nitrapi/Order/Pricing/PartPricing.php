@@ -95,4 +95,32 @@ abstract class PartPricing extends Pricing {
             }
         }
     }
+
+    protected function getNewOrderArray($rentalTime) {
+        $this->checkDependencies();
+        $orderArray = [
+            'price' => $this->getPrice($rentalTime),
+            'rental_time' => $rentalTime,
+            'location' => $this->locationId,
+            'parts' => $this->getParts(),
+            'additionals' => $this->additionals
+        ];
+
+        return $orderArray;
+    }
+
+    protected function getSwitchOrderArray(Service &$service, $rentalTime) {
+        $this->checkDependencies();
+        $orderArray = [
+            'price' => $this->getSwitchPrice($service, $rentalTime),
+            'rental_time' => $rentalTime,
+            'location' => $this->locationId,
+            'parts' => $this->getParts(),
+            'additionals' => $this->additionals,
+            'method' => 'switch',
+            'service_id' => $service->getId(),
+        ];
+
+        return $orderArray;
+    }
 }

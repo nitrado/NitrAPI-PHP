@@ -4,6 +4,8 @@ namespace Nitrapi\Order\Pricing\Products;
 
 use Nitrapi\Order\Pricing\DimensionPricing;
 use Nitrapi\Services\Service;
+Use Nitrapi\Nitrapi;
+use Nitrapi\Order\Pricing\Location;
 
 class Gameserver extends DimensionPricing {
 
@@ -50,5 +52,15 @@ class Gameserver extends DimensionPricing {
         }
 
         return $price;
+    }
+
+    protected function getNewOrderArray($rentalTime) {
+        $orderArray = parent::getNewOrderArray($rentalTime);
+
+        if (!empty($this->promoCode)) {
+            $orderArray['promo_code'] = $this->promoCode;
+        }
+
+        return $orderArray;
     }
 }

@@ -77,4 +77,29 @@ abstract class DimensionPricing extends Pricing {
 
         throw new PricingException("No price for selected dimensions not found.");
     }
+
+    protected function getNewOrderArray($rentalTime) {
+        $orderArray = [
+            'price' => $this->getPrice($rentalTime),
+            'rental_time' => $rentalTime,
+            'location' => $this->locationId,
+            'dimensions' => $this->getDimensions(),
+            'additionals' => $this->additionals
+        ];
+        return $orderArray;
+    }
+
+    protected function getSwitchOrderArray(Service &$service, $rentalTime) {
+        $orderArray = [
+            'price' => $this->getSwitchPrice($service, $rentalTime),
+            'rental_time' => $rentalTime,
+            'location' => $this->locationId,
+            'dimensions' => $this->getDimensions(),
+            'additionals' => $this->additionals,
+            'method' => 'switch',
+            'service_id' => $service->getId(),
+        ];
+
+        return $orderArray;
+    }
 }
