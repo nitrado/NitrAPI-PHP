@@ -65,7 +65,7 @@ class Domain extends NitrapiObject
     /**
      * Returns the date until the domain is able to renew.
      *
-     * @return string
+     * @return \DateTime
      */
     public function getRenewUntil() {
         return (new \DateTime())->setTimestamp(strtotime($this->data['renew_until']));
@@ -74,7 +74,7 @@ class Domain extends NitrapiObject
     /**
      * Returns the date until the domain has been paid.
      *
-     * @return string
+     * @return \DateTime
      */
     public function getPaidUntil() {
         return (new \DateTime())->setTimestamp(strtotime($this->data['paid_until']));
