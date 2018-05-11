@@ -39,6 +39,10 @@ class Domain extends NitrapiObject
         return $this->data['id'];
     }
 
+    public function getStatus() {
+        return $this->data['status'];
+    }
+
     public function getProvider() {
         return $this->data['provider'];
     }
