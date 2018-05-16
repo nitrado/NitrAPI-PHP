@@ -183,26 +183,8 @@ abstract class Pricing implements PricingInterface {
      */
     public function orderService($rentalTime) {
         $this->setCurrency(null); //use user currency
-        if ($this instanceof PartPricing) {
-            $this->checkDependencies();
-            $orderArray = [
-                'price' => $this->getPrice($rentalTime),
-                'rental_time' => $rentalTime,
-                'location' => $this->locationId,
-                'parts' => $this->getParts(),
-                'additionals' => $this->additionals
-            ];
-        } elseif ($this instanceof DimensionPricing) {
-            $orderArray = [
-                'price' => $this->getPrice($rentalTime),
-                'rental_time' => $rentalTime,
-                'location' => $this->locationId,
-                'dimensions' => $this->getDimensions(),
-                'additionals' => $this->additionals
-            ];
-        } else {
-            throw new PricingException("Unknown pricing calculation type.");
-        }
+
+        $orderArray = $this->getNewOrderArray($rentalTime);
 
         $result = $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
 
@@ -231,30 +213,7 @@ abstract class Pricing implements PricingInterface {
      */
     public function switchService(Service &$service, $rentalTime) {
         $this->setCurrency(null); //use user currency
-        if ($this instanceof PartPricing) {
-            $this->checkDependencies();
-            $orderArray = [
-                'price' => $this->getSwitchPrice($service, $rentalTime),
-                'rental_time' => $rentalTime,
-                'location' => $this->locationId,
-                'parts' => $this->getParts(),
-                'additionals' => $this->additionals,
-                'method' => 'switch',
-                'service_id' => $service->getId(),
-            ];
-        } elseif ($this instanceof DimensionPricing) {
-            $orderArray = [
-                'price' => $this->getSwitchPrice($service, $rentalTime),
-                'rental_time' => $rentalTime,
-                'location' => $this->locationId,
-                'dimensions' => $this->getDimensions(),
-                'additionals' => $this->additionals,
-                'method' => 'switch',
-                'service_id' => $service->getId(),
-            ];
-        } else {
-            throw new PricingException("Unknown pricing calculation type.");
-        }
+        $orderArray = $this->getSwitchOrderArray($service, $rentalTime);
 
         $result = $this->nitrapi->dataPost("order/order/" . $this->getProduct(), $orderArray);
 
@@ -281,4 +240,7 @@ abstract class Pricing implements PricingInterface {
     protected function getProduct() {
         return static::$product;
     }
+
+    protected abstract function getNewOrderArray($rentalTime);
+    protected abstract function getSwitchOrderArray(Service &$service, $rentalTime);
 }
