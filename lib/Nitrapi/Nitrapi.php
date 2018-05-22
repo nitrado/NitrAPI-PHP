@@ -83,8 +83,8 @@ class Nitrapi extends Client
         return new \Nitrapi\GameInfo\GameInfoInterface($this);
     }
 
-    public function registerUser($userName, $email, $password, $recaptchaResponse = null, $currency = null, $language = null, $timezone = null) {
-        return new \Nitrapi\Customer\Registration($this, $this->oAuthClientId, $this->oAuthClientSecret, $userName, $email, $password, $recaptchaResponse, $currency, $language, $timezone);
+    public function registerUser($userName, $email, $password, $consentPrivacy, $consentAge, $consentTos, $recaptchaResponse = null, $currency = null, $language = null, $timezone = null) {
+        return new \Nitrapi\Customer\Registration($this, $this->oAuthClientId, $this->oAuthClientSecret, $userName, $email, $password, $consentPrivacy, $consentAge, $consentTos, $recaptchaResponse, $currency, $language, $timezone);
     }
 
     public function getRecaptchaSiteKey() {

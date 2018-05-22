@@ -15,6 +15,9 @@ class Registration {
                                 $userName,
                                 $email,
                                 $password,
+                                $consentPrivacy,
+                                $consentAge,
+                                $consentTos,
                                 $recaptchaResponse = null,
                                 $currency = null,
                                 $language = null,
@@ -26,6 +29,9 @@ class Registration {
             "username" => $userName,
             "email" => $email,
             "password" => $password,
+            "consent_privacy" => $consentPrivacy,
+            "consent_age" => $consentAge,
+            "consent_tos" => $consentTos
         ];
 
         if (!empty($recaptchaResponse)) {
