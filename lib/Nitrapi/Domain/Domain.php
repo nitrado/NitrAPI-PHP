@@ -47,6 +47,10 @@ class Domain extends NitrapiObject
         return $this->data['provider'];
     }
 
+    public function deleteOnExpire() {
+        return $this->data['delete_on_expire'];
+    }
+
     public function setDomain($domain) {
         $this->data['domain'] = $domain;
 
