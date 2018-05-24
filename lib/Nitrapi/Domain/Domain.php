@@ -11,6 +11,7 @@ class Domain extends NitrapiObject
     const AUTH_CODE_STATUS_AVAILABLE = 'available';
     const AUTH_CODE_STATUS_NOT_REQUESTED = 'not_requested';
     const AUTH_CODE_STATUS_PENDING = 'pending';
+    const AUTH_CODE_STATUS_CREATING = 'creating';
 
     /**
      * @var $api Nitrapi
@@ -140,12 +141,24 @@ class Domain extends NitrapiObject
     /**
      * Requesting the Auth Code.
      * It can take up to 24 hours until the Auth Code is available.
+     * Requesting the Auth Code removes the transfer lock of the domain.
      *
-     * @return array
+     * @return string
      */
     public function createAuthCode() {
         return $this->getApi()->dataPost('/domain/'.$this->getDomain().'/auth_code');
     }
+
+    /**
+     * Delete the Auth Code.
+     * If you delete the Auth Code, the transfer lock will be re-enabled again.
+     *
+     * @return string
+     */
+    public function deleteAuthCode() {
+        return $this->getApi()->dataDelete('/domain/'.$this->getDomain().'/auth_code');
+    }
+
 
     public function changeHandle(Handle $handle, $type = HandleManager::TYPE_OWNER_C) {
         return $this->getApi()->dataPut('/domain/'.$this->getDomain().'/handle/' . $handle->getHandle(), [
