@@ -33,7 +33,7 @@ class CloudServer extends Service {
 
     /**
      * @see Gameserver::refresh()
-     * @see Service::ensureActiveService()
+     * @see Service::forceAction()
      *
      * @return bool
      * @throws NitrapiServiceNotActiveException

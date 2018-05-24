@@ -58,23 +58,28 @@ abstract class Service extends NitrapiObject
     }
 
     /**
-     * Some actions does not need to check for active state, like deleting
+     * Some actions do not need the check for active state, like deleting
      * the service. For this case, the active state check can be disabled.
      * If enabled, a Exception will be thrown if the service is not active
      * any more.
      *
      * Example:
-     * Service::forceAction(function() use $nitrapi, $serviceId {
+     * Service::forceAction(function() use ($nitrapi, $serviceId) {
      *     $nitrapi->getService($serviceId)->doDelete();
      * });
      *
      * @see Gameserver::refresh()
      * @param $fn
+     * @return null|mixed The return value from the given lambda fn
      */
     public static function forceAction($fn) {
+        $res = null;
+
         self::$ensureActiveService = false;
-        $fn();
+        $res = $fn();
         self::$ensureActiveService = true;
+
+        return $res;
     }
 
     /**

@@ -50,7 +50,7 @@ class Gameserver extends Service {
      * lot of methods in this class (and their dependencies) uses the info array
      * to instantiate other classes or do something with the data.
      *
-     * @see Service::ensureActiveService()
+     * @see Service::forceAction()
      *
      * @return boolean If the info array is refreshed.
      * @throws NitrapiServiceNotActiveException
@@ -70,7 +70,7 @@ class Gameserver extends Service {
         // a service can be done in SERVICE_STATUS_SUSPENDED. This edge cases need
         // to be handled properly. For that, we only check for SERVICE_STATUS_ACTIVE
         // if it is explicitly enforced. The default is true, so you can disable
-        // it with Service::ensureActiveService(false).
+        // it with Service::forceAction($fn)
         if (!self::$ensureActiveService || $this->getStatus() === self::SERVICE_STATUS_ACTIVE) {
             $url = 'services/' . $this->getId() . '/gameservers';
             $res = $this->getApi()->dataGet($url);
