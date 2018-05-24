@@ -72,9 +72,9 @@ abstract class Service extends NitrapiObject
      * @param $fn
      */
     public static function forceAction($fn) {
-        self::$ensureActiveService = true;
-        $fn();
         self::$ensureActiveService = false;
+        $fn();
+        self::$ensureActiveService = true;
     }
 
     /**
