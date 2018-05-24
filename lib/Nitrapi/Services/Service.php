@@ -25,6 +25,8 @@ abstract class Service extends NitrapiObject
     protected $websocket_token;
     protected $roles;
 
+    protected static $ensureActiveService = true;
+
     const SERVICE_STATUS_INSTALLING = 'installing';
     const SERVICE_STATUS_ACTIVE = 'active';
     const SERVICE_STATUS_SUSPENDED = 'suspended';
@@ -53,6 +55,20 @@ abstract class Service extends NitrapiObject
      */
     public function getStatus() {
         return $this->status;
+    }
+
+    /**
+     * Some actions does not need to check for active state, like deleting
+     * the service. For this case, the active state check can be disabled.
+     * If enabled, a Exception will be thrown if the service is not active
+     * any more.
+     *
+     * @see Gameserver::refresh()
+     *
+     * @param boolean $ensure Active state is forced if true
+     */
+    public static function ensureActiveService($ensure) {
+        self::$ensureActiveService = $ensure;
     }
 
     /**

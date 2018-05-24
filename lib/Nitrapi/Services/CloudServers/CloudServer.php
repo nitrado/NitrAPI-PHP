@@ -4,25 +4,53 @@ namespace Nitrapi\Services\CloudServers;
 
 use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
+use Nitrapi\Common\Exceptions\NitrapiServiceNotActiveException;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
 use Nitrapi\Services\SupportAuthorization;
 
-class CloudServer extends Service
-{
+class CloudServer extends Service {
     protected $game;
     protected $info = null;
 
+    /**
+     * CloudServer constructor.
+     *
+     * @see Gameserver::refresh()
+     *
+     * @param Nitrapi $api
+     * @param $data
+     * @throws NitrapiHttpErrorException
+     * @throws NitrapiServiceNotActiveException
+     */
     public function __construct(Nitrapi &$api, &$data) {
         parent::__construct($api, $data);
-        $this->refresh();
+
+        if (!$this->refresh()) {
+            throw new NitrapiHttpErrorException('Received invalid data from NitrAPI.');
+        }
     }
 
+    /**
+     * @see Gameserver::refresh()
+     * @see Service::ensureActiveService()
+     *
+     * @return bool
+     * @throws NitrapiServiceNotActiveException
+     */
     public function refresh() {
-        if (in_array($this->getStatus(), [self::SERVICE_STATUS_ACTIVE, self::SERVICE_STATUS_SUSPENDED])) {
+        if (!self::$ensureActiveService || $this->getStatus() === self::SERVICE_STATUS_ACTIVE) {
             $url = 'services/' . $this->getId() . '/cloud_servers';
-            $this->info = $this->getApi()->dataGet($url);
+            $res = $this->getApi()->dataGet($url);
+            if ($res !== null) {
+                $this->info = $res;
+                return true;
+            }
+
+            return false;
         }
+
+        throw new NitrapiServiceNotActiveException('Service is not active any more.');
     }
 
     /**
