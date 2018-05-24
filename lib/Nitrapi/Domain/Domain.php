@@ -11,7 +11,6 @@ class Domain extends NitrapiObject
     const AUTH_CODE_STATUS_AVAILABLE = 'available';
     const AUTH_CODE_STATUS_NOT_REQUESTED = 'not_requested';
     const AUTH_CODE_STATUS_PENDING = 'pending';
-    const AUTH_CODE_STATUS_CREATING = 'creating';
 
     /**
      * @var $api Nitrapi
