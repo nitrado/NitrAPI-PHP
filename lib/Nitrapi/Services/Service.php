@@ -63,12 +63,18 @@ abstract class Service extends NitrapiObject
      * If enabled, a Exception will be thrown if the service is not active
      * any more.
      *
-     * @see Gameserver::refresh()
+     * Example:
+     * Service::forceAction(function() use $nitrapi, $serviceId {
+     *     $nitrapi->getService($serviceId)->doDelete();
+     * });
      *
-     * @param boolean $ensure Active state is forced if true
+     * @see Gameserver::refresh()
+     * @param $fn
      */
-    public static function ensureActiveService($ensure) {
-        self::$ensureActiveService = $ensure;
+    public static function forceAction($fn) {
+        self::$ensureActiveService = true;
+        $fn();
+        self::$ensureActiveService = false;
     }
 
     /**
