@@ -27,8 +27,8 @@ class Gameserver extends Service {
      *
      * @param Nitrapi $api The NitrAPI object
      * @param array $data Data for the service object
-     * @throws NitrapiServiceNotActiveException If the service is gone.
      * @throws NitrapiHttpErrorException If the initial refresh contains invalid data.
+     * @throws NitrapiServiceNotActiveException
      */
     public function __construct(Nitrapi $api, &$data) {
         parent::__construct($api, $data);
@@ -50,13 +50,28 @@ class Gameserver extends Service {
      * lot of methods in this class (and their dependencies) uses the info array
      * to instantiate other classes or do something with the data.
      *
+     * @see Service::forceAction()
+     *
      * @return boolean If the info array is refreshed.
-     * @throws NitrapiServiceNotActiveException If the service is gone.
+     * @throws NitrapiServiceNotActiveException
      */
     public function refresh() {
-        $status = $this->getStatus();
-
-        if ($status === self::SERVICE_STATUS_ACTIVE) {
+        // A service can be in various states. From SERVICE_STATUS_INSTALLING to
+        // SERVICE_STATE_DELETED. This lib is designed to work with "working"
+        // services, so only the good path is implemented on the most methods. This
+        // leads to the problem when a service becomes not accessible (state changed
+        // to SERVICE_STATUS_ADMIN_LOCKED or SERVICE_STATUS_SUSPENDED); The
+        // application which uses the lib does not notified about that change. So
+        // this is the place the state change is detected, therefore, we need to
+        // make that change public, so everyone knows that the lib can't be used
+        // the normal way.
+        // This decision solves a lot of problems along the way, but creates a new
+        // one: Some actions can be executed regardless of the status. So, deleting
+        // a service can be done in SERVICE_STATUS_SUSPENDED. This edge cases need
+        // to be handled properly. For that, we only check for SERVICE_STATUS_ACTIVE
+        // if it is explicitly enforced. The default is true, so you can disable
+        // it with Service::forceAction($fn)
+        if (!self::$ensureActiveService || $this->getStatus() === self::SERVICE_STATUS_ACTIVE) {
             $url = 'services/' . $this->getId() . '/gameservers';
             $res = $this->getApi()->dataGet($url);
             // To make the client more reliable (and work with old data if there is
