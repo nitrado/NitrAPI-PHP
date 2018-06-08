@@ -71,7 +71,7 @@ class Gameserver extends Service {
         // to be handled properly. For that, we only check for SERVICE_STATUS_ACTIVE
         // if it is explicitly enforced. The default is true, so you can disable
         // it with Service::forceAction($fn)
-        if (!self::$ensureActiveService || $this->getStatus() === self::SERVICE_STATUS_ACTIVE) {
+        if ($this->getStatus() === self::SERVICE_STATUS_ACTIVE) {
             $url = 'services/' . $this->getId() . '/gameservers';
             $res = $this->getApi()->dataGet($url);
             // To make the client more reliable (and work with old data if there is
@@ -86,7 +86,11 @@ class Gameserver extends Service {
             return false;
         }
 
-        throw new NitrapiServiceNotActiveException('Service is not active any more.');
+        if (self::$ensureActiveService){
+            throw new NitrapiServiceNotActiveException('Service is not active any more.');
+        }
+
+        return true;
     }
 
     /**
