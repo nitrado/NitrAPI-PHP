@@ -42,13 +42,13 @@ class Handle extends NitrapiObject
         return $this->getApi()->dataGet('/domain/contact/' . $this->getHandle() . '/domains')['domains'];
     }
 
-    public function setOrganisation($organisation) {
-        return $this->data['organisation'] = $organisation;
+    public function setOrganization($organization) {
+        return $this->data['organization'] = $organization;
     }
 
-    public function getOrganisation() {
-        if (!empty($this->data['organisation'])) {
-            return $this->data['organisation'];
+    public function getOrganization() {
+        if (!empty($this->data['organization'])) {
+            return $this->data['organization'];
         }
 
         return null;
@@ -150,7 +150,7 @@ class Handle extends NitrapiObject
     public function save() {
         $request = [
             'contact' => [
-                'organisation' => $this->getOrganisation(),
+                'organization' => $this->getOrganization(),
                 'first_name' => $this->getFirstName(),
                 'last_name' => $this->getLastName(),
                 'email' => $this->getEMail(),
