@@ -89,6 +89,8 @@ class Gameserver extends Service {
         if (self::$ensureActiveService){
             throw new NitrapiServiceNotActiveException('Service is not active any more.');
         }
+
+        return true;
     }
 
     /**

@@ -54,6 +54,7 @@ class CloudServer extends Service {
             throw new NitrapiServiceNotActiveException('Service is not active any more.');
         }
 
+        return true;
     }
 
     /**
