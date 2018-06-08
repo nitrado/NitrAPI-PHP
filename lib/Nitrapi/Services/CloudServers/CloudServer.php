@@ -39,7 +39,7 @@ class CloudServer extends Service {
      * @throws NitrapiServiceNotActiveException
      */
     public function refresh() {
-        if (!self::$ensureActiveService || $this->getStatus() === self::SERVICE_STATUS_ACTIVE) {
+        if ($this->getStatus() === self::SERVICE_STATUS_ACTIVE) {
             $url = 'services/' . $this->getId() . '/cloud_servers';
             $res = $this->getApi()->dataGet($url);
             if ($res !== null) {
@@ -50,7 +50,10 @@ class CloudServer extends Service {
             return false;
         }
 
-        throw new NitrapiServiceNotActiveException('Service is not active any more.');
+        if (self::$ensureActiveService) {
+            throw new NitrapiServiceNotActiveException('Service is not active any more.');
+        }
+
     }
 
     /**
