@@ -41,14 +41,14 @@ class DomainManager
     }
 
     /**
-     * Returns a single Domain object.
+     * Returns a single Domain object by domain or ID.
      *
-     * @param $domain
+     * @param mixed $domain
      * @return Domain
      */
     public function getDomain($domain) {
         foreach ($this->api->dataGet('/domain')['domains'] as $_domain) {
-            if ($_domain['domain'] === $domain) {
+            if ($domain === $_domain['domain'] || $_domain['id'] === (int)$domain) {
                 return new Domain($this->api, $_domain);
             }
         }
