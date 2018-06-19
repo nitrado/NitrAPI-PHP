@@ -21,6 +21,8 @@ abstract class Service extends NitrapiObject
     protected $delete_date;
     protected $suspend_date;
     protected $start_date;
+    protected $auto_extension;
+    protected $auto_extension_duration;
     protected $details;
     protected $websocket_token;
     protected $roles;
@@ -101,6 +103,29 @@ abstract class Service extends NitrapiObject
      */
     public function isAdminLockedSuspended() {
         return $this->getStatus() === self::SERVICE_STATUS_ADMINLOCKED_SUSPENDED;
+    }
+
+    /**
+     * Services are rented for a predefined duration. When this duration is
+     * over, the service changes the state from active to suspended. To prevent
+     * a service from going into suspended mode, the auto extension feature
+     * can be enabled to renew the rental time if the duration is over. For this,
+     * the account need sufficient money to renew the rental time.
+     *
+     * @return bool True if the service has the auto extension enabled
+     */
+    public function isAutoExtensionEnabled() {
+        return (bool)$this->auto_extension;
+    }
+
+    /**
+     * If the service is renewed from the auto extension feature, it will renew
+     * for this amount of time. This duration can be set on the website.
+     *
+     * @return int The duration for the auto extension feature
+     */
+    public function getAutoExtensionDuration() {
+        return $this->auto_extension_duration;
     }
 
     /**
