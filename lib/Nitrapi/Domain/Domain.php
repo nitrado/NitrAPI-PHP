@@ -43,6 +43,14 @@ class Domain extends NitrapiObject
         return $this->data['status'];
     }
 
+    public function getDeleteAt() {
+        if (empty($this->data['delete_at'])) {
+            return null;
+        }
+
+        return (new \DateTime())->setTimestamp(strtotime($this->data['delete_at']));
+    }
+
     public function getProvider() {
         return $this->data['provider'];
     }
