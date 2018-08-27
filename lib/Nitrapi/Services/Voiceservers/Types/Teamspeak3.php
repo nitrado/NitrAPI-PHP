@@ -54,7 +54,7 @@ class Teamspeak3 extends Type
         return true;
     }
 
-    public function setHostmessage($mode, $message) {
+    public function setHostMessage($mode, $message) {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/hostmessage";
         $this->service->getApi()->dataPost($url, [
             'mode' => $mode,
