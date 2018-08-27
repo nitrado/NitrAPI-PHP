@@ -40,7 +40,39 @@ class Teamspeak3 extends Type
         ]);
         return true;
     }
-    
+
+    public function getBanlist() {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/bans";
+        return $this->service->getApi()->dataGet($url, null);
+    }
+
+    public function deleteBanlist($id) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/bans";
+        $this->service->getApi()->dataDelete($url, [
+            'ban_id' => $id
+        ]);
+        return true;
+    }
+
+    public function setHostmessage($mode, $message) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/hostmessage";
+        $this->service->getApi()->dataPost($url, [
+            'mode' => $mode,
+            'message' => $message,
+        ]);
+        return true;
+    }
+
+    public function addPassword($password, $description, $duration = 10) {
+        $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/temppassword";
+        $this->service->getApi()->dataPost($url, [
+            'password' => $password,
+            'description' => $description,
+            'duration' => $duration,
+        ]);
+        return true;
+    }
+
     public function enableLogView($group) {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/enable_log_view";
         return $this->service->getApi()->dataPost($url, [
