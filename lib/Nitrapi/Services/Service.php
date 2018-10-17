@@ -166,7 +166,7 @@ abstract class Service extends NitrapiObject
     }
 
     /**
-     * Return the service comment
+     * Return if the service is in readonly mode (edit locked)
      *
      * @return mixed
      */
