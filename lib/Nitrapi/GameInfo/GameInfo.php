@@ -37,6 +37,10 @@ class GameInfo extends NitrapiObject{
         return $this->data['locations'];
     }
 
+    public function getPreOrderLocationIds() {
+        return !empty($this->data['preorder_locations']) ? $this->data['preorder_locations'] : [];
+    }
+
     public function getSlotMultiplier() {
         return $this->data['slot_multiplier'];
     }
