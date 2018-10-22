@@ -23,6 +23,7 @@ abstract class Service extends NitrapiObject
     protected $start_date;
     protected $auto_extension;
     protected $auto_extension_duration;
+    protected $readonly;
     protected $details;
     protected $websocket_token;
     protected $roles;
@@ -162,6 +163,15 @@ abstract class Service extends NitrapiObject
      */
     public function getComment() {
         return $this->comment;
+    }
+
+    /**
+     * Return if the service is in readonly mode (edit locked)
+     *
+     * @return mixed
+     */
+    public function isReadonly() {
+        return $this->readonly;
     }
 
     /**
