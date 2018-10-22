@@ -24,6 +24,7 @@ abstract class Service extends NitrapiObject
     protected $auto_extension;
     protected $auto_extension_duration;
     protected $details;
+    protected $readonly;
     protected $websocket_token;
     protected $roles;
 
@@ -52,11 +53,20 @@ abstract class Service extends NitrapiObject
 
     /**
      * Returns the service status
-     * 
+     *
      * @return mixed
      */
     public function getStatus() {
         return $this->status;
+    }
+
+    /**
+     * Returns if the webinterface is locked
+     *
+     * @return mixed
+     */
+    public function isReadonly() {
+        return $this->readonly;
     }
 
     /**
