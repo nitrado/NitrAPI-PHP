@@ -263,12 +263,22 @@ class FileServer
     }
 
     /**
-     * Reads a specific file
+     * Reads a specific file from the gameserver
      *
-     * @param $file
-     * @return string
+     * Read the content from a filepath, living on the gameserver host. You
+     * can access all files from your gameserver root directory which you
+     * have sufficient permissions for. To limit the amount of data you will
+     * receive from the host, you can set the $maxKB variable for that. This
+     * is especially useful, if you don't know the size of the file. The default
+     * is 100MB. If that limit is exceeded, an Exception is thrown. So always
+     * wrap that method call in a try-catch to make your code bullet proof.
+     *
+     * @param string $file remote filepath
+     * @param int $maxKB max size of the file.
+     * @return string requested filedata
+     * @throws NitrapiErrorException if the requested file is too big
      */
-    public function readFile($file) {
+    public function readFile($file, $maxKB=102400) {
         $download = $this->downloadToken($file);
 
         // Here we use the GuzzleClient API directly. This is intended, but
@@ -279,7 +289,26 @@ class FileServer
             ]
         ]);
 
-        return $response->getBody()->getContents();
+        // Because PHP can't handle infinite amount of data in one request
+        // (PHP puts the data in memory), we read chunks of the file until
+        // we reach a byte limit. If we hit that limit, we throw an error,
+        // otherwise the data is returned.
+        $body = $response->getBody();
+        $bytesRead = 0;
+        $data = '';
+
+        while (!$body->eof()) {
+            $chunk = $body->read(1024);
+            $data .= $chunk;
+            $bytesRead += strlen($chunk);
+
+            if ($bytesRead >= $maxKB*1024) {
+                $body->close();
+                throw new \Exception('File is too big.');
+            }
+        }
+
+        return $data;
     }
 
     /**
