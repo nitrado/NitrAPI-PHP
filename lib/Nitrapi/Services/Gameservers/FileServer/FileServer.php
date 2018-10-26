@@ -275,7 +275,7 @@ class FileServer
      *
      * @param string $file remote filepath
      * @param int $maxKB max size of the file.
-     * @return string requested filedata
+     * @return string requested file data
      * @throws NitrapiErrorException if the requested file is too big
      */
     public function readFile($file, $maxKB=102400) {
@@ -304,7 +304,7 @@ class FileServer
 
             if ($bytesRead >= $maxKB*1024) {
                 $body->close();
-                throw new \Exception('File is too big.');
+                throw new NitrapiErrorException('File is too big.');
             }
         }
 
