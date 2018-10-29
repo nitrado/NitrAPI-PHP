@@ -54,6 +54,18 @@ class GameserverDetails
     }
 
     /**
+     * Return the IPv6 address if available
+     *
+     * If there is an IPv6 address attached to the gameserver, it will return
+     * the IPv6 as a string. Otherwise, NULL is returned.
+     *
+     * @return string|null
+     */
+    public function getIPv6() {
+        return $this->data['ipv6'];
+    }
+
+    /**
      * Returns the gameserver port
      *
      * @return int
