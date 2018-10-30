@@ -42,6 +42,15 @@ abstract class Service extends NitrapiObject
         $this->loadData($data);
     }
 
+     /**
+     * Return the name of the service as a string.
+     *
+     * @return string Name of the service
+     */
+    public function __toString() {
+        return strtolower(substr(get_class($this), (int)strrpos(get_class($this), '\\') + 1));
+    }
+
     /**
      * Returns the current location id
      *
