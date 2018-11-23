@@ -444,4 +444,43 @@ class Gameserver extends Service {
 
         return true;
     }
+
+    /**
+     * Returns the created backups of the game server.
+     *
+     * @return array
+     */
+    public function getBackups() {
+        $url = "services/" . $this->getId() . "/gameservers/backups";
+        $backups = $this->getApi()->dataGet($url)['backups'];
+
+        return $backups;
+    }
+
+    /**
+     * Restores a backup of a gameserver image.
+     *
+     * @return array
+     */
+    public function restoreGameserverBackup($game, $number) {
+        $url = "services/" . $this->getId() . "/gameservers/backups/gameserver";
+        return $this->getApi()->dataPost($url, [
+            'game' => $game,
+            'backup' => $number
+        ]);
+    }
+
+    /**
+     * Restores a backup of a MySQL database.
+     *
+     * @return string
+     */
+    public function restoreDatabaseBackup($database, $timestamp) {
+        $url = "services/" . $this->getId() . "/gameservers/backups/database";
+        return $this->getApi()->dataPost($url, [
+            'database' => $database,
+            'timestamp' => $timestamp
+        ]);
+    }
+
 }
