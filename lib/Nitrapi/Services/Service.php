@@ -350,13 +350,15 @@ abstract class Service extends NitrapiObject
      *
      * @param string $category
      * @param string $message
+     * @param string $severity
      * @return boolean
      */
-    public function addLog($category, $message) {
+    public function addLog($category, $message, $severity = 'info') {
         $url = "services/" . $this->getId() . "/logs";
         $this->getApi()->dataPost($url, [
             'category' => $category,
-            'message' => $message
+            'message' => $message,
+            'severity' => $severity,
         ]);
         return true;
     }
