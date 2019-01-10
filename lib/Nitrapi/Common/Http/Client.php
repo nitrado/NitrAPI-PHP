@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Common\Http;
 
+use DateTime;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Response;
@@ -9,6 +10,7 @@ use Nitrapi\Common\Exceptions\NitrapiConcurrencyException;
 use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 use Nitrapi\Common\Exceptions\NitrapiMaintenanceException;
+use Nitrapi\Common\Exceptions\NitrapiRateLimitException;
 
 class Client extends GuzzleClient
 {
@@ -17,6 +19,14 @@ class Client extends GuzzleClient
     protected $defaultQuery = [];
 
     protected $accessToken = null;
+
+    // Rate Limit metadata
+    /** @var integer */
+    protected $rateLimit;
+    /** @var integer */
+    protected $remainingRequests;
+    /** @var DateTime */
+    protected $rateLimitResetTime;
 
     protected $clientCertificate;
     protected $clientCertificateKey;
@@ -82,7 +92,70 @@ class Client extends GuzzleClient
         }
     }
 
+    /**
+     * Rate limit
+     *
+     * @return int The number of requests which are allowed in one hour.
+     */
+    public function getRateLimit() {
+        return $this->rateLimit;
+    }
+
+    /**
+     * Check for rate limit
+     *
+     * @return bool if there is a rate limit in place
+     */
+    public function hasRateLimit() {
+        return $this->rateLimit !== false;
+    }
+
+    /**
+     * Remaining requests
+     *
+     * @return int The number of requests remaining until the rate limit is exceeded.
+     */
+    public function getRemainingRequests() {
+        return $this->remainingRequests;
+    }
+
+    /**
+     * Rate limit reset time
+     *
+     * @return DateTime The time the rate limit will be reset
+     */
+    public function getRateLimitResetTime() {
+        return $this->rateLimitResetTime;
+    }
+
+    /**
+     * Parse the NitrAPI response
+     *
+     * @param Response $response
+     * @return bool|mixed true if response is fine but without message, data or message otherwise.
+     * @throws NitrapiHttpErrorException when the API responds with an error message.
+     * @throws NitrapiRateLimitException when the user ran into the rate limit.
+     */
     public function parseResponse(Response $response) {
+        // Rate limit metadata
+        if ($response->hasHeader('X-RateLimit-Limit')) {
+            $this->rateLimit = $response->getHeader('X-RateLimit-Limit')[0];
+            $this->remainingRequests = $response->getHeader('X-RateLimit-Remaining')[0];
+            $resetDateTime = new DateTime();
+            $resetDateTime->setTimestamp($response->getHeader('X-RateLimit-Reset')[0]);
+            $this->rateLimitResetTime = $resetDateTime;
+
+            // We ran into the rate limit, so we throw an exception with all needed information.
+            // This gives the client the option to handle that error. To access the rate limit
+            // metadata, the getRateLimit(), getRemainingRequests() and getRateLimitResetTime()
+            // method can be used at any time.
+            if ($response->getStatusCode() === 429) {
+                throw new NitrapiRateLimitException($this->getRateLimit(), $this->getRateLimitResetTime());
+            }
+        } else {
+            $this->rateLimit = false;
+        }
+
         $contentType = $response->getHeader('Content-Type')[0];
 
         // Return plain text
