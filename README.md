@@ -5,13 +5,13 @@ Nitrapi-PHP
 [![Latest Unstable Version](https://poser.pugx.org/nitrado/nitrapi-php-lib/v/unstable.svg)](https://packagist.org/packages/nitrado/nitrapi-php-lib)
 [![Total Downloads](https://poser.pugx.org/nitrado/nitrapi-php-lib/downloads.png)](https://packagist.org/packages/nitrado/nitrapi-php-lib)
 
-PHP based SDK for the Nitrapi RESTful API.
+Official PHP based SDK for the Nitrapi RESTful API.
 
 
 Recommends
 ---------
 
-* PHP 5.5 or higher
+* PHP 6.5 or higher
 * Composer
 
 
