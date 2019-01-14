@@ -24,7 +24,8 @@ class NitrapiRateLimitException extends NitrapiException {
         $this->rateLimit = $rateLimit;
         $this->resetTime = $resetTime;
 
-        parent::__construct("The rate limit ($rateLimit requests in one hour) is exceeded. You need to wait until $resetTime make another request.");
+        $resetTimeString = $resetTime->format('Y-m-d H:i:s');
+        parent::__construct("The rate limit ($rateLimit requests in one hour) is exceeded. You need to wait until $resetTimeString to make another request.");
     }
 
     public function getRateLimit() {
