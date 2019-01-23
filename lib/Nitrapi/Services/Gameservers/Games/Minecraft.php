@@ -72,6 +72,19 @@ class Minecraft extends Game
     }
 
     /**
+     * Resets the overviewmap
+     * @return bool
+     */
+    public function resetOverviewMap() {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/overviewmap";
+        $response = $this->service->getApi()->dataPost($url, [
+            'reset' => 'true'
+        ]);
+
+        return true;
+    }
+
+    /**
      * Changing bungeecord settings
      *
      * @param bool|false $enabled
