@@ -72,6 +72,19 @@ class Minecraft extends Game
     }
 
     /**
+     * Maybe we only want to reset the map (Nitrado Webinterface)
+     * @return bool
+     */
+    public function resetOverviewMap() {
+        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/overviewmap";
+        $response = $this->service->getApi()->dataPost($url, [
+            'reset' => 'true'
+        ]);
+
+        return true;
+    }
+
+    /**
      * Changing bungeecord settings
      *
      * @param bool|false $enabled
