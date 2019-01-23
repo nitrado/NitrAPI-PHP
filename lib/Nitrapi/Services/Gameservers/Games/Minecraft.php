@@ -72,7 +72,7 @@ class Minecraft extends Game
     }
 
     /**
-     * Sometimes we only want to reset the map (Nitrado Webinterface)
+     * Resets the overviewmap
      * @return bool
      */
     public function resetOverviewMap() {
