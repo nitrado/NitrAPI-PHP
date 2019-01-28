@@ -27,6 +27,7 @@ abstract class Service extends NitrapiObject
     protected $readonly;
     protected $websocket_token;
     protected $roles;
+    protected $arguments;
 
     protected static $ensureActiveService = true;
 
@@ -49,6 +50,17 @@ abstract class Service extends NitrapiObject
      */
     public function __toString() {
         return strtolower(substr(get_class($this), (int)strrpos(get_class($this), '\\') + 1));
+    }
+
+    /**
+     * Return a list of arguments for the service (also called service args).
+     * This arguments store additional information like the startgame or the
+     * ordered amount.
+     *
+     * @return array list of arguments
+     */
+    public function getArguments() {
+        return $this->arguments;
     }
 
     /**
