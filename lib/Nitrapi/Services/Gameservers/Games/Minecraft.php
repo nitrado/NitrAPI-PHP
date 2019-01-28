@@ -60,11 +60,17 @@ class Minecraft extends Game
      * @return bool
      */
     public function setOverviewMap($enabled = false, $signs = true, $ipsonly = null, $reset = null, $version = 'pre_1.13') {
+        #If reset is null, do not change anything. If reset is bool val, validate
+        if(is_bool($reset)){
+            $reset = (int)($reset);
+        } else {
+            $reset = null;
+        }
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/overviewmap";
         $this->service->getApi()->dataPost($url, [
             'enabled' => (int)$enabled,
             'version' => $version,
-            'reset' => (int)$reset,
+            'reset' => $reset,
             'ipsonly' => $ipsonly,
         ]);
 
