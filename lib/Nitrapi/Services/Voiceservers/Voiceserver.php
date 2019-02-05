@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\Voiceservers;
 
+use Nitrapi\Common\Exceptions\NitrapiErrorException;
 use Nitrapi\Common\Exceptions\NitrapiServiceTypeNotFoundException;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
@@ -27,8 +28,12 @@ class Voiceserver extends Service
      * Returns informations about the voiceserver
      *
      * @return VoiceserverDetails
+     * @throws NitrapiErrorException
      */
     public function getDetails() {
+        if (!isset($this->info['voiceserver'])) {
+            throw new NitrapiErrorException('No voiceserver data available');
+        }
         return new VoiceserverDetails($this->info['voiceserver']);
     }
 
