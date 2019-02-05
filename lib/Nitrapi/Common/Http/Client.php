@@ -107,7 +107,7 @@ class Client extends GuzzleClient
      * @return bool if there is a rate limit in place
      */
     public function hasRateLimit() {
-        return $this->rateLimit !== false;
+        return $this->rateLimit !== null && $this->rateLimit !== false;
     }
 
     /**
