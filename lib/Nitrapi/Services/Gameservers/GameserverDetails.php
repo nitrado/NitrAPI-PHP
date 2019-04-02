@@ -350,4 +350,13 @@ class GameserverDetails
         $dateTime->setTimestamp(strtotime($this->data['game_specific']['last_update']));
         return $dateTime;
     }
+
+    /**
+     * Returns all features available for the service
+     *
+     * @return array
+     */
+    public function getFeatures() {
+        return $this->data['game_specific']['features'];
+    }
 }
