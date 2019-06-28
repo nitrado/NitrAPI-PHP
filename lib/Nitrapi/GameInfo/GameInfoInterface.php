@@ -7,11 +7,13 @@ use Nitrapi\Common\NitrapiObject;
 class GameInfoInterface extends NitrapiObject {
 
     public function getGameList() {
+        $api = $this->getApi();
         $result = [];
-        $gameList = $this->getApi()->dataGet('/gameserver/games')['games']['games'];
+
+        $gameList = $api->dataGet('/gameserver/games')['games']['games'];
 
         foreach ($gameList as $gameListEntry) {
-            $result[$gameListEntry['id']] = new GameInfo($this->getApi(), $gameListEntry);
+            $result[$gameListEntry['id']] = new GameInfo($api, $gameListEntry);
         }
 
         return $result;
