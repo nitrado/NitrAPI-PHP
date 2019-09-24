@@ -25,6 +25,7 @@ class Task extends ServiceItem
     protected $weekday;
     protected $next_run;
     protected $last_run;
+    protected $timezone;
     protected $action_method;
     protected $action_data = null;
 
@@ -122,6 +123,10 @@ class Task extends ServiceItem
             return null;
 
         return (new \DateTime())->setTimestamp(strtotime($this->last_run));
+    }
+
+    public function getTimeZone() {
+        return $this->timezone;
     }
 
     public function reloadData() {
