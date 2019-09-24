@@ -125,7 +125,7 @@ class Task extends ServiceItem
         return (new \DateTime())->setTimestamp(strtotime($this->last_run));
     }
 
-    public function getTimeZone() {
+    public function getTimezone() {
         return $this->timezone;
     }
 
