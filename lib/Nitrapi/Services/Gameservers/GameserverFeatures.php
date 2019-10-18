@@ -19,8 +19,15 @@ class GameserverFeatures
         return $this->data['has_packages'];
     }
 
+    /**
+     * @deprecated
+     */
     public function hasApplicationServer() {
-        return $this->data['has_application_server'];
+        return false;
+    }
+
+    public function hasContainerWebsocket() {
+        return $this->data['has_container_websocket'];
     }
 
     public function hasFileBrowser() {
