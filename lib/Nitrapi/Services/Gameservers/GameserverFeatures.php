@@ -39,6 +39,18 @@ class GameserverFeatures
         return $this->data['has_restart_message_support'];
     }
 
+    public function hasPlayerManagement() {
+        return $this->data['has_playermanagement_feature'];
+    }
+
+    public function hasPluginSystem() {
+        return $this->data['has_plugin_system'];
+    }
+
+    public function hasRCon() {
+        return $this->data['has_rcon'];
+    }
+
     public function hasFTP() {
         return $this->data['has_ftp'];
     }
