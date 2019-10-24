@@ -20,12 +20,32 @@ class GameserverFeatures
     }
 
     /**
+     * Redirect the output stream from a running service.
+     *
+     * This feature is deprecated and should not be used any more. We keep
+     * it here for compatibility concerns, but will be removed in the
+     * future.
+     *
      * @deprecated
+     * @return bool if the gameserver supports the old application server
      */
     public function hasApplicationServer() {
-        return false;
+        return $this->data['has_application_server'];
     }
 
+    /**
+     * Replacement feature for the deprecated application server.
+     *
+     * The container websockets allows to access a websocket server on the
+     * hostsystem on 'wss://[hostsystem].gamedata.io:34882'. This websocket
+     * provide the STDOUT and STDERR stream, directly from within the
+     * container. It also supports events like attaching to a container or
+     * a status event when the container died. you can also use this
+     * websocket to send commands to a container. For that, just send a
+     * JSON message with "command" and "container" keys.
+     *
+     * @return bool true if the gameserver supports container websockets
+     */
     public function hasContainerWebsocket() {
         return $this->data['has_container_websocket'];
     }
