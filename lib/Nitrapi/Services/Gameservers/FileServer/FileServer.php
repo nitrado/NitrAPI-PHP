@@ -284,6 +284,7 @@ class FileServer
         // Here we use the GuzzleClient API directly. This is intended, but
         // should remain a special case. Don't copy this code.
         $response = $this->service->getApi()->request('GET', $download['token']['url'], [
+            'timeout' => 20,
             'query' => [
                 'token' => $download['token']['token']
             ]
