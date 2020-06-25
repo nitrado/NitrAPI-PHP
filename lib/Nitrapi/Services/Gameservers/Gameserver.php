@@ -6,6 +6,7 @@ use Nitrapi\Common\Exceptions\NitrapiErrorException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 use Nitrapi\Common\Exceptions\NitrapiServiceNotActiveException;
 use Nitrapi\Nitrapi;
+use Nitrapi\Services\Gameservers\BackupManager;
 use Nitrapi\Services\Gameservers\Packages\PackageManager;
 use Nitrapi\Services\Gameservers\ApplicationServer\ApplicationServer;
 use Nitrapi\Services\Service;
@@ -356,7 +357,7 @@ class Gameserver extends Service {
 
     /**
      * Get access to the addons, if the gameserver has any.
-     * 
+     *
      * @return Packages
      */
     public function getPackages() {
@@ -487,6 +488,16 @@ class Gameserver extends Service {
             'database' => $database,
             'timestamp' => $timestamp
         ]);
+    }
+
+    /**
+     * Returns the created backups of the game server.
+     *
+     * @return array
+     * @throws NitrapiErrorException
+     */
+    public function getBackupManager() {
+        return new BackupManager($this);
     }
 
 }
