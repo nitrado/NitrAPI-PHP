@@ -131,27 +131,6 @@ class Minecraft extends Game
     }
 
     /**
-     * Changing mcmyadmin settings
-     *
-     * @param bool|false $enabled
-     * @param null $username
-     * @param null $password
-     * @param null $language
-     * @return bool
-     */
-    public function setMcMyAdmin($enabled = false, $username = null, $password = null, $language = null) {
-        $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/mcmyadmin";
-        $this->service->getApi()->dataPost($url, [
-            'enabled' => (int)$enabled,
-            'username' => $username,
-            'password' => $password,
-            'language' => $language,
-        ]);
-
-        return true;
-    }
-
-    /**
      * Creates a new backup of a specified world
      *
      * @param $world
