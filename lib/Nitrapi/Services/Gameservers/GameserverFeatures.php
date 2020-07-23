@@ -11,6 +11,15 @@ class GameserverFeatures
         $this->data = $data;
     }
 
+    /**
+     * Return true if the game can manage world backups.
+     *
+     * @return boolean true if the game has world backups
+     */
+    public function hasWorldBackups() {
+        return $this->data['has_world_backups'];
+    }
+
     public function hasBackups() {
         return $this->data['has_backups'];
     }
