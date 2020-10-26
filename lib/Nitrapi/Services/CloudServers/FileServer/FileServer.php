@@ -69,7 +69,6 @@ class FileServer
                 'body' => \GuzzleHttp\Psr7\stream_for(fopen($file, 'rb')),
             ));
         } catch (RequestException $e) {
-            var_dump($e->getResponse()->getBody()->getContents());
             $response = $e->getResponse()->json();
             throw new NitrapiErrorException($response['message']);
         }
