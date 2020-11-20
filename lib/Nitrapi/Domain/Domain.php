@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Domain;
 
+use DateTime;
 use Nitrapi\Common\NitrapiObject;
 use Nitrapi\Nitrapi;
 
@@ -27,6 +28,12 @@ class Domain extends NitrapiObject
         $this->setData($data);
     }
 
+    /**
+     * Sets data field $data to specified value.
+     *
+     * @param $data
+     * @return $this
+     */
     public function setData($data) {
         if (count($data) > 0) {
             $this->data = $data;
@@ -35,26 +42,51 @@ class Domain extends NitrapiObject
         return $this;
     }
 
+    /**
+     * Returns the domain id
+     *
+     * @return int
+     */
     public function getId() {
         return $this->data['id'];
     }
 
+    /**
+     * Returns status of domain
+     *
+     * @return string
+     */
     public function getStatus() {
         return $this->data['status'];
     }
 
+    /**
+     * Returns DateTime of domain deletion
+     *
+     * @return DateTime|null
+     */
     public function getDeleteAt() {
         if (empty($this->data['delete_at'])) {
             return null;
         }
 
-        return (new \DateTime())->setTimestamp(strtotime($this->data['delete_at']));
+        return (new DateTime())->setTimestamp(strtotime($this->data['delete_at']));
     }
 
+    /**
+     * Returns the shorthand of the registrar
+     *
+     * @return string
+     */
     public function getProvider() {
         return $this->data['provider'];
     }
 
+    /**
+     * Returns integer whether domain will be deleted when it expires
+     *
+     * @return int
+     */
     public function deleteOnExpire() {
         return $this->data['delete_on_expire'];
     }
@@ -66,7 +98,7 @@ class Domain extends NitrapiObject
     }
 
     /**
-     * Return the full domain.
+     * Returns the FQDN
      *
      * @return string
      */
@@ -77,19 +109,19 @@ class Domain extends NitrapiObject
     /**
      * Returns the date until the domain is able to renew.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getRenewUntil() {
-        return (new \DateTime())->setTimestamp(strtotime($this->data['renew_until']));
+        return (new DateTime())->setTimestamp(strtotime($this->data['renew_until']));
     }
 
     /**
      * Returns the date until the domain has been paid.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getPaidUntil() {
-        return (new \DateTime())->setTimestamp(strtotime($this->data['paid_until']));
+        return (new DateTime())->setTimestamp(strtotime($this->data['paid_until']));
     }
 
     /**
@@ -123,7 +155,21 @@ class Domain extends NitrapiObject
         return $this->data['nameserver'];
     }
 
+    /**
+     * Returns array of DNS Records
+     *
+     * @return array
+     */
     public function getDNSRecords() {
+        return $this->data['dns_records'];
+    }
+
+    /**
+     * Returns boolean true if
+     *
+     * @return mixed
+     */
+    public function hasDns() {
         return $this->data['dns_records'];
     }
 
@@ -166,7 +212,6 @@ class Domain extends NitrapiObject
         return $this->getApi()->dataDelete('/domain/'.$this->getDomain().'/auth_code');
     }
 
-
     public function changeHandle(Handle $handle, $type = HandleManager::TYPE_OWNER_C) {
         return $this->getApi()->dataPut('/domain/'.$this->getDomain().'/handle/' . $handle->getHandle(), [
             'type' => $type
@@ -182,4 +227,30 @@ class Domain extends NitrapiObject
         return $this->getApi()->dataGet('/domain/'.$this->getDomain().'/check')['check']['free'];
     }
 
+    /**
+     * Returns the corresponding service id.
+     *
+     * @return int
+     */
+    public function getServiceId() {
+        return $this->data['service_id'];
+    }
+
+    /**
+     * Returns the expire date.
+     *
+     * @return DateTime
+     */
+    public function getExpireDate() {
+        return (new DateTime())->setTimestamp(strtotime($this->data['expires']));
+    }
+
+    /**
+     * Returns the tld ID.
+     *
+     * @return int
+     */
+    public function getTldId() {
+        return $this->data['tld_id'];
+    }
 }
