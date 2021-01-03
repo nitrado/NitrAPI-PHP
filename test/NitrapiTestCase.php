@@ -2,13 +2,13 @@
 
 namespace Nitrapi\Tests;
 
-use Nitrapi\Nitrapi;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use Nitrapi\Nitrapi;
 
-abstract class NitrapiTestCase extends \PHPUnit_Framework_TestCase {
+abstract class NitrapiTestCase extends \PHPUnit\Framework\TestCase {
     function nitrapiMock($urls) {
         $responses = [];
         foreach ($urls as $url => $params)
