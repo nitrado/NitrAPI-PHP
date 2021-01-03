@@ -156,7 +156,7 @@ class Client extends GuzzleClient
             $this->rateLimit = false;
         }
 
-        $contentType = $response->getHeader('Content-Type')[0];
+        $contentType = ($response->getHeader('Content-Type')[0] ?? 'application/json');
 
         // Return plain text
         if (preg_match("/text\\/plain/i", $contentType)) {
