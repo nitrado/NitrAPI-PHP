@@ -2,8 +2,8 @@
 
 namespace Nitrapi\Tests;
 
-use Nitrapi\Tests\NitrapiTestCase;
 use Nitrapi\Nitrapi;
+use Nitrapi\Tests\NitrapiTestCase;
 
 class UserTest extends NitrapiTestCase {
     protected $user;
@@ -21,7 +21,7 @@ class UserTest extends NitrapiTestCase {
         $this->assertEquals(1337, $this->user->getUserId());
         $this->assertEquals(1955, $this->user->getCredit());
         $this->assertEquals('marty.mcfly@biffco.com', $this->user->getEmail());
-        $this->assertEquals('eng', $this->user->get('language'));
+        $this->assertEquals('eng', $this->user->getLanguage());
     }
 
     function testPersonalData() {
