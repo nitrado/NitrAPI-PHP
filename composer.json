@@ -21,6 +21,9 @@
             "Nitrapi": ["lib/"]
         }
     },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+    },
     "require": {
         "php" : ">=5.5",
         "guzzlehttp/guzzle": "~6.0"
