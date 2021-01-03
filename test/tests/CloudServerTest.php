@@ -9,7 +9,7 @@ use Nitrapi\Tests\NitrapiTestCase;
 class CloudServerTest extends NitrapiTestCase {
     private $images = null;
     
-    function setUp() {
+    protected function setUp(): void {
         $nitrapi = $this->nitrapiMock([
             'cloud_server.images' => []
         ]);
