@@ -2,9 +2,9 @@
 
 namespace Nitrapi\Tests;
 
-use Nitrapi\Tests\NitrapiTestCase;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\CloudServers\CloudServer;
+use Nitrapi\Tests\NitrapiTestCase;
 
 class CloudServerTest extends NitrapiTestCase {
     private $images = null;
@@ -22,8 +22,8 @@ class CloudServerTest extends NitrapiTestCase {
 
     function testImageAttributes() {
         $linux = $this->images[0];
-        $this->assertEquals($linux->getId(), 2);
-        $this->assertEquals($linux->getName(), "Ubuntu 14.04 LTS (Plain)");
+        $this->assertEquals($linux->getId(), 1);
+        $this->assertEquals($linux->getName(), "Ubuntu 16.04 LTS (Plain)");
         $this->assertFalse($linux->isWindows());
     }
 
