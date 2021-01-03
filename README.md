@@ -4,6 +4,7 @@ Nitrapi-PHP
 [![Latest Stable Version](https://poser.pugx.org/nitrado/nitrapi-php-lib/v/stable.png)](https://packagist.org/packages/nitrado/nitrapi-php-lib)
 [![Latest Unstable Version](https://poser.pugx.org/nitrado/nitrapi-php-lib/v/unstable.svg)](https://packagist.org/packages/nitrado/nitrapi-php-lib)
 [![Total Downloads](https://poser.pugx.org/nitrado/nitrapi-php-lib/downloads.png)](https://packagist.org/packages/nitrado/nitrapi-php-lib)
+![PHP Composer](https://github.com/nitrado/NitrAPI-PHP/workflows/PHP%20Composer/badge.svg)
 
 Official PHP based SDK for the Nitrapi RESTful API.
 
@@ -11,7 +12,7 @@ Official PHP based SDK for the Nitrapi RESTful API.
 Recommends
 ---------
 
-* PHP 5.5 or higher
+* PHP 7.3 or higher
 * Composer
 
 
