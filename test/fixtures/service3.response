@@ -3,20 +3,33 @@
    "data":{
       "service":{
          "id":3,
+         "location_id":2,
+         "status":"active",
          "websocket_token":"b05ac3d5d71a8858fca3011a8c179f1d9ec5ab41",
          "user_id":2,
          "username":"ni2_2",
+         "auto_extension":false,
+         "auto_extension_duration":null,
          "type":"gameserver",
-         "details":{  
+         "type_human": "Publicserver 16 Slots",
+         "details":{
             "address":"10.10.0.6:27015",
             "name":"Nitrado.net Battlefield 4 Server",
             "game":"Battlefield 4",
             "portlist_short":"bf4",
-            "folder_short":"bf4"
+            "folder_short":"bf4",
+            "slots": 16
          },
          "start_date":1422455269,
          "suspend_date":1425048169,
-         "delete_date":1425652969
+         "delete_date":1425652969,
+         "arguments": {
+            "startgame": "bf4",
+            "startport": "27015"
+         },
+         "roles":[
+            "ROLE_OWNER"
+         ]
       }
    }
 }

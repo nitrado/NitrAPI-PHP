@@ -1,1 +1,39 @@
-{"status":"success","data":{"images":[{"id":2,"name":"Ubuntu 14.04 LTS (Plain)","is_windows":false},{"id":6,"name":"Windows Server 2012 R2 Standard","is_windows":true}]}}
+{
+   "status":"success",
+   "data":{
+      "images":[
+         {
+            "id":1,
+            "name":"Ubuntu 16.04 LTS (Plain)",
+            "is_windows":false,
+            "default":true,
+            "has_daemon":false,
+            "is_daemon_compatible":true
+         },
+         {
+            "id":2,
+            "name":"Windows Server 2012 R2 Standard (Plain)",
+            "is_windows":true,
+            "default":false,
+            "has_daemon":false,
+            "is_daemon_compatible":false
+         },
+         {
+            "id":3,
+            "name":"CentOS 7 (Plain)",
+            "is_windows":false,
+            "default":false,
+            "has_daemon":false,
+            "is_daemon_compatible":true
+         },
+         {
+            "id":4,
+            "name":"Windows Server 2016 Standard (Plain)",
+            "is_windows":true,
+            "default":false,
+            "has_daemon":false,
+            "is_daemon_compatible":true
+         }
+      ]
+   }
+}

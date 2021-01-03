@@ -1,4 +1,4 @@
 {
-    "status": "success",
-    "message": "All systems operate as expected."
+   "status":"success",
+   "message":"cloud1000.nitrado.cloud with version 1337 is running fine!"
 }

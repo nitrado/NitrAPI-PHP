@@ -4,17 +4,39 @@
       "user":{
          "user_id":1337,
          "username":"Marty",
+         "activated":true,
+         "timezone":"America/Los_Angeles",
          "email":"marty.mcfly@biffco.com",
          "credit":1955,
-         "registred":"1985-25-10T01:15:00.000+00:00",
+         "currency":"EUR",
+         "registered":"1985-25-10T01:15:00.000+00:00",
          "language":"eng",
          "avatar":"https://server.nitrado.net/users.nitrado/1337.jpg",
+         "donations":true,
+         "phone":{
+            "number":"+49******1337",
+            "country_code":"49",
+            "verified":true
+         },
+         "two_factor":[
+            "u2f",
+            "google"
+         ],
          "profile":{
             "name":"Marty McFly",
             "street":"DeLorean Street 12",
             "postcode":"2209",
-            "city":"Hill Valley"
-         }
+            "city":"Hill Valley",
+            "country":"US",
+            "state":"CA",
+            "country_and_state_verified":true,
+            "newsletter":true
+         },
+         "permissions": [
+            "TWITCH_WHITELISTING"
+         ],
+         "employee":false,
+         "partner_id": 139
       }
    }
 }
