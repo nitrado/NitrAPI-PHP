@@ -25,10 +25,10 @@
         "test": "vendor/bin/phpunit"
     },
     "require": {
-        "php" : ">=5.5",
-        "guzzlehttp/guzzle": "~6.0"
+        "php" : ">=7.3",
+        "guzzlehttp/guzzle": "~9.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~5.0"
+        "phpunit/phpunit": "~7.0"
     }
 }
