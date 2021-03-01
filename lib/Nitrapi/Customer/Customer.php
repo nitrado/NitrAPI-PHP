@@ -302,4 +302,13 @@ class Customer extends NitrapiObject
         return new AccessToken($this->getApi()->dataPost('token/sub', $payload)['token']);
     }
 
+    /**
+     * Return the User's rate limit for the Nitrado API
+     *
+     * @return int
+     */
+    public function getRateLimit()
+    {
+        return isset($this->data['rate_limit']) ? $this->data['rate_limit'] : 15000;
+    }
 }
