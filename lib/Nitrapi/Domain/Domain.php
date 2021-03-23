@@ -253,4 +253,13 @@ class Domain extends NitrapiObject
     public function getTldId() {
         return $this->data['tld_id'];
     }
+
+    /**
+     * Returns all current notifications
+     *
+     * @return array
+     */
+    public function getNotifications(): array {
+        return $this->getApi()->dataGet("/domain/" . $this->getDomain() . "/notifications");
+    }
 }
