@@ -31,7 +31,8 @@ class Client extends GuzzleClient
     protected $clientCertificate;
     protected $clientCertificateKey;
 
-    public function __construct($baseUrl = '', $config = null) {
+    public function __construct($baseUrl = '', $config = null)
+    {
         if (PHP_VERSION < self::MINIMUM_PHP_VERSION) {
             throw new NitrapiException(sprintf(
                 'You must have PHP version >= %s installed.',
@@ -52,7 +53,8 @@ class Client extends GuzzleClient
      * @param $privateKey
      * @return $this
      */
-    public function setClientCertificate($cert, $privateKey) {
+    public function setClientCertificate($cert, $privateKey)
+    {
         $this->clientCertificate = $cert;
         $this->clientCertificateKey = $privateKey;
 
@@ -65,7 +67,8 @@ class Client extends GuzzleClient
      * @param $accessToken
      * @return $this
      */
-    protected function setAccessToken($accessToken) {
+    protected function setAccessToken($accessToken)
+    {
         $this->accessToken = $accessToken;
 
         return $this;
@@ -76,13 +79,15 @@ class Client extends GuzzleClient
      *
      * @return null
      */
-    protected function getAccessToken() {
+    protected function getAccessToken()
+    {
         return $this->accessToken;
     }
 
-    public function fillOptions(&$options) {
+    public function fillOptions(&$options)
+    {
         if (!empty($this->accessToken)) {
-            $options['headers']['Authorization'] = 'Bearer ' . $this-> accessToken;
+            $options['headers']['Authorization'] = 'Bearer ' . $this->accessToken;
         }
         if (!empty($this->clientCertificate) && file_exists($this->clientCertificate)) {
             $options[\GuzzleHttp\RequestOptions::CERT] = $this->clientCertificate;
@@ -97,7 +102,8 @@ class Client extends GuzzleClient
      *
      * @return int The number of requests which are allowed in one hour.
      */
-    public function getRateLimit() {
+    public function getRateLimit()
+    {
         return $this->rateLimit;
     }
 
@@ -106,7 +112,8 @@ class Client extends GuzzleClient
      *
      * @return bool if there is a rate limit in place
      */
-    public function hasRateLimit() {
+    public function hasRateLimit()
+    {
         return $this->rateLimit !== null && $this->rateLimit !== false;
     }
 
@@ -115,7 +122,8 @@ class Client extends GuzzleClient
      *
      * @return int The number of requests remaining until the rate limit is exceeded.
      */
-    public function getRemainingRequests() {
+    public function getRemainingRequests()
+    {
         return $this->remainingRequests;
     }
 
@@ -124,7 +132,8 @@ class Client extends GuzzleClient
      *
      * @return DateTime The time the rate limit will be reset
      */
-    public function getRateLimitResetTime() {
+    public function getRateLimitResetTime()
+    {
         return $this->rateLimitResetTime;
     }
 
@@ -136,7 +145,8 @@ class Client extends GuzzleClient
      * @throws NitrapiHttpErrorException when the API responds with an error message.
      * @throws NitrapiRateLimitException when the user ran into the rate limit.
      */
-    public function parseResponse(Response $response) {
+    public function parseResponse(Response $response)
+    {
         // Rate limit metadata
         if ($response->hasHeader('X-RateLimit-Limit')) {
             $this->rateLimit = $response->getHeader('X-RateLimit-Limit')[0];
@@ -188,7 +198,8 @@ class Client extends GuzzleClient
      * @param array $options
      * @return mixed
      */
-    public function dataGet($url, $headers = null, $options = array()) {
+    public function dataGet($url, $headers = null, $options = array())
+    {
         try {
             if (!isset($options['headers'])) {
                 $options['headers'] = [];
@@ -216,7 +227,8 @@ class Client extends GuzzleClient
      * @param array $options
      * @return mixed
      */
-    public function dataPut($url, $body = null, $headers = null, $options = array()) {
+    public function dataPut($url, $body = null, $headers = null, $options = array())
+    {
         try {
             if (is_array($body)) {
                 $options['form_params'] = $body;
@@ -244,7 +256,8 @@ class Client extends GuzzleClient
      * @param array $options
      * @return mixed
      */
-    public function dataPost($url, $body = null, $headers = null, $options = array()) {
+    public function dataPost($url, $body = null, $headers = null, $options = array())
+    {
         try {
             if (is_array($body)) {
                 $options['form_params'] = $body;
@@ -275,7 +288,8 @@ class Client extends GuzzleClient
      * @param array $options
      * @return bool
      */
-    public function dataDelete($url, $body = null, $headers = null, $options = array()) {
+    public function dataDelete($url, $body = null, $headers = null, $options = array())
+    {
         try {
             if (is_array($body)) {
                 $options['form_params'] = $body;
@@ -307,7 +321,8 @@ class Client extends GuzzleClient
      * @throws NitrapiHttpErrorException
      * @throws NitrapiMaintenanceException
      */
-    protected function handleException(RequestException $e) {
+    protected function handleException(RequestException $e)
+    {
         if ($e->hasResponse()) {
             $response = json_decode($e->getResponse()->getBody(), true);
             $errorId = $e->getResponse()->getHeader('X-Raven-Event-ID');
@@ -339,7 +354,8 @@ class Client extends GuzzleClient
      * @param int $responseCode
      * @throws NitrapiHttpErrorException
      */
-    protected function checkErrors(Response $response, $responseCode = 200) {
+    protected function checkErrors(Response $response, $responseCode = 200)
+    {
         $allowedPorts = array();
         $allowedPorts[] = $responseCode;
         if ($responseCode == 200) {
