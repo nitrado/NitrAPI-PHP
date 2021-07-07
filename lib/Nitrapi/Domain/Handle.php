@@ -17,12 +17,14 @@ class Handle extends NitrapiObject
      */
     protected $data;
 
-    public function __construct(Nitrapi &$api,  array $data = []) {
+    public function __construct(Nitrapi &$api, array $data = [])
+    {
         parent::__construct($api);
         $this->setData($data);
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         if (count($data) > 0) {
             $this->data = $data;
         }
@@ -30,7 +32,8 @@ class Handle extends NitrapiObject
         return $this;
     }
 
-    public function getHandle() {
+    public function getHandle()
+    {
         if (!empty($this->data['handle'])) {
             return $this->data['handle'];
         }
@@ -38,15 +41,18 @@ class Handle extends NitrapiObject
         return null;
     }
 
-    public function getDomainList() {
+    public function getDomainList()
+    {
         return $this->getApi()->dataGet('/domain/contact/' . $this->getHandle() . '/domains')['domains'];
     }
 
-    public function setOrganization($organization) {
+    public function setOrganization($organization)
+    {
         return $this->data['organization'] = $organization;
     }
 
-    public function getOrganization() {
+    public function getOrganization()
+    {
         if (!empty($this->data['organization'])) {
             return $this->data['organization'];
         }
@@ -54,48 +60,58 @@ class Handle extends NitrapiObject
         return null;
     }
 
-    public function setFirstName($firstName) {
+    public function setFirstName($firstName)
+    {
         $this->data['first_name'] = $firstName;
         return $this;
     }
 
-    public function getFirstName() {
+    public function getFirstName()
+    {
         return $this->data['first_name'];
     }
 
-    public function setLastName($lastName) {
+    public function setLastName($lastName)
+    {
         $this->data['last_name'] = $lastName;
         return $this;
     }
 
-    public function getLastName() {
+    public function getLastName()
+    {
         return $this->data['last_name'];
     }
 
-    public function setEMail($email) {
+    public function setEMail($email)
+    {
         $this->data['email'] = $email;
         return $this;
     }
 
-    public function getEMail() {
+    public function getEMail()
+    {
         return $this->data['email'];
     }
 
-    public function setPhone($phone) {
+    public function setPhone($phone)
+    {
         $this->data['phone'] = $phone;
         return $this;
     }
 
-    public function getPhone() {
+    public function getPhone()
+    {
         return $this->data['phone'];
     }
 
-    public function setFax($fax) {
+    public function setFax($fax)
+    {
         $this->data['fax'] = $fax;
         return $this;
     }
 
-    public function getFax() {
+    public function getFax()
+    {
         if (!empty($this->data['fax'])) {
             return $this->data['fax'];
         }
@@ -103,51 +119,63 @@ class Handle extends NitrapiObject
         return null;
     }
 
-    public function setStreet($street) {
+    public function setStreet($street)
+    {
         $this->data['street'] = $street;
         return $this;
     }
 
-    public function getStreet() {
+    public function getStreet()
+    {
         return $this->data['street'];
     }
 
-    public function setPostCode($postCode) {
+    public function setPostCode($postCode)
+    {
         $this->data['postcode'] = $postCode;
         return $this;
     }
 
-    public function getPostCode() {
+    public function getPostCode()
+    {
         return $this->data['postcode'];
     }
 
-    public function setCity($city) {
+    public function setCity($city)
+    {
         $this->data['city'] = $city;
         return $this;
     }
 
-    public function getCity() {
+    public function getCity()
+    {
         return $this->data['city'];
     }
 
-    public function setState($state) {
+    public function setState($state)
+    {
         $this->data['state'] = $state;
         return $this;
     }
-    public function getState() {
+
+    public function getState()
+    {
         return $this->data['state'];
     }
 
-    public function setCountry($country) {
+    public function setCountry($country)
+    {
         $this->data['country'] = $country;
         return $this;
     }
 
-    public function getCountry() {
+    public function getCountry()
+    {
         return $this->data['country'];
     }
 
-    public function save() {
+    public function save()
+    {
         $request = [
             'contact' => [
                 'organization' => $this->getOrganization(),
@@ -173,7 +201,8 @@ class Handle extends NitrapiObject
         return $this->getApi()->dataPut('/domain/contact/' . $this->getHandle(), $request);
     }
 
-    public function delete() {
+    public function delete()
+    {
         return $this->getApi()->dataDelete('/domain/contact/' . $this->getHandle());
     }
 
