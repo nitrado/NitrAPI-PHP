@@ -33,13 +33,15 @@ class TwoFactor
      * Adds the a Google Authenticator Device.
      *
      * @param $updateToken
+     * @param string $sessionIdToIgnore
      * @param $code
      * @return string
      */
-    public function addGoogleAuthenticator($updateToken, $code) {
+    public function addGoogleAuthenticator($updateToken, $code, $sessionIdToIgnore = NULL) {
         return $this->api->dataPost("user/two_factor/google", [
             'token' => $updateToken,
-            'code' => $code
+            'code' => $code,
+            'session_id_to_ignore' => $sessionIdToIgnore
         ]);
     }
 
@@ -75,12 +77,14 @@ class TwoFactor
      *
      * @param $updateToken
      * @param $response
+     * @param string $sessionIdToIgnore add a session id that will not be terminated
      * @return string
      */
-    public function addU2F($updateToken, $response) {
+    public function addU2F($updateToken, $response, $sessionIdToIgnore = NULL) {
         return $this->api->dataPost("user/two_factor/u2f", [
             'token' => $updateToken,
-            'response' => $response
+            'response' => $response,
+            'session_id_to_ignore' => $sessionIdToIgnore
         ]);
     }
 
