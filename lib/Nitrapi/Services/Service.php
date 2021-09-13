@@ -16,6 +16,7 @@ abstract class Service extends NitrapiObject
     protected $location_id;
     protected $comment;
     protected $status;
+    protected $status_code;
     protected $user_id;
     protected $username;
     protected $delete_date;
@@ -28,6 +29,8 @@ abstract class Service extends NitrapiObject
     protected $websocket_token;
     protected $roles;
     protected $arguments;
+    protected $servicetype;
+    protected $is_owner;
 
     protected static $ensureActiveService = true;
 
@@ -79,6 +82,15 @@ abstract class Service extends NitrapiObject
      */
     public function getStatus() {
         return $this->status;
+    }
+
+    /**
+     * Returns a numeric status code
+     *
+     * @return integer
+     */
+    public function getStatusCode(): int {
+        return $this->status_code;
     }
 
     /**
@@ -445,6 +457,65 @@ abstract class Service extends NitrapiObject
             $property->setValue($this, $value);
             $property->setAccessible(false);
         }
+    }
+
+    /**
+     * Returns all available domains to register subdomains to
+     *
+     * @return array
+     */
+    public function getDomains(): array {
+        return $this->getApi()->dataGet("services/" . $this->getId() . "/subdomain/domains");
+    }
+
+    /**
+     * Returns the currently set subdomain
+     *
+     * @return array ["subdomain": "mysubdomain", "domain": "nitrado.net", "fqdn": "mysubdomain.nitrado.net", "domain_id": 5]
+     */
+    public function getSubdomain(): array {
+        return $this->getApi()->dataGet("services/" . $this->getId() . "/subdomain");
+    }
+
+    /**
+     * Deletes the currently set subdomain
+     *
+     * @return string
+     */
+    public function deleteSubdomain(): string {
+        return $this->getApi()->dataDelete("services/" . $this->getId() . "/subdomain");
+    }
+
+    /**
+     * Sets a new subdomain
+     *
+     * @return string
+     */
+    public function setSubdomain(string $subdomain, int $domain_id): string {
+        $data = [
+          "subdomain" => $subdomain,
+          "domain_id" => $domain_id
+        ];
+
+        return $this->getApi()->dataPut("services/" . $this->getId() . "/subdomain", $data);
+    }
+
+    /**
+     * Returns the servicetype
+     *
+     * @return integer
+     */
+    public function getServicetype(): int {
+        return (int) $this->servicetype;
+    }
+
+    /**
+     *  Returns is the service belongs to the calling user
+     *
+     * @return bool
+     */
+    public function isOwnService(): bool {
+        return (bool) $this->is_owner;
     }
 
     public function getSupportAuthorization() {
