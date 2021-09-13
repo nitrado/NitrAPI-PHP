@@ -84,6 +84,15 @@ class Domain extends NitrapiObject
     }
 
     /**
+     * Returns the cancelperiod in days
+     *
+     * @return int days
+     */
+    public function getCancelperiod() {
+        return (int) $this->data['cancelperiod'];
+    }
+
+    /**
      * Returns integer whether domain will be deleted when it expires
      *
      * @return int
@@ -282,6 +291,16 @@ class Domain extends NitrapiObject
     }
 
     /**
+     * Returns the handle of the domain
+     *
+     * @return string
+     */
+    public function getHandle()
+    {
+        return $this->data['handle'];
+    }
+
+    /**
      * Extends the Domain instantly.
      *
      * @return mixed
@@ -389,5 +408,63 @@ class Domain extends NitrapiObject
     public function getNotifications()
     {
         return $this->getApi()->dataGet("/domain/" . $this->getDomain() . "/notifications");
+    }
+
+    /**
+     * Returns if the domain is registered
+     *
+     * @return bool
+     */
+    public function isRegistered() {
+        return $this->data['registered'] == 1;
+    }
+
+    /**
+     * Return the renew count
+     *
+     * @return int
+     */
+    public function getRenewCount() {
+        return (int)$this->data['renew_count'];
+    }
+
+    /**
+     * Return the extend count
+     *
+     * @return int
+     */
+    public function getExtendCount() {
+        return (int)$this->data['extend_count'];
+    }
+
+    /**
+     * Returns information about the domain
+     *
+     * @return array
+     */
+    public function getInfo() {
+        return $this->getApi()->dataGet("/domain/" . $this->getDomain() . "/info");
+    }
+
+    /**
+     * Add domain to a service
+     *
+     * @param integer $service_id
+     * @return string success message
+     */
+    public function addService(int $service_id): string {
+        $data = [
+          "service_id" => $service_id
+        ];
+        return $this->getApi()->dataPut("/domain/" . $this->getDomain() . "/service", $data);
+    }
+
+    /**
+     * Remove domain from a service
+     *
+     * @return string
+     */
+    public function removeService(): string {
+        return $this->getApi()->dataDelete("/domain/" . $this->getDomain() . "/service");
     }
 }
