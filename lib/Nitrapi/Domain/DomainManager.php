@@ -52,7 +52,7 @@ class DomainManager
     public function getDomain($domain)
     {
         foreach ($this->api->dataGet('/domain')['domains'] as $_domain) {
-            if ($domain === $_domain['domain'] || (preg_match("@^[0-9]+$@", $_domain['id']) && $_domain['id'] === (int)$domain)) {
+            if ($domain === $_domain['domain'] || (preg_match("@^[0-9]+$@", $domain) && $_domain['id'] === (int)$domain)) {
                 return new Domain($this->api, $_domain);
             }
         }
