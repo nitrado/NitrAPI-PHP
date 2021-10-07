@@ -391,6 +391,16 @@ class Domain extends NitrapiObject
     }
 
     /**
+     * Returns if nameserver edits are allowed.
+     *
+     * @return bool
+     */
+    public function nameserverEditBlocked()
+    {
+        return (int) $this->data['block_nameserver_edit'];
+    }
+
+    /**
      * Returns information about the DNS Zone
      *
      * @return array
