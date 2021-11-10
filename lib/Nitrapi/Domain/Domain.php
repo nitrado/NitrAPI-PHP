@@ -93,6 +93,15 @@ class Domain extends NitrapiObject
     }
 
     /**
+     * Returns the duration of 1 runtime in seconds
+     *
+     * @return int seconds
+     */
+    public function getDuration() {
+        return (int) $this->data['duration'];
+    }
+
+    /**
      * Returns integer whether domain will be deleted when it expires
      *
      * @return int
