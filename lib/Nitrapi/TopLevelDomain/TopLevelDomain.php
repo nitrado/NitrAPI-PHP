@@ -60,4 +60,13 @@ class TopLevelDomain extends NitrapiObject
         return $this->data['tld'];
     }
 
+    /**
+     * Returns the tld features
+     *
+     * @return array
+     */
+    public function getFeatures(): array {
+        return $this->data['features'];
+    }
+
 }
