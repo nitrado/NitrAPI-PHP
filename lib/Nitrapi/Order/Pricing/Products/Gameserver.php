@@ -27,6 +27,16 @@ class Gameserver extends DimensionPricing {
     }
 
     /**
+     * Set the autoextend status.
+     * Important: This does NOT enable autoextend. Use /services/:id/auto_extend instead.
+     * @param int $autoextend
+     * @return void
+     */
+    public function setAutoextend($autoextend) {
+        $this->additionals['autoextend'] = $autoextend;
+    }
+
+    /**
      * Returns the price for the service.
      *
      * @param $rentalTime
