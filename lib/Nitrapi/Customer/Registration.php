@@ -21,7 +21,8 @@ class Registration {
                                 $recaptchaResponse = null,
                                 $currency = null,
                                 $language = null,
-                                $timezone = null) {
+                                $timezone = null,
+                                $consentNewsletter = false) {
         $this->api = $api;
         $parameters = [
             "client_id" => $oAuthClientId,
@@ -31,7 +32,8 @@ class Registration {
             "password" => $password,
             "consent_privacy" => $consentPrivacy,
             "consent_age" => $consentAge,
-            "consent_tos" => $consentTos
+            "consent_tos" => $consentTos,
+            "consent_newsletter" => $consentNewsletter
         ];
 
         if (!empty($recaptchaResponse)) {
