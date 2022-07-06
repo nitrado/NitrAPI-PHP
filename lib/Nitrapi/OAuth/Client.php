@@ -89,6 +89,15 @@ class Client {
     }
 
     /**
+     * Returns the website.
+     *
+     * @return string
+     */
+    public function getWebsite() {
+        return $this->data['website'];
+    }
+
+    /**
      * Returns all valid redirect uris for this client.
      *
      * @return array
