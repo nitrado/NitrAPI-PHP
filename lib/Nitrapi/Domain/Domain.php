@@ -373,6 +373,8 @@ class Domain extends NitrapiObject
      * Returns the corresponding service id.
      *
      * @return int
+     *
+     * @deprecated feature no longer existent
      */
     public function getServiceId()
     {
@@ -470,6 +472,8 @@ class Domain extends NitrapiObject
      *
      * @param integer $service_id
      * @return string success message
+     *
+     * @deprecated feature no longer existent
      */
     public function addService(int $service_id): string {
         $data = [
@@ -482,6 +486,8 @@ class Domain extends NitrapiObject
      * Remove domain from a service
      *
      * @return string
+     *
+     * @deprecated feature no longer existent
      */
     public function removeService(): string {
         return $this->getApi()->dataDelete("/domain/" . $this->getDomain() . "/service");
