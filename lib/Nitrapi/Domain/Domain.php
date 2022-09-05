@@ -492,4 +492,13 @@ class Domain extends NitrapiObject
     public function removeService(): string {
         return $this->getApi()->dataDelete("/domain/" . $this->getDomain() . "/service");
     }
+
+    /**
+     * Returns true if the domain is locked (access restricted
+     *
+     * @return boolean
+     */
+    public function isLocked(): bool {
+        return (bool)$this->data['locked'];
+    }
 }
