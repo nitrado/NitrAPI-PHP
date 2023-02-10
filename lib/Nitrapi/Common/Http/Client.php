@@ -256,6 +256,38 @@ class Client extends GuzzleClient
      * @param array $options
      * @return mixed
      */
+    public function dataPatch($url, $body = null, $headers = null, $options = array())
+    {
+        try {
+            if (is_array($body)) {
+                $options['form_params'] = $body;
+            }
+            if (!isset($options['headers'])) {
+                $options['headers'] = [];
+            }
+            if (is_array($headers)) {
+                $options['headers'] = array_merge($options['headers'], $headers);
+            }
+            if (is_array($options) && isset($options['query'])) {
+                $options['query'] = array_merge($options['query'], $this->defaultQuery);
+            }
+            $this->fillOptions($options);
+
+            $response = $this->request('PATCH', $url, $options);
+            $this->checkErrors($response);
+            return $this->parseResponse($response);
+        } catch (RequestException $e) {
+            $this->handleException($e);
+        }
+    }
+
+    /**
+     * @param $url
+     * @param array $body
+     * @param array $headers
+     * @param array $options
+     * @return mixed
+     */
     public function dataPost($url, $body = null, $headers = null, $options = array())
     {
         try {
