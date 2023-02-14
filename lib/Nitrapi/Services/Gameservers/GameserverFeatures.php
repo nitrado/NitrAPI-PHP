@@ -90,4 +90,8 @@ class GameserverFeatures
     public function hasFTP() {
         return $this->data['has_ftp'];
     }
+
+    public function hasCurseforgeWorkshop() {
+        return $this->data['has_curseforge_workshop'];
+    }
 }
