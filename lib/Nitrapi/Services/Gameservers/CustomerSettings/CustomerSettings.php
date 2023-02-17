@@ -17,7 +17,7 @@ class CustomerSettings
 
     public function __construct(Gameserver &$service, array &$settings) {
         $this->service = $service;
-        $this->settings = $settings;
+        $this->settings = &$settings;
     }
 
     /**
