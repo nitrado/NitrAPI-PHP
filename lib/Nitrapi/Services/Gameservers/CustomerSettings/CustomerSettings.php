@@ -94,6 +94,9 @@ class CustomerSettings
             "value" => $value,
         ]);
 
+        // Update internal storage
+        $this->settings[$category][$key] = $value;
+
         return true;
     }
 
