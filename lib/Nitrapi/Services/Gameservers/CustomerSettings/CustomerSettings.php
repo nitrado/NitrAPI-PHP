@@ -17,7 +17,7 @@ class CustomerSettings
 
     public function __construct(Gameserver &$service, array &$settings) {
         $this->service = $service;
-        $this->settings = $settings;
+        $this->settings = &$settings;
     }
 
     /**
@@ -93,6 +93,9 @@ class CustomerSettings
             "key" => $key,
             "value" => $value,
         ]);
+
+        // Update internal storage
+        $this->settings[$category][$key] = $value;
 
         return true;
     }

@@ -299,10 +299,10 @@ class GameserverDetails
     public function getPath() {
         return $this->data['game_specific']['path'];
     }
-    
+
     /**
      * Return gameserver game path status
-     * 
+     *
      * @return boolean
      */
     public function isPathAvailable() {
@@ -358,5 +358,14 @@ class GameserverDetails
      */
     public function getFeatures() {
         return $this->data['game_specific']['features'];
+    }
+
+    /**
+     * Returns the customer settings
+     *
+     * @return array
+     */
+    public function getCurseforgeCustomerSettings() {
+        return $this->data['game_specific']['curseforge_customer_settings'];
     }
 }
