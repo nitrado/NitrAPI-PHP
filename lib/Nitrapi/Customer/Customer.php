@@ -9,7 +9,6 @@ use Nitrapi\Nitrapi;
 class Customer extends NitrapiObject
 {
 
-    private $api;
     private $data;
 
     public function __construct(Nitrapi &$api)
@@ -310,5 +309,42 @@ class Customer extends NitrapiObject
     public function getRateLimit()
     {
         return isset($this->data['rate_limit']) ? $this->data['rate_limit'] : 15000;
+    }
+
+    /**
+     * Get the subscribed and active newsletter campaigns
+     *
+     * @return array
+     */
+    public function getNewsletterCampaigns()
+    {
+        if(isset($this->data['newsletter_campaigns'])){
+            return $this->data['newsletter_campaigns'];
+        }
+        return [];
+    }
+
+    /**
+     * Subscribe to newsletter campaign
+     *
+     * @param int $newsletterCampaignId
+     * @return true
+     */
+    public function subscribeToNewsletterCampaign($newsletterCampaignId)
+    {
+        $this->getApi()->dataPost('user/newsletter_campaign/'.$newsletterCampaignId.'/subscribe');
+        return true;
+    }
+
+    /**
+     * Unsubscribe from newsletter campaign
+     *
+     * @param int $newsletterCampaignId
+     * @return true
+     */
+    public function unsubscribeFromNewsletterCampaign($newsletterCampaignId)
+    {
+        $this->getApi()->dataPut('user/newsletter_campaign/'.$newsletterCampaignId.'/unsubscribe');
+        return true;
     }
 }
