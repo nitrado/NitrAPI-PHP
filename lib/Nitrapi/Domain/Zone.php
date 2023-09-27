@@ -19,7 +19,7 @@ class Zone extends NitrapiObject
      */
     protected $data;
 
-    public function __construct(Nitrapi &$api, $fqdn, array $data = [])
+    public function __construct(Nitrapi $api, $fqdn, array $data = [])
     {
         parent::__construct($api);
         $this->setData($data);

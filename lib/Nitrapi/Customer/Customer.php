@@ -11,7 +11,7 @@ class Customer extends NitrapiObject
 
     private $data;
 
-    public function __construct(Nitrapi &$api)
+    public function __construct(Nitrapi $api)
     {
         parent::__construct($api);
         $this->data = $this->getApi()->dataGet("user")['user'];

@@ -15,7 +15,7 @@ class CustomerSettings
 
     protected $defaults = null;
 
-    public function __construct(Gameserver &$service, array &$settings) {
+    public function __construct(Gameserver $service, array &$settings) {
         $this->service = $service;
         $this->settings = &$settings;
     }

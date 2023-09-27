@@ -11,7 +11,7 @@ class Backup
 
     protected $data;
 
-    public function __construct(BackupManager &$backupManager, array $data) {
+    public function __construct(BackupManager $backupManager, array $data) {
         $this->backupManager = $backupManager;
         $this->data = $data;
     }

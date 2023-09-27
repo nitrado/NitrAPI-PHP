@@ -8,7 +8,7 @@ class GameInfo extends NitrapiObject{
 
     private $data;
 
-    public function __construct(Nitrapi &$api, &$data) {
+    public function __construct(Nitrapi $api, &$data) {
         parent::__construct($api);
         $this->data = $data;
     }

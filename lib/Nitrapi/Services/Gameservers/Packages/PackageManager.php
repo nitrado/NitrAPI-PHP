@@ -11,7 +11,7 @@ class PackageManager {
      */
     protected $service;
 
-    public function __construct(Gameserver &$service) {
+    public function __construct(Gameserver $service) {
         $this->service = $service;
     }
 

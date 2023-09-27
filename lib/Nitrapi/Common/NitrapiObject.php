@@ -8,7 +8,7 @@ abstract class NitrapiObject
 {
     private $api;
 
-    public function __construct(Nitrapi &$api)
+    public function __construct(Nitrapi $api)
     {
         $this->setApi($api);
     }
@@ -16,7 +16,7 @@ abstract class NitrapiObject
     /**
      * @param Nitrapi $api
      */
-    public function setApi(Nitrapi &$api)
+    public function setApi(Nitrapi $api)
     {
         $this->api = $api;
     }

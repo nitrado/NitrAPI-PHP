@@ -42,7 +42,7 @@ abstract class Pricing implements PricingInterface {
      */
     protected $locationId;
 
-    public function __construct(Nitrapi &$nitrapi, Location $location)
+    public function __construct(Nitrapi $nitrapi, Location $location)
     {
         $this->nitrapi = $nitrapi;
         $this->locationId = $location->getId();

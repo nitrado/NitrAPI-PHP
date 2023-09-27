@@ -23,7 +23,7 @@ class CloudServer extends Service {
      * @throws NitrapiHttpErrorException
      * @throws NitrapiServiceNotActiveException
      */
-    public function __construct(Nitrapi &$api, &$data) {
+    public function __construct(Nitrapi $api, &$data) {
         parent::__construct($api, $data);
 
         if (!$this->refresh()) {

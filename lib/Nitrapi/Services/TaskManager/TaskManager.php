@@ -9,7 +9,7 @@ class TaskManager
     protected $service;
     protected $tasks = [];
 
-    public function __construct(Service &$service) {
+    public function __construct(Service $service) {
         $this->service = $service;
         $this->reloadTasks();
     }

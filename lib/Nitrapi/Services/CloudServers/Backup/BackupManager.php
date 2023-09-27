@@ -11,7 +11,7 @@ class BackupManager
      */
     protected $service;
 
-    public function __construct(CloudServer &$service) {
+    public function __construct(CloudServer $service) {
         $this->service = $service;
     }
 
