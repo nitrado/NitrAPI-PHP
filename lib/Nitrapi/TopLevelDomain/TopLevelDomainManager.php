@@ -12,7 +12,7 @@ class TopLevelDomainManager
      */
     protected $api;
 
-    public function __construct(Nitrapi &$api) {
+    public function __construct(Nitrapi $api) {
         $this->api = $api;
     }
 

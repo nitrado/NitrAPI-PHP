@@ -15,7 +15,7 @@ class FileServer
 
     protected $lastError = null;
 
-    public function __construct(CloudServer &$service) {
+    public function __construct(CloudServer $service) {
         $this->service = $service;
     }
 

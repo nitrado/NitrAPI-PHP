@@ -18,7 +18,7 @@ class Domain extends NitrapiObject
      */
     protected $data;
 
-    public function __construct(Nitrapi &$api, array $data = [])
+    public function __construct(Nitrapi $api, array $data = [])
     {
         parent::__construct($api);
         $this->setData($data);

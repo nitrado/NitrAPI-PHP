@@ -16,7 +16,7 @@ class HandleManager
     const TYPE_ADMIN_C = 'admin_c';
     const TYPE_TECH_C = 'tech_c';
 
-    public function __construct(Nitrapi &$api) {
+    public function __construct(Nitrapi $api) {
         $this->api = $api;
     }
 

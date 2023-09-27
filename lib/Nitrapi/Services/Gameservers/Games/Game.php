@@ -16,7 +16,7 @@ abstract class Game
      */
     protected $game;
 
-    public function __construct(Gameserver &$service) {
+    public function __construct(Gameserver $service) {
         $this->service = $service;
     }
 

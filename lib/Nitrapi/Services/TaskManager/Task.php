@@ -31,7 +31,7 @@ class Task extends ServiceItem
 
     public function __construct() {}
 
-    public function setTaskManager(TaskManager &$taskManager, array &$data = []) {
+    public function setTaskManager(TaskManager $taskManager, array &$data = []) {
         $this->taskManager = $taskManager;
         parent::__construct($taskManager->getService(), $data);
         $this->setService($taskManager->getService());

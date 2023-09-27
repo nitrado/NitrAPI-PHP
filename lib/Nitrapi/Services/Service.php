@@ -41,7 +41,7 @@ abstract class Service extends NitrapiObject
     const SERVICE_STATUS_ADMINLOCKED = 'adminlocked';
     const SERVICE_STATUS_ADMINLOCKED_SUSPENDED = 'adminlocked_suspended';
 
-    public function __construct(Nitrapi &$api, array &$data) {
+    public function __construct(Nitrapi $api, array &$data) {
         parent::__construct($api);
         $this->loadData($data);
     }

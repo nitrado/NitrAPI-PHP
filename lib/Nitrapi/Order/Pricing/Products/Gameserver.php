@@ -12,7 +12,7 @@ class Gameserver extends DimensionPricing {
     protected static $product = 'gameserver';
     private $promoCode;
 
-    public function __construct(Nitrapi &$nitrapi, Location $location, $promoCode = null) {
+    public function __construct(Nitrapi $nitrapi, Location $location, $promoCode = null) {
         parent::__construct($nitrapi, $location);
 
         $this->promoCode = $promoCode;
