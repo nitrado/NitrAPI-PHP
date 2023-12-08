@@ -98,8 +98,4 @@ class GameserverFeatures
     public function hasHiddenQueryPort() {
         return $this->data['has_hidden_queryport'];
     }
-
-    public function hasHiddenRconPort() {
-        return $this->data['has_hidden_rconport'];
-    }
 }
