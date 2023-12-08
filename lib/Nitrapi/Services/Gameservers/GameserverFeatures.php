@@ -96,6 +96,6 @@ class GameserverFeatures
     }
 
     public function hasQueryPort() {
-        return $this->data['has_hidden_queryport'];
+        return $this->data['has_queryport'];
     }
 }
