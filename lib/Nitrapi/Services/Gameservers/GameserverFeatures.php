@@ -95,7 +95,7 @@ class GameserverFeatures
         return $this->data['has_curseforge_workshop'];
     }
 
-    public function hasHiddenQueryPort() {
+    public function hasQueryPort() {
         return $this->data['has_hidden_queryport'];
     }
 }
