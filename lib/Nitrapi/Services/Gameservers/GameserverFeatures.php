@@ -94,4 +94,12 @@ class GameserverFeatures
     public function hasCurseforgeWorkshop() {
         return $this->data['has_curseforge_workshop'];
     }
+
+    public function hasBlockedQueryPort() {
+        return $this->data['has_hidden_queryport'];
+    }
+
+    public function hasBlockedRconPort() {
+        return $this->data['has_hidden_rconport'];
+    }
 }
