@@ -360,23 +360,22 @@ class Client extends GuzzleClient
             $errorId = $e->getResponse()->getHeader('X-Raven-Event-ID');
 
             $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
-            if ($e->getResponse()->getStatusCode() == 503) {
-                $exception = new NitrapiMaintenanceException($msg);
-                if (!empty($errorId)) $exception->setErrorId($errorId);
-                throw $exception;
+            switch ($e->getResponse()->getStatusCode()) {
+                case 503:
+                    $exception = new NitrapiMaintenanceException($msg);
+                    break;
+                case 428:
+                    $exception = new NitrapiConcurrencyException($msg);
+                    break;
+                default:
+                    $exception = new NitrapiHttpErrorException($msg);
             }
-            if ($e->getResponse()->getStatusCode() == 428) {
-                $exception = new NitrapiConcurrencyException($msg);
-                if (!empty($errorId)) $exception->setErrorId($errorId);
-                throw $exception;
-            }
-            $exception = new NitrapiHttpErrorException($msg);
+            $exception->setResponse($e->getResponse());
             if (!empty($errorId)) $exception->setErrorId($errorId);
             throw $exception;
         }
-        $exception = new NitrapiHttpErrorException($e->getMessage());
-        if (!empty($errorId)) $exception->setErrorId($errorId);
-        throw $exception;
+
+        throw new NitrapiHttpErrorException($e->getMessage());
     }
 
     /**
