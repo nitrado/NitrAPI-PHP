@@ -120,16 +120,18 @@ class FileServer
     /**
      * Lists all files and folder inside of a given directory
      *
-     * @param $dir
+     * @param string $dir Directory to list
+     * @param bool $summarizeFolders Summarize disk usage of folders. Increases response time
      * @return array
      * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
      */
-    public function getFileList($dir) {
+    public function getFileList($dir, $summarizeFolders = false) {
         $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
 
         $entries = $this->service->getApi()->dataGet($url, null, [
             'query' => [
-                'dir' => $dir
+                'dir' => $dir,
+                'summarize_folders' => $summarizeFolders ? 1 : 0,
             ]
         ]);
 
