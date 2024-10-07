@@ -368,4 +368,18 @@ class GameserverDetails
     public function getCurseforgeCustomerSettings() {
         return $this->data['game_specific']['curseforge_customer_settings'];
     }
+
+    /**
+     * Returns an associative array of limits for Curseforge mods
+     *
+     * The key determines the type of limit. Only active limits are present.
+     *
+     * Possible types:
+     *   'per-category': Associative array of category IDs to maximum recommended number of mods in the category
+     *
+     * @return array
+     */
+    public function getCurseforgeLimits() {
+        return $this->data['game_specific']['curseforge_limits'];
+    }
 }
