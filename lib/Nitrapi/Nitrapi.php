@@ -25,6 +25,10 @@ class Nitrapi extends Client
             $query['user_ip'] = $options['user_ip'];
         }
 
+        if (isset($options['user_ipv6']) && filter_var($options['user_ipv6'], FILTER_VALIDATE_IP)) {
+            $query['user_ipv6'] = $options['user_ipv6'];
+        }
+
         if (!empty($options['locale'])) {
             $query['locale'] = (string)$options['locale'];
         }
