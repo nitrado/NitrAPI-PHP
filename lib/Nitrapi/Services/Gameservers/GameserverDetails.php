@@ -382,4 +382,13 @@ class GameserverDetails
     public function getCurseforgeLimits() {
         return $this->data['game_specific']['curseforge_limits'];
     }
+
+    /**
+     * Returns the maximum allowed file size of mods in MiB
+     *
+     * @return int
+     */
+    public function getModQuotaMegabytes() {
+        return $this->data['game_specific']['mod_quota_mb'];
+    }
 }
