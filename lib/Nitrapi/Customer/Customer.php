@@ -145,15 +145,6 @@ class Customer extends NitrapiObject
     }
 
     /**
-     * Returns the User Phone censored Number and Status
-     *
-     * @return array
-     */
-    public function getPhone() {
-        return $this->data['phone'];
-    }
-
-    /**
      * Returns a array with the enabled Two Factor Methods.
      *
      * @return array
