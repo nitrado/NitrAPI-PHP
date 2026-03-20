@@ -2,39 +2,33 @@
 
 namespace Nitrapi\Services\CloudServers\FileServer;
 
-use GuzzleHttp\Exception\RequestException;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\CloudServers\CloudServer;
 
 class FileServer
 {
-    /**
-     * @var CloudServer $service
-     */
+    /** @var CloudServer */
     protected $service;
 
-    protected $lastError = null;
-
-    public function __construct(CloudServer $service) {
+    public function __construct(CloudServer $service)
+    {
         $this->service = $service;
     }
 
     /**
-     * Returns the upload token and url. You can post the file by your own directly to the url.
+     * Returns the upload token and url. You can post the file directly to the url yourself.
      *
-     * @param $path
-     * @param $name
-     * @return array
-     * @throws NitrapiErrorException
-     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     * @throws NitrapiException
      */
-    public function uploadToken($path, $name, $username = null) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/upload";
-        $upload = $this->service->getApi()->dataPost($url, array(
+    public function uploadToken(string $path, string $name, ?string $username = null): array
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/upload";
+        $upload = $this->service->getApi()->dataPost($url, [
             'path' => $path,
             'file' => $name,
-            'username' => $username
-        ));
+            'username' => $username,
+        ]);
 
         $token = $upload['token'];
         if (empty($token['token']) || empty($token['url'])) {
@@ -45,132 +39,102 @@ class FileServer
     }
 
     /**
-     * Uploads a specific file
+     * Uploads a local file to the cloud server.
      *
-     * @param $file
-     * @param $path
-     * @param $name
-     * @return bool
-     * @throws NitrapiErrorException
+     * @throws NitrapiException
      */
-    public function uploadFile($file, $path, $name) {
+    public function uploadFile(string $file, string $path, string $name): bool
+    {
         if (!file_exists($file) || !is_readable($file)) {
             throw new NitrapiErrorException('Can\'t find local file');
         }
 
         $upload = $this->uploadToken($path, $name);
+        $api = $this->service->getApi();
 
-        try {
-            $this->service->getApi()->post($upload['url'], array(
-                'headers' => array(
-                    'content-type' => 'application/binary',
-                    'token' => $upload['token']
-                ),
-                'body' => \GuzzleHttp\Psr7\stream_for(fopen($file, 'rb')),
-            ));
-        } catch (RequestException $e) {
-            $response = $e->getResponse()->json();
-            throw new NitrapiErrorException($response['message']);
-        }
+        $stream = $api->getStreamFactory()->createStreamFromResource(fopen($file, 'rb'));
 
-        return true;
-    }
-
-    /**
-     * Returns a list with Bookmarks for easier Navigation.
-     *
-     * @return array
-     */
-    public function getBookmarks() {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/bookmarks";
-
-        $entries = $this->service->getApi()->dataGet($url);
-
-        return $entries['bookmarks'];
-    }
-
-    /**
-     * Writes a specific file. File will be overwritten if it's already existing.
-     *
-     * @param $path
-     * @param $name
-     * @param $content
-     * @return bool
-     * @throws NitrapiErrorException
-     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
-     */
-    public function writeFile($path, $name, $content, $username = null) {
-        $upload = $this->uploadToken($path, $name, $username);
-
-        try {
-            $this->service->getApi()->dataPost($upload['url'], null, null, array(
-                'body' => $content,
-                'headers' => array(
-                    'content-type' => 'application/binary',
-                    'token' => $upload['token']
-                )
-            ));
-        } catch (RequestException $e) {
-            $response = $e->getResponse()->json();
-            throw new NitrapiErrorException($response['message']);
-        }
-
-        return true;
-    }
-
-    /**
-     * Lists all files and folder inside of a given directory
-     *
-     * @param $dir
-     * @return array
-     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
-     */
-    public function getFileList($dir = null) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/list";
-
-        $entries = $this->service->getApi()->dataGet($url, null, [
-            'query' => [
-                'dir' => $dir
-            ]
+        $api->request('POST', $upload['url'], [
+            'headers' => [
+                'Content-Type' => 'application/binary',
+                'token' => $upload['token'],
+            ],
+            'body' => $stream,
         ]);
 
-        return $entries['entries'];
+        return true;
     }
 
     /**
-     * Searches inside a specific directory recursively for specific file pattern.
-     *
-     * @param $dir
-     * @param $search
-     * @return array
-     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     * Returns a list of bookmarks for easier navigation.
+     * @throws NitrapiException
      */
-    public function doFileSearch($dir, $search) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/list";
+    public function getBookmarks(): array
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/bookmarks";
+        return $this->service->getApi()->dataGet($url)['bookmarks'];
+    }
 
-        $entries = $this->service->getApi()->dataGet($url, null, [
+    /**
+     * Writes a file. The file is overwritten if it already exists.
+     *
+     * @throws NitrapiException
+     */
+    public function writeFile(string $path, string $name, string $content, ?string $username = null): bool
+    {
+        $upload = $this->uploadToken($path, $name, $username);
+        $api = $this->service->getApi();
+
+        $api->request('POST', $upload['url'], [
+            'headers' => [
+                'Content-Type' => 'application/binary',
+                'token' => $upload['token'],
+            ],
+            'body' => $content,
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Lists all files and folders inside a given directory.
+     *
+     * @throws NitrapiException
+     */
+    public function getFileList(?string $dir = null): array
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/list";
+        return $this->service->getApi()->dataGet($url, null, [
+            'query' => ['dir' => $dir],
+        ])['entries'];
+    }
+
+    /**
+     * Recursively searches a directory for files matching a pattern.
+     *
+     * @throws NitrapiException
+     */
+    public function doFileSearch(string $dir, string $search): array
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/list";
+        return $this->service->getApi()->dataGet($url, null, [
             'query' => [
                 'dir' => $dir,
-                'search' => $search
-            ]
-        ]);
-
-        return $entries['entries'];
+                'search' => $search,
+            ],
+        ])['entries'];
     }
 
     /**
-     * Returns the download token and url for a file
+     * Returns the download token and url for a file.
      *
-     * @param $file
-     * @return array
-     * @throws \Nitrapi\Common\Exceptions\NitrapiErrorException
+     * @throws NitrapiException
      */
-    public function downloadToken($file) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/download";
+    public function downloadToken(string $file): array
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/download";
         $download = $this->service->getApi()->dataGet($url, null, [
-            'query' => [
-                'file' => $file
-            ]
+            'query' => ['file' => $file],
         ]);
 
         $token = $download['token'];
@@ -182,265 +146,206 @@ class FileServer
     }
 
     /**
-     * Downloads a file and safes it directly to a specified path
+     * Downloads a remote file and saves it to the local filesystem.
      *
-     * @param $file
-     * @param $path
-     * @param $name
-     * @return bool
-     * @throws \Nitrapi\Common\Exceptions\NitrapiErrorException
+     * @throws NitrapiException
      */
-    public function downloadFile($file, $path, $name) {
-        if (!is_writeable($path)) {
+    public function downloadFile(string $file, string $path, string $name): bool
+    {
+        if (!is_writable($path)) {
             throw new NitrapiErrorException('The target directory "' . $path . '" is not writeable');
         }
 
-        if (file_exists($path . DIRECTORY_SEPARATOR . $name)) {
-            throw new NitrapiErrorException('The target file '.$path . DIRECTORY_SEPARATOR . $name.' already exists');
+        $targetPath = $path . DIRECTORY_SEPARATOR . $name;
+        if (file_exists($targetPath)) {
+            throw new NitrapiErrorException('The target file ' . $targetPath . ' already exists');
         }
 
         $download = $this->downloadToken($file);
-
-        $resource = fopen($path . DIRECTORY_SEPARATOR . $name, 'wb');
-        $stream = \GuzzleHttp\Psr7\stream_for($resource);
-
-        $this->service->getApi()->request('GET', $download['token']['url'], [
-            'query' => [
-                'token' => $download['token']['token']
-            ],
-            'sink' => $stream
+        $response = $this->service->getApi()->request('GET', $download['token']['url'], [
+            'query' => ['token' => $download['token']['token']],
         ]);
+
+        file_put_contents($targetPath, (string)$response->getBody());
+
         return true;
     }
 
     /**
-     * Reads a part from a specific file
-     *
-     * @param $file
-     * @param $offset
-     * @param $count
-     * @return string
+     * Reads a portion of a remote file.
+     * @throws NitrapiException
      */
-    public function readPartFromFile($file, $offset = 0, $count = null) {
+    public function readPartFromFile(string $file, int $offset = 0, ?int $count = null): string
+    {
         $download = $this->downloadToken($file);
-
-        // Here we use the GuzzleClient API directly. This is intended, but
-        // should remain a special case. Don't copy this code.
         $response = $this->service->getApi()->request('GET', $download['token']['url'], [
             'query' => [
                 'token' => $download['token']['token'],
                 'offset' => $offset,
                 'count' => $count,
-            ]
+            ],
         ]);
 
-        return $response->getBody()->getContents();
+        return (string)$response->getBody();
     }
 
     /**
-     * Reads a specific file
-     *
-     * @param $file
-     * @return string
+     * Reads a remote file fully.
+     * @throws NitrapiException
      */
-    public function readFile($file) {
+    public function readFile(string $file): string
+    {
         $download = $this->downloadToken($file);
-
-        // Here we use the GuzzleClient API directly. This is intended, but
-        // should remain a special case. Don't copy this code.
         $response = $this->service->getApi()->request('GET', $download['token']['url'], [
-            'timeout' => 20,
-            'query' => [
-                'token' => $download['token']['token']
-            ]
+            'query' => ['token' => $download['token']['token']],
         ]);
 
-        return $response->getBody()->getContents();
+        return (string)$response->getBody();
     }
 
     /**
-     * Deletes a file from server
-     *
-     * @param $file
-     * @return bool
+     * Deletes a file from the server.
+     * @throws NitrapiException
      */
-    public function deleteFile($file) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/delete";
-        $this->service->getApi()->dataDelete($url, array(
-            'path' => $file
-        ));
-
+    public function deleteFile(string $file): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/delete";
+        $this->service->getApi()->dataDelete($url, ['path' => $file]);
         return true;
     }
 
     /**
-     * Returns stat infos by file array
-     *
-     * @param $files
-     * @return array
+     * Returns stat info for an array of file paths.
+     * @throws NitrapiException
      */
-    public function statFiles(array $files) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/stat";
-
+    public function statFiles(array $files): array
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/stat";
         return $this->service->getApi()->dataGet($url, null, [
-            'query' => [
-                'files' => $files
-            ]
+            'query' => ['files' => $files],
         ])['entries'];
     }
 
     /**
-     * Gets the file size of the given path
-     *
-     * @param $path
-     * @return int
+     * Returns the disk usage of a path.
+     * @throws NitrapiException
      */
-    public function pathSize($path) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/size";
-        $result = $this->service->getApi()->dataGet($url, null, [
-            'query' => [
-                'path' => $path
-            ]
-        ]);
-
-        return (int)$result['size'];
+    public function pathSize(string $path): int
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/size";
+        return (int)$this->service->getApi()->dataGet($url, null, [
+            'query' => ['path' => $path],
+        ])['size'];
     }
 
     /**
-     * Deletes a directory with content from server
-     *
-     * @param $directory
-     * @return bool
+     * Recursively deletes a directory.
+     * @throws NitrapiException
      */
-    public function deleteDirectory($directory) {
+    public function deleteDirectory(string $directory): bool
+    {
         return $this->deleteFile($directory);
     }
 
     /**
-     * Moves a file to another directory
-     *
-     * @param $sourceFile
-     * @param $targetDir
-     * @param $fileName
-     * @param $username
-     * @return bool
+     * Moves a file to another directory.
+     * @throws NitrapiException
      */
-    public function moveFile($sourceFile, $targetDir, $fileName, $username = null) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/move";
-        $this->service->getApi()->dataPost($url, array(
+    public function moveFile(string $sourceFile, string $targetDir, string $fileName, ?string $username = null): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/move";
+        $this->service->getApi()->dataPost($url, [
             'source_path' => $sourceFile,
             'target_path' => $targetDir,
             'target_filename' => $fileName,
             'username' => $username,
-        ));
+        ]);
         return true;
     }
 
     /**
-     * Moves a directory to another directory (recursive)
-     *
-     * @param $source
-     * @param $target
-     * @param $username
-     * @return bool
+     * Moves a directory recursively.
+     * @throws NitrapiException
      */
-    public function moveDirectory($source, $target, $username = null) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/move";
-        $this->service->getApi()->dataPost($url, array(
+    public function moveDirectory(string $source, string $target, ?string $username = null): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/move";
+        $this->service->getApi()->dataPost($url, [
             'source_path' => $source,
             'target_path' => $target,
-            'username' => $username
-        ));
+            'username' => $username,
+        ]);
         return true;
     }
 
     /**
-     * Copies a file to another directory
-     *
-     * @param $source
-     * @param $targetDir
-     * @param $fileName
-     * @param $username
-     * @return bool
+     * Copies a file to another directory.
+     * @throws NitrapiException
      */
-    public function copyFile($source, $targetDir, $fileName, $username = null) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/copy";
-        $this->service->getApi()->dataPost($url, array(
+    public function copyFile(string $source, string $targetDir, string $fileName, ?string $username = null): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/copy";
+        $this->service->getApi()->dataPost($url, [
             'source_path' => $source,
             'target_path' => $targetDir,
             'target_name' => $fileName,
-            'username' => $username
-        ));
+            'username' => $username,
+        ]);
         return true;
     }
 
-
     /**
-     * Copies a directory to another directory (recursive)
-     *
-     * @param $source
-     * @param $targetDir
-     * @param $dirName
-     * @param $username
-     * @return bool
+     * Recursively copies a directory.
+     * @throws NitrapiException
      */
-    public function copyDirectory($source, $targetDir, $dirName, $username = null) {
+    public function copyDirectory(string $source, string $targetDir, string $dirName, ?string $username = null): bool
+    {
         return $this->copyFile($source, $targetDir, $dirName, $username);
     }
 
     /**
-     * Creates a new directory
-     *
-     * @param $path
-     * @param $name
-     * @param $username
-     * @return bool
+     * Creates a new directory.
+     * @throws NitrapiException
      */
-    public function createDirectory($path, $name, $username = null) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/mkdir";
-        $this->service->getApi()->dataPost($url, array(
+    public function createDirectory(string $path, string $name, ?string $username = null): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/mkdir";
+        $this->service->getApi()->dataPost($url, [
             'path' => $path,
             'name' => $name,
-            'username' => $username
-        ));
+            'username' => $username,
+        ]);
         return true;
     }
 
     /**
-     * Chowns a specified path
-     *
-     * @param $path
-     * @param $username
-     * @param $group
-     * @param $recursive
-     * @return bool
+     * Changes the ownership of a path.
+     * @throws NitrapiException
      */
-    public function chown($path, $username, $group, $recursive = false) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/chown";
-        $this->service->getApi()->dataPost($url, array(
+    public function chown(string $path, string $username, string $group, bool $recursive = false): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/chown";
+        $this->service->getApi()->dataPost($url, [
             'path' => $path,
             'username' => $username,
             'group' => $group,
-            'recursive' => ($recursive ? 'true' : 'false')
-        ));
+            'recursive' => $recursive ? 'true' : 'false',
+        ]);
         return true;
     }
 
     /**
-     * Chmods a specified path
-     *
-     * @param $path
-     * @param $chmod
-     * @param $recursive
-     * @return bool
+     * Changes the permissions of a path.
+     * @throws NitrapiException
      */
-    public function chmod($path, $chmod, $recursive = false) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/file_server/chmod";
-        $this->service->getApi()->dataPost($url, array(
+    public function chmod(string $path, string $chmod, bool $recursive = false): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/file_server/chmod";
+        $this->service->getApi()->dataPost($url, [
             'path' => $path,
             'chmod' => $chmod,
-            'recursive' => ($recursive ? 'true' : 'false')
-        ));
+            'recursive' => $recursive ? 'true' : 'false',
+        ]);
         return true;
     }
 }

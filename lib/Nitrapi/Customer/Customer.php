@@ -2,7 +2,7 @@
 
 namespace Nitrapi\Customer;
 
-use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\NitrapiObject;
 use Nitrapi\Nitrapi;
 
@@ -11,6 +11,9 @@ class Customer extends NitrapiObject
 
     private $data;
 
+    /**
+     * @throws NitrapiException
+     */
     public function __construct(Nitrapi $api)
     {
         parent::__construct($api);
@@ -18,11 +21,22 @@ class Customer extends NitrapiObject
     }
 
     /**
+     * Returns a raw data value by key.
+     *
+     * @param string $key
+     * @return mixed|null
+     */
+    public function get(string $key)
+    {
+        return $this->data[$key] ?? null;
+    }
+
+    /**
      * Returns the User ID.
      *
      * @return string
      */
-    public function getUserId()
+    public function getUserId(): string
     {
         return $this->data['user_id'];
     }
@@ -32,7 +46,7 @@ class Customer extends NitrapiObject
      *
      * @return string username
      */
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->data['username'];
     }
@@ -42,7 +56,7 @@ class Customer extends NitrapiObject
      *
      * @return bool
      */
-    public function isActivated()
+    public function isActivated(): bool
     {
         return $this->data['activated'];
     }
@@ -52,7 +66,7 @@ class Customer extends NitrapiObject
      *
      * @return string
      */
-    public function getTimezone()
+    public function getTimezone(): string
     {
         return $this->data['timezone'];
     }
@@ -63,12 +77,13 @@ class Customer extends NitrapiObject
      * @param $updateToken
      * @param $newTimezone
      * @return bool
+     * @throws NitrapiException
      */
-    public function setTimezone($updateToken, $newTimezone)
+    public function setTimezone($updateToken, $newTimezone): bool
     {
         $this->getApi()->dataPost('user', [
             'timezone' => $newTimezone,
-            'token' => $updateToken
+            'token' => $updateToken,
         ]);
         $this->data['timezone'] = $newTimezone;
         return true;
@@ -79,7 +94,7 @@ class Customer extends NitrapiObject
      *
      * @return string
      */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->data['email'];
     }
@@ -89,7 +104,7 @@ class Customer extends NitrapiObject
      *
      * @return int
      */
-    public function getCredit()
+    public function getCredit(): int
     {
         return $this->data['credit'];
     }
@@ -99,7 +114,7 @@ class Customer extends NitrapiObject
      *
      * @return string
      */
-    public function getCurrency()
+    public function getCurrency(): string
     {
         return $this->data['currency'];
     }
@@ -109,7 +124,7 @@ class Customer extends NitrapiObject
      *
      * @return \DateTime
      */
-    public function getRegistrationDate()
+    public function getRegistrationDate(): \DateTime
     {
         return (new \DateTime())->setTimestamp(strtotime($this->data['registered']));
     }
@@ -119,7 +134,7 @@ class Customer extends NitrapiObject
      *
      * @return string
      */
-    public function getLanguage()
+    public function getLanguage(): string
     {
         return $this->data['language'];
     }
@@ -129,7 +144,7 @@ class Customer extends NitrapiObject
      *
      * @return string|null
      */
-    public function getAvatar()
+    public function getAvatar(): ?string
     {
         return $this->data['avatar'];
     }
@@ -139,7 +154,7 @@ class Customer extends NitrapiObject
      *
      * @return bool
      */
-    public function hasDonationsEnabled()
+    public function hasDonationsEnabled(): bool
     {
         return $this->data['donations'];
     }
@@ -149,7 +164,8 @@ class Customer extends NitrapiObject
      *
      * @return array
      */
-    public function getTwoFactorMethods() {
+    public function getTwoFactorMethods(): array
+    {
         return $this->data['two_factor'];
     }
 
@@ -163,7 +179,8 @@ class Customer extends NitrapiObject
      *
      * @return array The permissions associated to the user
      */
-    public function getPermissions() {
+    public function getPermissions(): array
+    {
         return $this->data['permissions'];
     }
 
@@ -171,19 +188,19 @@ class Customer extends NitrapiObject
      * Check if the user has the given permission. The permission is a string
      * (all uppercase).
      *
-     * @see Customer::getPermissions()
-     *
      * @param $permission
      * @return bool
+     * @see Customer::getPermissions()
      */
-    public function hasPermission($permission) {
+    public function hasPermission($permission): bool
+    {
         return in_array($permission, $this->getPermissions(), true);
     }
 
     /**
      * @deprecated
      */
-    public function getPersonalData()
+    public function getPersonalData(): array
     {
         return $this->getProfile();
     }
@@ -193,7 +210,8 @@ class Customer extends NitrapiObject
      *
      * @return array
      */
-    public function getProfile() {
+    public function getProfile(): array
+    {
         return $this->data['profile'];
     }
 
@@ -203,8 +221,10 @@ class Customer extends NitrapiObject
      * @param $updateToken
      * @param array $profile
      * @return bool
+     * @throws NitrapiException
      */
-    public function updateProfile($updateToken, array $profile) {
+    public function updateProfile($updateToken, array $profile): bool
+    {
         $data = [];
         $data['token'] = $updateToken;
         $data['profile'] = $profile;
@@ -218,11 +238,12 @@ class Customer extends NitrapiObject
      *
      * @param $password
      * @return array|bool
+     * @throws NitrapiException
      */
     public function getUpdateToken($password)
     {
         return $this->getApi()->dataPost('user/token', [
-            'password' => $password
+            'password' => $password,
         ]);
     }
 
@@ -232,12 +253,13 @@ class Customer extends NitrapiObject
      * @param $updateToken
      * @param $newPassword
      * @return bool
+     * @throws NitrapiException
      */
-    public function changePassword($updateToken, $newPassword)
+    public function changePassword($updateToken, $newPassword): bool
     {
         $this->getApi()->dataPost('user', [
             'password' => $newPassword,
-            'token' => $updateToken
+            'token' => $updateToken,
         ]);
         return true;
     }
@@ -246,14 +268,15 @@ class Customer extends NitrapiObject
      * Updates the user donation setting.
      *
      * @param $updateToken
-     * @param $newState
+     * @param bool $newState
      * @return bool
+     * @throws NitrapiException
      */
-    public function setDonations($updateToken, $newState = true)
+    public function setDonations($updateToken, bool $newState = true): bool
     {
         $this->getApi()->dataPost('user', [
             'donations' => (($newState) ? 'true' : 'false'),
-            'token' => $updateToken
+            'token' => $updateToken,
         ]);
         $this->data['donations'] = $newState;
         return true;
@@ -264,21 +287,23 @@ class Customer extends NitrapiObject
      *
      * @param array|string $scopes The scopes for the new token. Can only contain scopes of the current token.
      * May be passed in as array or space separated string.
-     * @param null|integer $serviceId A serviceID to pin the token to. It won't be possible to access other services with this
+     * @param integer|null $serviceId A serviceID to pin the token to. It won't be possible to access other services with this
      * token. Passing null allows all services to be accessed.
      * @param null|integer $expires_in The time in seconds the new token will be valid for. The life time of a sub token
      * can never exceed the life time of the parent token. Pass in null for taking the parent token's life time.
      *
      * @return AccessToken
+     * @throws NitrapiException
      */
-    public function getSubToken($scopes, $serviceId = null, $expires_in = null) {
+    public function getSubToken($scopes, ?int $serviceId = null, ?int $expires_in = null): AccessToken
+    {
         $scopeString = $scopes;
         if (is_array($scopes)) {
             $scopeString = implode(' ', $scopes);
         }
 
         $payload = [
-            'scope' => $scopeString
+            'scope' => $scopeString,
         ];
 
         if (!empty($serviceId)) {
@@ -297,9 +322,9 @@ class Customer extends NitrapiObject
      *
      * @return int
      */
-    public function getRateLimit()
+    public function getRateLimit(): int
     {
-        return isset($this->data['rate_limit']) ? $this->data['rate_limit'] : 15000;
+        return $this->data['rate_limit'] ?? 15000;
     }
 
     /**
@@ -307,12 +332,9 @@ class Customer extends NitrapiObject
      *
      * @return array
      */
-    public function getNewsletterCampaigns()
+    public function getNewsletterCampaigns(): array
     {
-        if(isset($this->data['newsletter_campaigns'])){
-            return $this->data['newsletter_campaigns'];
-        }
-        return [];
+        return $this->data['newsletter_campaigns'] ?? [];
     }
 
     /**
@@ -320,10 +342,11 @@ class Customer extends NitrapiObject
      *
      * @param int $newsletterCampaignId
      * @return true
+     * @throws NitrapiException
      */
-    public function subscribeToNewsletterCampaign($newsletterCampaignId)
+    public function subscribeToNewsletterCampaign(int $newsletterCampaignId): bool
     {
-        $this->getApi()->dataPost('user/newsletter_campaign/'.$newsletterCampaignId.'/subscribe');
+        $this->getApi()->dataPost('user/newsletter_campaign/' . $newsletterCampaignId . '/subscribe');
         return true;
     }
 
@@ -332,10 +355,11 @@ class Customer extends NitrapiObject
      *
      * @param int $newsletterCampaignId
      * @return true
+     * @throws NitrapiException
      */
-    public function unsubscribeFromNewsletterCampaign($newsletterCampaignId)
+    public function unsubscribeFromNewsletterCampaign(int $newsletterCampaignId): bool
     {
-        $this->getApi()->dataPut('user/newsletter_campaign/'.$newsletterCampaignId.'/unsubscribe');
+        $this->getApi()->dataPut('user/newsletter_campaign/' . $newsletterCampaignId . '/unsubscribe');
         return true;
     }
 }

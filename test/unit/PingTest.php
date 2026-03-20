@@ -6,10 +6,10 @@ use Nitrapi\Tests\NitrapiTestCase;
 use Nitrapi\Nitrapi;
 
 class PingTest extends NitrapiTestCase {
-    function testPing() {
+    public function testPing(): void {
         $nitrapi = $this->nitrapiMock(['ping' => []]);
 
         $response = $nitrapi->dataGet('ping');
-        $this->assertEquals($response, 'All systems operate as expected.');
+        $this->assertEquals('All systems operate as expected.', $response);
     }
 }

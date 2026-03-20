@@ -2,38 +2,37 @@
 
 namespace Nitrapi\Services\Gameservers\FileServer;
 
-use GuzzleHttp\Exception\RequestException;
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
 class FileServer
 {
-    /**
-     * @var Gameserver $service
-     */
+    /** @var Gameserver */
     protected $service;
 
-    protected $lastError = null;
-
-    public function __construct(Gameserver $service) {
+    public function __construct(Gameserver $service)
+    {
         $this->service = $service;
     }
 
     /**
-     * Returns the upload token and url. You can post the file by your own directly to the url.
+     * Returns the upload token and url. You can post the file directly to the url yourself.
      *
-     * @param $path
-     * @param $name
+     * @param string $path
+     * @param string $name
+     *
      * @return array
-     * @throws NitrapiErrorException
-     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     *
+     * @throws NitrapiException
      */
-    public function uploadToken($path, $name) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/upload";
-        $upload = $this->service->getApi()->dataPost($url, array(
+    public function uploadToken(string $path, string $name): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/upload";
+        $upload = $this->service->getApi()->dataPost($url, [
             'path' => $path,
-            'file' => $name
-        ));
+            'file' => $name,
+        ]);
 
         $token = $upload['token'];
         if (empty($token['token']) || empty($token['url'])) {
@@ -44,160 +43,135 @@ class FileServer
     }
 
     /**
-     * Uploads a specific file
+     * Uploads a local file to the game server.
      *
-     * @param $file
-     * @param $path
-     * @param $name
+     * @param string $file
+     * @param string $path
+     * @param string $name
      * @return bool
-     * @throws NitrapiErrorException
+     * @throws NitrapiException
      */
-    public function uploadFile($file, $path, $name) {
+    public function uploadFile(string $file, string $path, string $name): bool
+    {
         if (!file_exists($file) || !is_readable($file)) {
             throw new NitrapiErrorException('Can\'t find local file');
         }
 
         $upload = $this->uploadToken($path, $name);
+        $api = $this->service->getApi();
 
-        try {
-            $this->service->getApi()->post($upload['url'], array(
-                'headers' => array(
-                    'content-type' => 'application/binary',
-                    'token' => $upload['token']
-                ),
-                'body' => \GuzzleHttp\Psr7\stream_for(fopen($file, 'rb')),
-            ));
-        } catch (RequestException $e) {
-            $response = $e->getResponse()->json();
-            throw new NitrapiErrorException($response['message']);
-        }
+        $stream = $api->getStreamFactory()->createStreamFromResource(fopen($file, 'rb'));
+
+        $api->request('POST', $upload['url'], [
+            'headers' => [
+                'Content-Type' => 'application/binary',
+                'token' => $upload['token'],
+            ],
+            'body' => $stream,
+        ]);
 
         return true;
     }
 
     /**
-     * Returns a list with Bookmarks for easier Navigation.
+     * Returns a list of bookmarks for easier navigation.
      *
-     * @return array
+     * @throws NitrapiException
      */
-    public function getBookmarks() {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/bookmarks";
-
-        $entries = $this->service->getApi()->dataGet($url);
-
-        return $entries['bookmarks'];
+    public function getBookmarks(): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/bookmarks";
+        return $this->service->getApi()->dataGet($url)['bookmarks'];
     }
 
     /**
-     * Writes a specific file. File will be overwritten if it's already existing.
+     * Writes a file. The file is overwritten if it already exists.
      *
-     * @param $path
-     * @param $name
-     * @param $content
-     * @return bool
-     * @throws NitrapiErrorException
-     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     * @throws NitrapiException
      */
-    public function writeFile($path, $name, $content) {
+    public function writeFile(string $path, string $name, string $content): bool
+    {
         $upload = $this->uploadToken($path, $name);
+        $api = $this->service->getApi();
 
-        try {
-            $this->service->getApi()->dataPost($upload['url'], null, null, array(
-                'body' => $content,
-                'headers' => array(
-                    'content-type' => 'application/binary',
-                    'token' => $upload['token']
-                )
-            ));
-        } catch (RequestException $e) {
-            $response = $e->getResponse()->json();
-            throw new NitrapiErrorException($response['message']);
-        }
+        $api->request('POST', $upload['url'], [
+            'headers' => [
+                'Content-Type' => 'application/binary',
+                'token' => $upload['token'],
+            ],
+            'body' => $content,
+        ]);
 
         return true;
     }
 
     /**
-     * Lists all files and folder inside of a given directory
+     * Lists all files and folders inside a given directory.
      *
-     * @param string $dir Directory to list
-     * @param bool $summarizeFolders Summarize disk usage of folders. Increases response time
-     * @return array
-     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     * @throws NitrapiException
      */
-    public function getFileList($dir, $summarizeFolders = false) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
-
-        $entries = $this->service->getApi()->dataGet($url, null, [
+    public function getFileList(string $dir, bool $summarizeFolders = false): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/list";
+        return $this->service->getApi()->dataGet($url, null, [
             'query' => [
                 'dir' => $dir,
                 'summarize_folders' => $summarizeFolders ? 1 : 0,
-            ]
-        ]);
-
-        return $entries['entries'];
+            ],
+        ])['entries'];
     }
 
     /**
-     * Searches inside a specific directory recursively for specific file pattern.
+     * Recursively searches a directory for files matching a pattern.
      *
-     * @param $dir
-     * @param $search
-     * @return array
-     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     * @throws NitrapiException
      */
-    public function doFileSearch($dir, $search) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/list";
-
-        $entries = $this->service->getApi()->dataGet($url, null, [
+    public function doFileSearch(string $dir, string $search): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/list";
+        return $this->service->getApi()->dataGet($url, null, [
             'query' => [
                 'dir' => $dir,
-                'search' => $search
-            ]
-        ]);
-
-        return $entries['entries'];
+                'search' => $search,
+            ],
+        ])['entries'];
     }
 
     /**
-     * Returns the seek token and url for a file
+     * Returns the seek token and url for a file.
      *
-     * @param $file
-     * @return array
-     * @throws \Nitrapi\Common\Exceptions\NitrapiErrorException
+     * @throws NitrapiException
      */
-    public function seekToken($file, $offset, $length, $mode) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/seek";
+    public function seekToken(string $file, int $offset, int $length, string $mode): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/seek";
         $seek = $this->service->getApi()->dataGet($url, null, [
             'query' => [
                 'file' => $file,
                 'offset' => $offset,
                 'length' => $length,
-                'mode' => $mode
-            ]
+                'mode' => $mode,
+            ],
         ]);
 
         $token = $seek['token'];
         if (empty($token['token']) || empty($token['url'])) {
-            throw new NitrapiErrorException('Unknown error while getting download token');
+            throw new NitrapiErrorException('Unknown error while getting seek token');
         }
 
         return $seek;
     }
 
     /**
-     * Returns the download token and url for a file
+     * Returns the download token and url for a file.
      *
-     * @param $file
-     * @return array
-     * @throws \Nitrapi\Common\Exceptions\NitrapiErrorException
+     * @throws NitrapiException
      */
-    public function downloadToken($file) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/download";
+    public function downloadToken(string $file): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/download";
         $download = $this->service->getApi()->dataGet($url, null, [
-            'query' => [
-                'file' => $file
-            ]
+            'query' => ['file' => $file],
         ]);
 
         $token = $download['token'];
@@ -209,103 +183,72 @@ class FileServer
     }
 
     /**
-     * Downloads a file and safes it directly to a specified path
+     * Downloads a remote file and saves it to the local filesystem.
      *
-     * @param $file
-     * @param $path
-     * @param $name
-     * @return bool
-     * @throws \Nitrapi\Common\Exceptions\NitrapiErrorException
+     * @throws NitrapiException
      */
-    public function downloadFile($file, $path, $name) {
-        if (!is_writeable($path)) {
+    public function downloadFile(string $file, string $path, string $name): bool
+    {
+        if (!is_writable($path)) {
             throw new NitrapiErrorException('The target directory "' . $path . '" is not writeable');
         }
 
-        if (file_exists($path . DIRECTORY_SEPARATOR . $name)) {
-            throw new NitrapiErrorException('The target file '.$path . DIRECTORY_SEPARATOR . $name.' already exists');
+        $targetPath = $path . DIRECTORY_SEPARATOR . $name;
+        if (file_exists($targetPath)) {
+            throw new NitrapiErrorException('The target file ' . $targetPath . ' already exists');
         }
 
         $download = $this->downloadToken($file);
-
-        $resource = fopen($path . DIRECTORY_SEPARATOR . $name, 'wb');
-        $stream = \GuzzleHttp\Psr7\stream_for($resource);
-
-        $this->service->getApi()->request('GET', $download['token']['url'], [
-            'query' => [
-                'token' => $download['token']['token']
-            ],
-            'sink' => $stream
+        $response = $this->service->getApi()->request('GET', $download['token']['url'], [
+            'query' => ['token' => $download['token']['token']],
         ]);
+
+        file_put_contents($targetPath, (string)$response->getBody());
+
         return true;
     }
 
     /**
-     * Reads a part from a specific file
-     *
-     * @param $file
-     * @param $offset
-     * @param $count
-     * @return string
+     * Reads a portion of a remote file.
+     * @throws NitrapiException
      */
-    public function readPartFromFile($file, $offset = 0, $count = null) {
+    public function readPartFromFile(string $file, int $offset = 0, ?int $count = null): string
+    {
         $download = $this->downloadToken($file);
-
-        // Here we use the GuzzleClient API directly. This is intended, but
-        // should remain a special case. Don't copy this code.
         $response = $this->service->getApi()->request('GET', $download['token']['url'], [
             'query' => [
                 'token' => $download['token']['token'],
                 'offset' => $offset,
                 'count' => $count,
-            ]
+            ],
         ]);
 
-        return $response->getBody()->getContents();
+        return (string)$response->getBody();
     }
 
     /**
-     * Reads a specific file from the gameserver
+     * Reads a remote file, up to $maxKB kilobytes.
      *
-     * Read the content from a filepath, living on the gameserver host. You
-     * can access all files from your gameserver root directory which you
-     * have sufficient permissions for. To limit the amount of data you will
-     * receive from the host, you can set the $maxKB variable for that. This
-     * is especially useful, if you don't know the size of the file. The default
-     * is 100MB. If that limit is exceeded, an Exception is thrown. So always
-     * wrap that method call in a try-catch to make your code bullet proof.
-     *
-     * @param string $file remote filepath
-     * @param int $maxKB max size of the file.
-     * @return string requested file data
-     * @throws NitrapiErrorException if the requested file is too big
+     * @throws NitrapiErrorException if the file exceeds the size limit
+     * @throws NitrapiException
      */
-    public function readFile($file, $maxKB=102400) {
+    public function readFile(string $file, int $maxKB = 102400): string
+    {
         $download = $this->downloadToken($file);
-
-        // Here we use the GuzzleClient API directly. This is intended, but
-        // should remain a special case. Don't copy this code.
         $response = $this->service->getApi()->request('GET', $download['token']['url'], [
-            'timeout' => 20,
-            'query' => [
-                'token' => $download['token']['token']
-            ]
+            'query' => ['token' => $download['token']['token']],
         ]);
 
-        // Because PHP can't handle infinite amount of data in one request
-        // (PHP puts the data in memory), we read chunks of the file until
-        // we reach a byte limit. If we hit that limit, we throw an error,
-        // otherwise the data is returned.
         $body = $response->getBody();
         $bytesRead = 0;
         $data = '';
 
         while (!$body->eof()) {
-            $chunk = $body->read(1024);
+            $chunk = $body->read(8192);
             $data .= $chunk;
             $bytesRead += strlen($chunk);
 
-            if ($bytesRead >= $maxKB*1024) {
+            if ($bytesRead >= $maxKB * 1024) {
                 $body->close();
                 throw new NitrapiErrorException('File is too big.');
             }
@@ -315,186 +258,152 @@ class FileServer
     }
 
     /**
-     * Seek a specific
+     * Reads a range of bytes from a remote file.
      *
-     * @param $file
-     * @param $offset
-     * @param $length
-     * @param $mode [raw|lines]
+     * @param string $file
+     * @param int $offset
+     * @param int $length
+     * @param string $mode [raw|lines]
      * @return string
+     * @throws NitrapiException
      */
-    public function seekFile($file, $offset, $length = 4048, $mode = 'raw') {
+    public function seekFile(string $file, int $offset, int $length = 4048, string $mode = 'raw'): string
+    {
         $download = $this->seekToken($file, $offset, $length, $mode);
-
-        // Here we use the GuzzleClient API directly. This is intended, but
-        // should remain a special case. Don't copy this code.
         $response = $this->service->getApi()->request('GET', $download['token']['url'], [
-            'query' => [
-                'token' => $download['token']['token']
-            ]
+            'query' => ['token' => $download['token']['token']],
         ]);
 
-        return $response->getBody()->getContents();
+        return (string)$response->getBody();
     }
 
     /**
-     * Reads x bytes from file head
-     *
-     * @param $file
-     * @param length
-     * @return string
+     * Reads the first $length bytes of a remote file.
+     * @throws NitrapiException
      */
-    public function headFile($file, $length) {
+    public function headFile(string $file, int $length): string
+    {
         return $this->seekFile($file, 0, $length);
     }
 
     /**
-     * Reads x bytes from file tail
+     * Reads the last $length bytes of a remote file.
      *
-     * @param $file
-     * @param length
-     * @return string
+     * @throws NitrapiException
      */
-    public function tailFile($file, $length) {
-        return $this->seekFile($file, -($length), $length);
+    public function tailFile(string $file, int $length): string
+    {
+        return $this->seekFile($file, -$length, $length);
     }
 
     /**
-     * Deletes a file from server
-     *
-     * @param $file
-     * @return bool
+     * Deletes a file from the server.
+     * @throws NitrapiException
      */
-    public function deleteFile($file) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/delete";
-        $this->service->getApi()->dataDelete($url, array(
-            'path' => $file
-        ));
-
+    public function deleteFile(string $file): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/delete";
+        $this->service->getApi()->dataDelete($url, ['path' => $file]);
         return true;
     }
 
     /**
-     * Returns stat infos by file array
-     *
-     * @param $files
-     * @return array
+     * Returns stat info for an array of file paths.
+     * @throws NitrapiException
      */
-    public function statFiles(array $files) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/stat";
-
+    public function statFiles(array $files): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/stat";
         return $this->service->getApi()->dataGet($url, null, [
-            'query' => [
-                'files' => $files
-            ]
+            'query' => ['files' => $files],
         ])['entries'];
     }
 
     /**
-     * Gets the file size of the given path
-     *
-     * @param $path
-     * @return int
+     * Returns the disk usage of a path.
+     * @throws NitrapiException
      */
-    public function pathSize($path) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/size";
-        $result = $this->service->getApi()->dataGet($url, null, [
-            'query' => [
-                'path' => $path
-            ]
-        ]);
-
-        return (int)$result['size'];
+    public function pathSize(string $path): int
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/size";
+        return (int)$this->service->getApi()->dataGet($url, null, [
+            'query' => ['path' => $path],
+        ])['size'];
     }
 
     /**
-     * Deletes a directory with content from server
-     *
-     * @param $directory
-     * @return bool
+     * Recursively deletes a directory.
+     * @throws NitrapiException
      */
-    public function deleteDirectory($directory) {
+    public function deleteDirectory(string $directory): bool
+    {
         return $this->deleteFile($directory);
     }
 
     /**
-     * Moves a file to another directory
-     *
-     * @param $sourceFile
-     * @param $targetDir
-     * @param $fileName
-     * @return bool
+     * Moves a file to another directory.
+     * @throws NitrapiException
      */
-    public function moveFile($sourceFile, $targetDir, $fileName) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/move";
-        $this->service->getApi()->dataPost($url, array(
+    public function moveFile(string $sourceFile, string $targetDir, string $fileName): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/move";
+        $this->service->getApi()->dataPost($url, [
             'source_path' => $sourceFile,
             'target_path' => $targetDir,
-            'target_filename' => $fileName
-        ));
+            'target_filename' => $fileName,
+        ]);
         return true;
     }
 
     /**
-     * Moves a directory to another directory (recursive)
-     *
-     * @param $source
-     * @param $target
-     * @return bool
+     * Moves a directory recursively.
+     * @throws NitrapiException
      */
-    public function moveDirectory($source, $target) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/move";
-        $this->service->getApi()->dataPost($url, array(
+    public function moveDirectory(string $source, string $target): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/move";
+        $this->service->getApi()->dataPost($url, [
             'source_path' => $source,
-            'target_path' => $target
-        ));
+            'target_path' => $target,
+        ]);
         return true;
     }
 
     /**
-     * Copies a file to another directory
-     *
-     * @param $source
-     * @param $targetDir
-     * @param $fileName
-     * @return bool
+     * Copies a file to another directory.
+     * @throws NitrapiException
      */
-    public function copyFile($source, $targetDir, $fileName) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/copy";
-        $this->service->getApi()->dataPost($url, array(
+    public function copyFile(string $source, string $targetDir, string $fileName): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/copy";
+        $this->service->getApi()->dataPost($url, [
             'source_path' => $source,
             'target_path' => $targetDir,
-            'target_name' => $fileName
-        ));
+            'target_name' => $fileName,
+        ]);
         return true;
     }
 
-
     /**
-     * Copies a directory to another directory (recursive)
-     *
-     * @param $source
-     * @param $targetDir
-     * @param $dirName
-     * @return bool
+     * Recursively copies a directory.
+     * @throws NitrapiException
      */
-    public function copyDirectory($source, $targetDir, $dirName) {
+    public function copyDirectory(string $source, string $targetDir, string $dirName): bool
+    {
         return $this->copyFile($source, $targetDir, $dirName);
     }
 
     /**
-     * Creates a new directory
-     *
-     * @param $path
-     * @param $name
-     * @return bool
+     * Creates a new directory.
+     * @throws NitrapiException
      */
-    public function createDirectory($path, $name) {
-        $url = "/services/".$this->service->getId()."/gameservers/file_server/mkdir";
-        $this->service->getApi()->dataPost($url, array(
+    public function createDirectory(string $path, string $name): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/file_server/mkdir";
+        $this->service->getApi()->dataPost($url, [
             'path' => $path,
-            'name' => $name
-        ));
+            'name' => $name,
+        ]);
         return true;
     }
 }

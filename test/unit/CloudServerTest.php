@@ -5,29 +5,30 @@ namespace Nitrapi\Tests;
 use Nitrapi\Tests\NitrapiTestCase;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\CloudServers\CloudServer;
+use Nitrapi\Services\CloudServers\Image;
 
 class CloudServerTest extends NitrapiTestCase {
     private $images = null;
     
-    function setUp() {
+    public function setUp(): void {
         $nitrapi = $this->nitrapiMock([
             'cloud_server.images' => []
         ]);
         $this->images = CloudServer::getAvailableImages($nitrapi);
     }
 
-    function testImageObjectCreation() {
-        $this->assertInstanceOf('Nitrapi\Services\CloudServers\Image', $this->images[0]);
+    public function testImageObjectCreation(): void {
+        $this->assertInstanceOf(Image::class, $this->images[0]);
     }
 
-    function testImageAttributes() {
+    public function testImageAttributes(): void {
         $linux = $this->images[0];
-        $this->assertEquals($linux->getId(), 2);
-        $this->assertEquals($linux->getName(), "Ubuntu 14.04 LTS (Plain)");
+        $this->assertEquals(2, $linux->getId());
+        $this->assertEquals("Ubuntu 14.04 LTS (Plain)", $linux->getName());
         $this->assertFalse($linux->isWindows());
     }
 
-    function testImageWindowsFlag() {
+    public function testImageWindowsFlag(): void {
         $this->assertFalse($this->images[0]->isWindows());
         $this->assertTrue($this->images[1]->isWindows());
     }

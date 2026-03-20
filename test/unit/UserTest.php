@@ -11,12 +11,12 @@ class UserTest extends NitrapiTestCase {
     /**
      * @before
      */
-    function setupUser() {
+    public function setupUser(): void {
         $nitrapi = $this->nitrapiMock(['user' => []]);
         $this->user = $nitrapi->getCustomer();
     }
 
-    function testFindAUser() {
+    public function testFindAUser(): void {
         $this->assertEquals('Marty', $this->user->getUsername());
         $this->assertEquals(1337, $this->user->getUserId());
         $this->assertEquals(1955, $this->user->getCredit());
@@ -24,7 +24,7 @@ class UserTest extends NitrapiTestCase {
         $this->assertEquals('eng', $this->user->get('language'));
     }
 
-    function testPersonalData() {
+    public function testPersonalData(): void {
         $this->assertEquals('Marty McFly', $this->user->getPersonalData()['name']);
         $this->assertEquals('DeLorean Street 12', $this->user->getPersonalData()['street']);
         $this->assertEquals('2209', $this->user->getPersonalData()['postcode']);

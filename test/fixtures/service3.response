@@ -2,6 +2,7 @@
    "status":"success",
    "data":{
       "service":{
+         "status":"active",
          "id":3,
          "websocket_token":"b05ac3d5d71a8858fca3011a8c179f1d9ec5ab41",
          "user_id":2,

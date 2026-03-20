@@ -3,104 +3,102 @@
 namespace Nitrapi\Common\Http;
 
 use DateTime;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\Response;
 use Nitrapi\Common\Exceptions\NitrapiConcurrencyException;
 use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
 use Nitrapi\Common\Exceptions\NitrapiMaintenanceException;
 use Nitrapi\Common\Exceptions\NitrapiRateLimitException;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
-class Client extends GuzzleClient
+class Client
 {
-    const MINIMUM_PHP_VERSION = '5.5.0';
+    public const MINIMUM_PHP_VERSION = '7.3.0';
 
+    /** @var ClientInterface */
+    protected $httpClient;
+
+    /** @var RequestFactoryInterface */
+    protected $requestFactory;
+
+    /** @var StreamFactoryInterface */
+    protected $streamFactory;
+
+    /** @var string */
+    protected $baseUrl;
+
+    /** @var array */
     protected $defaultQuery = [];
 
-    protected $accessToken = null;
+    /** @var string|null */
+    protected $accessToken;
 
-    // Rate Limit metadata
-    /** @var integer */
+    // Rate limit metadata
+    /** @var int|false|null */
     protected $rateLimit;
-    /** @var integer */
+    /** @var int */
     protected $remainingRequests;
     /** @var DateTime */
     protected $rateLimitResetTime;
 
-    protected $clientCertificate;
-    protected $clientCertificateKey;
-
-    public function __construct($baseUrl = '', $config = null)
-    {
-        if (PHP_VERSION < self::MINIMUM_PHP_VERSION) {
+    /**
+     * @throws NitrapiException
+     */
+    public function __construct(
+        ClientInterface $httpClient,
+        RequestFactoryInterface $requestFactory,
+        StreamFactoryInterface $streamFactory,
+        string $baseUrl = '',
+        ?array $config = null
+    ) {
+        if (version_compare(PHP_VERSION, self::MINIMUM_PHP_VERSION, '<')) {
             throw new NitrapiException(sprintf(
                 'You must have PHP version >= %s installed.',
                 self::MINIMUM_PHP_VERSION
             ));
         }
+        $this->httpClient = $httpClient;
+        $this->requestFactory = $requestFactory;
+        $this->streamFactory = $streamFactory;
+        $this->baseUrl = rtrim($baseUrl, '/');
+
         if (isset($config['query'])) {
             $this->defaultQuery = $config['query'];
         }
-        $config['base_uri'] = $baseUrl;
-        parent::__construct($config);
     }
 
     /**
-     * Specifies the path to a client certificate and key in PEM format.
-     *
-     * @param $cert
-     * @param $privateKey
-     * @return $this
+     * Returns the stream factory (used by FileServer classes for binary uploads/downloads).
      */
-    public function setClientCertificate($cert, $privateKey)
+    public function getStreamFactory(): StreamFactoryInterface
     {
-        $this->clientCertificate = $cert;
-        $this->clientCertificateKey = $privateKey;
-
-        return $this;
+        return $this->streamFactory;
     }
 
     /**
-     * Set a new access token.
-     *
-     * @param $accessToken
-     * @return $this
+     * Set the access token used for Bearer authentication.
      */
-    protected function setAccessToken($accessToken)
+    protected function setAccessToken(?string $accessToken): self
     {
         $this->accessToken = $accessToken;
-
         return $this;
     }
 
     /**
      * Returns the current access token.
-     *
-     * @return null
      */
-    protected function getAccessToken()
+    protected function getAccessToken(): ?string
     {
         return $this->accessToken;
     }
 
-    public function fillOptions(&$options)
-    {
-        if (!empty($this->accessToken)) {
-            $options['headers']['Authorization'] = 'Bearer ' . $this->accessToken;
-        }
-        if (!empty($this->clientCertificate) && file_exists($this->clientCertificate)) {
-            $options[\GuzzleHttp\RequestOptions::CERT] = $this->clientCertificate;
-        }
-        if (!empty($this->clientCertificateKey) && file_exists($this->clientCertificateKey)) {
-            $options[\GuzzleHttp\RequestOptions::SSL_KEY] = $this->clientCertificateKey;
-        }
-    }
-
     /**
-     * Rate limit
+     * Returns the number of requests allowed per hour.
      *
-     * @return int The number of requests which are allowed in one hour.
+     * @return int|false|null
      */
     public function getRateLimit()
     {
@@ -108,57 +106,106 @@ class Client extends GuzzleClient
     }
 
     /**
-     * Check for rate limit
-     *
-     * @return bool if there is a rate limit in place
+     * Returns true if a rate limit is in place.
      */
-    public function hasRateLimit()
+    public function hasRateLimit(): bool
     {
         return $this->rateLimit !== null && $this->rateLimit !== false;
     }
 
     /**
-     * Remaining requests
-     *
-     * @return int The number of requests remaining until the rate limit is exceeded.
+     * Returns the number of requests remaining before the rate limit is hit.
      */
-    public function getRemainingRequests()
+    public function getRemainingRequests(): int
     {
         return $this->remainingRequests;
     }
 
     /**
-     * Rate limit reset time
-     *
-     * @return DateTime The time the rate limit will be reset
+     * Returns the time at which the rate limit will be reset.
      */
-    public function getRateLimitResetTime()
+    public function getRateLimitResetTime(): DateTime
     {
         return $this->rateLimitResetTime;
     }
 
     /**
-     * Parse the NitrAPI response
+     * Builds and sends a PSR-7 request. Returns the raw PSR-7 response.
      *
-     * @param Response $response
-     * @return bool|mixed true if response is fine but without message, data or message otherwise.
-     * @throws NitrapiHttpErrorException when the API responds with an error message.
-     * @throws NitrapiRateLimitException when the user ran into the rate limit.
+     * Recognised option keys:
+     *   headers    array<string,string>  Additional request headers
+     *   query      array<string,mixed>   Query-string parameters (merged with defaultQuery)
+     *   body       string                Raw request body
+     *   form_params array               URL-encoded form body (sets Content-Type automatically)
+     *
+     * @throws NitrapiHttpErrorException on network-level failures
      */
-    public function parseResponse(Response $response)
+    public function request(string $method, string $url, array $options = []): ResponseInterface
+    {
+        // Resolve URL: prepend base URL when the URL is relative
+        if (!preg_match('#^https?://#', $url)) {
+            $url = $this->baseUrl . '/' . ltrim($url, '/');
+        }
+
+        // Merge and append query string
+        $query = array_merge($this->defaultQuery, $options['query'] ?? []);
+        if (!empty($query)) {
+            $sep = strpos($url, '?') === false ? '?' : '&';
+            $url .= $sep . http_build_query($query, '', '&');
+        }
+
+        $request = $this->requestFactory->createRequest($method, $url);
+
+        // Authorization header
+        if (!empty($this->accessToken)) {
+            $request = $request->withHeader('Authorization', 'Bearer ' . $this->accessToken);
+        }
+
+        // Additional headers
+        foreach ($options['headers'] ?? [] as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
+
+        // Body: prefer explicit 'body' string, fall back to url-encoded form_params
+        if (isset($options['body'])) {
+            $body = is_string($options['body'])
+                ? $this->streamFactory->createStream($options['body'])
+                : $options['body']; // allow StreamInterface to be passed directly
+            $request = $request->withBody($body);
+        } elseif (!empty($options['form_params'])) {
+            $request = $request
+                ->withHeader('Content-Type', 'application/x-www-form-urlencoded')
+                ->withBody($this->streamFactory->createStream(http_build_query($options['form_params'])));
+        }
+
+        try {
+            return $this->httpClient->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
+            $this->handleException($e);
+        }
+    }
+
+    /**
+     * Parses a NitrAPI response into its payload.
+     *
+     * Handles rate-limit headers, HTTP error status codes, and JSON unwrapping.
+     *
+     * @return bool|string|array true when the response is successful but has no payload.
+     * @throws NitrapiRateLimitException
+     * @throws NitrapiHttpErrorException
+     * @throws NitrapiMaintenanceException
+     * @throws NitrapiConcurrencyException
+     */
+    public function parseResponse(ResponseInterface $response)
     {
         // Rate limit metadata
         if ($response->hasHeader('X-RateLimit-Limit')) {
-            $this->rateLimit = $response->getHeader('X-RateLimit-Limit')[0];
-            $this->remainingRequests = $response->getHeader('X-RateLimit-Remaining')[0];
+            $this->rateLimit = (int) $response->getHeaderLine('X-RateLimit-Limit');
+            $this->remainingRequests = (int) $response->getHeaderLine('X-RateLimit-Remaining');
             $resetDateTime = new DateTime();
-            $resetDateTime->setTimestamp($response->getHeader('X-RateLimit-Reset')[0]);
+            $resetDateTime->setTimestamp((int) $response->getHeaderLine('X-RateLimit-Reset'));
             $this->rateLimitResetTime = $resetDateTime;
 
-            // We ran into the rate limit, so we throw an exception with all needed information.
-            // This gives the client the option to handle that error. To access the rate limit
-            // metadata, the getRateLimit(), getRemainingRequests() and getRateLimitResetTime()
-            // method can be used at any time.
             if ($response->getStatusCode() === 429) {
                 throw new NitrapiRateLimitException($this->getRateLimit(), $this->getRateLimitResetTime());
             }
@@ -166,19 +213,47 @@ class Client extends GuzzleClient
             $this->rateLimit = false;
         }
 
-        $contentType = $response->getHeader('Content-Type')[0];
+        // Map HTTP error status codes to domain exceptions
+        $status = $response->getStatusCode();
+        if ($status === 503) {
+            $msg = $this->extractErrorMessage($response);
+            $e = new NitrapiMaintenanceException($msg);
+            $e->setResponse($response);
+            throw $e;
+        }
+        if ($status === 428) {
+            $msg = $this->extractErrorMessage($response);
+            $e = new NitrapiConcurrencyException($msg);
+            $e->setResponse($response);
+            throw $e;
+        }
+        if ($status < 200 || ($status >= 300 && $status !== 429)) {
+            $msg = $this->extractErrorMessage($response) ?: "Invalid http status code {$status}";
+            $e = new NitrapiHttpErrorException($msg);
+            $e->setResponse($response);
+            $errorId = $response->getHeaderLine('X-Raven-Event-ID');
+            if (!empty($errorId)) {
+                $e->setErrorId($errorId);
+            }
+            throw $e;
+        }
 
-        // Return plain text
-        if (preg_match("/text\\/plain/i", $contentType)) {
+        $contentType = $response->getHeaderLine('Content-Type');
+
+        // Plain text response
+        if (preg_match('#text/plain#i', $contentType)) {
             return $response->getBody()->getContents();
         }
 
-        // Parse json
-        $json = @json_decode($response->getBody(), true);
+        try {
+            $json = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new NitrapiHttpErrorException("Error parsing JSON: {$e->getMessage()}", $e->getCode(), $e);
+        }
 
-        // check for errors in json response
+        // Application-level error in JSON body
         if (is_array($json) && isset($json['status']) && $json['status'] === 'error') {
-            throw new NitrapiHttpErrorException($json["message"]);
+            throw new NitrapiHttpErrorException($json['message'] ?? 'Unknown error');
         }
 
         if (isset($json['data']) && is_array($json['data'])) {
@@ -192,209 +267,139 @@ class Client extends GuzzleClient
         return true;
     }
 
-    /**
-     * @param $url
-     * @param array $headers
-     * @param array $options
-     * @return mixed
-     */
-    public function dataGet($url, $headers = null, $options = array())
-    {
-        try {
-            if (!isset($options['headers'])) {
-                $options['headers'] = [];
-            }
-            if (is_array($headers)) {
-                $options['headers'] = array_merge($options['headers'], $headers);
-            }
-            if (is_array($options) && isset($options['query'])) {
-                $options['query'] = array_merge($options['query'], $this->defaultQuery);
-            }
-            $this->fillOptions($options);
-
-            $response = $this->request('GET', $url, $options);
-            $this->checkErrors($response);
-            return $this->parseResponse($response);
-        } catch (RequestException $e) {
-            $this->handleException($e);
-        }
-    }
+    // -------------------------------------------------------------------------
+    // Convenience HTTP methods
+    // -------------------------------------------------------------------------
 
     /**
-     * @param $url
-     * @param array $body
-     * @param array $headers
-     * @param array $options
-     * @return mixed
-     */
-    public function dataPut($url, $body = null, $headers = null, $options = array())
-    {
-        try {
-            if (is_array($body)) {
-                $options['form_params'] = $body;
-            }
-            if (is_array($headers)) {
-                $options['headers'] = $headers;
-            }
-            if (is_array($options) && isset($options['query'])) {
-                $options['query'] = array_merge($options['query'], $this->defaultQuery);
-            }
-            $this->fillOptions($options);
-
-            $response = $this->request('PUT', $url, $options);
-            $this->checkErrors($response);
-            return $this->parseResponse($response);
-        } catch (RequestException $e) {
-            $this->handleException($e);
-        }
-    }
-
-    /**
-     * @param $url
-     * @param array $body
-     * @param array $headers
-     * @param array $options
-     * @return mixed
-     */
-    public function dataPatch($url, $body = null, $headers = null, $options = array())
-    {
-        try {
-            if (is_array($body)) {
-                $options['form_params'] = $body;
-            }
-            if (!isset($options['headers'])) {
-                $options['headers'] = [];
-            }
-            if (is_array($headers)) {
-                $options['headers'] = array_merge($options['headers'], $headers);
-            }
-            if (is_array($options) && isset($options['query'])) {
-                $options['query'] = array_merge($options['query'], $this->defaultQuery);
-            }
-            $this->fillOptions($options);
-
-            $response = $this->request('PATCH', $url, $options);
-            $this->checkErrors($response);
-            return $this->parseResponse($response);
-        } catch (RequestException $e) {
-            $this->handleException($e);
-        }
-    }
-
-    /**
-     * @param $url
-     * @param array $body
-     * @param array $headers
-     * @param array $options
-     * @return mixed
-     */
-    public function dataPost($url, $body = null, $headers = null, $options = array())
-    {
-        try {
-            if (is_array($body)) {
-                $options['form_params'] = $body;
-            }
-            if (!isset($options['headers'])) {
-                $options['headers'] = [];
-            }
-            if (is_array($headers)) {
-                $options['headers'] = array_merge($options['headers'], $headers);
-            }
-            if (is_array($options) && isset($options['query'])) {
-                $options['query'] = array_merge($options['query'], $this->defaultQuery);
-            }
-            $this->fillOptions($options);
-
-            $response = $this->request('POST', $url, $options);
-            $this->checkErrors($response);
-            return $this->parseResponse($response);
-        } catch (RequestException $e) {
-            $this->handleException($e);
-        }
-    }
-
-    /**
-     * @param $url
-     * @param array $body
-     * @param array $headers
-     * @param array $options
-     * @return bool
-     */
-    public function dataDelete($url, $body = null, $headers = null, $options = array())
-    {
-        try {
-            if (is_array($body)) {
-                $options['form_params'] = $body;
-            }
-            if (!isset($options['headers'])) {
-                $options['headers'] = [];
-            }
-            if (is_array($headers)) {
-                $options['headers'] = array_merge($options['headers'], $headers);
-            }
-            if (is_array($options) && isset($options['query'])) {
-                $options['query'] = array_merge($options['query'], $this->defaultQuery);
-            }
-            $this->fillOptions($options);
-
-            $response = $this->request('DELETE', $url, $options);
-            $this->checkErrors($response);
-            return $this->parseResponse($response);
-        } catch (RequestException $e) {
-            $this->handleException($e);
-        }
-    }
-
-    /**
-     * Exception handling for Nitrapi
+     * @param string      $url
+     * @param array|null  $headers  Additional headers
+     * @param array       $options  request() option keys (query, etc.)
      *
-     * @param RequestException $e
-     * @throws NitrapiConcurrencyException
-     * @throws NitrapiHttpErrorException
-     * @throws NitrapiMaintenanceException
+     * @return bool|string|array
+     *
+     * @throws NitrapiException
      */
-    protected function handleException(RequestException $e)
+    public function dataGet(string $url, ?array $headers = null, array $options = [])
     {
-        if ($e->hasResponse()) {
-            $response = json_decode($e->getResponse()->getBody(), true);
-            $errorId = $e->getResponse()->getHeader('X-Raven-Event-ID');
-
-            $msg = isset($response['message']) ? $response['message'] : 'Unknown error';
-            switch ($e->getResponse()->getStatusCode()) {
-                case 503:
-                    $exception = new NitrapiMaintenanceException($msg);
-                    break;
-                case 428:
-                    $exception = new NitrapiConcurrencyException($msg);
-                    break;
-                default:
-                    $exception = new NitrapiHttpErrorException($msg);
-            }
-            $exception->setResponse($e->getResponse());
-            if (!empty($errorId)) $exception->setErrorId($errorId);
-            throw $exception;
+        if (is_array($headers)) {
+            $options['headers'] = array_merge($options['headers'] ?? [], $headers);
         }
-
-        throw new NitrapiHttpErrorException($e->getMessage());
+        return $this->parseResponse($this->request('GET', $url, $options));
     }
 
     /**
-     * Checks error responses
+     * @param string      $url
+     * @param array|null  $body     Form parameters
+     * @param array|null  $headers  Additional headers
+     * @param array       $options
      *
-     * @param Response $response
-     * @param int $responseCode
+     * @return bool|string|array
+     *
+     * @throws NitrapiException
+     */
+    public function dataPut(string $url, ?array $body = null, ?array $headers = null, array $options = [])
+    {
+        if (is_array($body)) {
+            $options['form_params'] = $body;
+        }
+        if (is_array($headers)) {
+            $options['headers'] = array_merge($options['headers'] ?? [], $headers);
+        }
+        return $this->parseResponse($this->request('PUT', $url, $options));
+    }
+
+    /**
+     * @param string      $url
+     * @param array|null  $body
+     * @param array|null  $headers
+     * @param array       $options
+     *
+     * @return bool|string|array
+     *
+     * @throws NitrapiException
+     */
+    public function dataPatch(string $url, ?array $body = null, ?array $headers = null, array $options = [])
+    {
+        if (is_array($body)) {
+            $options['form_params'] = $body;
+        }
+        if (is_array($headers)) {
+            $options['headers'] = array_merge($options['headers'] ?? [], $headers);
+        }
+        return $this->parseResponse($this->request('PATCH', $url, $options));
+    }
+
+    /**
+     * @param string      $url
+     * @param array|null  $body
+     * @param array|null  $headers
+     * @param array       $options
+     *
+     * @return bool|string|array
+     *
+     * @throws NitrapiException
+     */
+    public function dataPost(string $url, ?array $body = null, ?array $headers = null, array $options = [])
+    {
+        if (is_array($body)) {
+            $options['form_params'] = $body;
+        }
+        if (is_array($headers)) {
+            $options['headers'] = array_merge($options['headers'] ?? [], $headers);
+        }
+        return $this->parseResponse($this->request('POST', $url, $options));
+    }
+
+    /**
+     * @param string      $url
+     * @param array|null  $body
+     * @param array|null  $headers
+     * @param array       $options
+     *
+     * @return bool|string|array
+     *
+     * @throws NitrapiException
+     */
+    public function dataDelete(string $url, ?array $body = null, ?array $headers = null, array $options = [])
+    {
+        if (is_array($body)) {
+            $options['form_params'] = $body;
+        }
+        if (is_array($headers)) {
+            $options['headers'] = array_merge($options['headers'] ?? [], $headers);
+        }
+        return $this->parseResponse($this->request('DELETE', $url, $options));
+    }
+
+    // -------------------------------------------------------------------------
+    // Internals
+    // -------------------------------------------------------------------------
+
+    /**
+     * Handles a PSR-18 network-level client exception (connection failures, etc.).
+     *
      * @throws NitrapiHttpErrorException
      */
-    protected function checkErrors(Response $response, $responseCode = 200)
+    protected function handleException(ClientExceptionInterface $e): void
     {
-        $allowedPorts = array();
-        $allowedPorts[] = $responseCode;
-        if ($responseCode == 200) {
-            $allowedPorts[] = 201;
-        }
+        throw new NitrapiHttpErrorException($e->getMessage(), 0, $e);
+    }
 
-        if (!in_array($response->getStatusCode(), $allowedPorts)) {
-            throw new NitrapiHttpErrorException("Invalid http status code " . $response->getStatusCode());
+    /**
+     * Attempts to extract a human-readable error message from a response body.
+     */
+    private function extractErrorMessage(ResponseInterface $response): string
+    {
+        $body = (string) $response->getBody();
+        try {
+            $json = @json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            return 'Unknown error';
         }
+        if (is_array($json) && isset($json['message'])) {
+            return $json['message'];
+        }
+        return $body ?: 'Unknown error';
     }
 }
