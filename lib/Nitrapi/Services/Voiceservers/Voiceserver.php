@@ -3,15 +3,20 @@
 namespace Nitrapi\Services\Voiceservers;
 
 use Nitrapi\Common\Exceptions\NitrapiErrorException;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiServiceTypeNotFoundException;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
 
 class Voiceserver extends Service
 {
-    protected $info = null;
+    protected $info;
 
-    public function __construct(Nitrapi $api, $data) {
+    /**
+     * @throws NitrapiException
+     */
+    public function __construct(Nitrapi $api, $data)
+    {
         parent::__construct($api, $data);
 
         if ($this->isActive()) {
@@ -19,18 +24,23 @@ class Voiceserver extends Service
         }
     }
 
-    public function refresh() {
+    /**
+     * @throws NitrapiException
+     */
+    public function refresh(): void
+    {
         $url = "services/" . $this->getId() . "/voiceservers";
         $this->info = $this->getApi()->dataGet($url);
     }
 
     /**
-     * Returns informations about the voiceserver
+     * Returns information about the voiceserver
      *
      * @return VoiceserverDetails
      * @throws NitrapiErrorException
      */
-    public function getDetails() {
+    public function getDetails(): VoiceserverDetails
+    {
         if (!isset($this->info['voiceserver'])) {
             throw new NitrapiErrorException('No voiceserver data available');
         }
@@ -41,30 +51,36 @@ class Voiceserver extends Service
      * Restarts the voiceserver
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function doRestart() {
+    public function doRestart(): bool
+    {
         $url = "services/" . $this->getId() . "/voiceservers/restart";
         $this->getApi()->dataPost($url);
         return true;
     }
 
     /**
-     * Stopps the voiceserver
+     * Stops the voiceserver
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function doStop() {
+    public function doStop(): bool
+    {
         $url = "services/" . $this->getId() . "/voiceservers/stop";
         $this->getApi()->dataPost($url);
         return true;
     }
 
     /**
-     * Stopps the voiceserver
+     * Stops the voiceserver
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function doReinstall() {
+    public function doReinstall(): bool
+    {
         $url = "services/" . $this->getId() . "/voiceservers/reinstall";
         $this->getApi()->dataPost($url);
 
@@ -74,13 +90,14 @@ class Voiceserver extends Service
     /**
      * Configures the voiceserver
      *
-     * @return bool
+     * @throws NitrapiException
      */
-    public function doConfigChange($key, $value) {
+    public function doConfigChange($key, $value): bool
+    {
         $url = "services/" . $this->getId() . "/voiceservers";
         $this->getApi()->dataPost($url, [
             'key' => $key,
-            'value' => $value
+            'value' => $value,
         ]);
 
         return true;
@@ -88,23 +105,19 @@ class Voiceserver extends Service
 
     /**
      * Returns all available Backups
-     *
-     * @return array
      */
-    public function getBackups() {
-        if (!isset($this->info['voiceserver']['specific']['snapshots'])) {
-            return [];
-        }
-
-        return $this->info['voiceserver']['specific']['snapshots'];
+    public function getBackups(): array
+    {
+        return $this->info['voiceserver']['specific']['snapshots'] ?? [];
     }
 
     /**
      * Creates a new Backup
      *
-     * @return array
+     * @throws NitrapiException
      */
-    public function createBackup() {
+    public function createBackup(): array
+    {
         $url = "services/" . $this->getId() . "/voiceservers/backup";
         $result = $this->getApi()->dataPost($url)['snapshot'];
 
@@ -116,11 +129,11 @@ class Voiceserver extends Service
      * Deployes a specific snapshot to the Voiceserver
      * The server will be restarted after a successful deployment.
      *
-     * @param $id
-     * @return bool
+     * @throws NitrapiException
      */
-    public function restoreBackup($id) {
-        $url = "services/" . $this->getId() . "/voiceservers/backup/".(int)$id."/restore";
+    public function restoreBackup($id): bool
+    {
+        $url = "services/" . $this->getId() . "/voiceservers/backup/" . (int)$id . "/restore";
         $this->getApi()->dataPost($url);
 
         return true;
@@ -129,11 +142,11 @@ class Voiceserver extends Service
     /**
      * Deletes a specific Backup from the Voiceserver
      *
-     * @param $id
-     * @return bool
+     * @throws NitrapiException
      */
-    public function deleteBackup($id) {
-        $url = "services/" . $this->getId() . "/voiceservers/backup/".(int)$id;
+    public function deleteBackup($id): bool
+    {
+        $url = "services/" . $this->getId() . "/voiceservers/backup/" . (int)$id;
         $this->getApi()->dataDelete($url);
 
         $this->refresh();
@@ -143,20 +156,24 @@ class Voiceserver extends Service
     /**
      * Downloads a specific backup file
      *
-     * @param $id
-     * @return string
+     * @throws NitrapiException
      */
-    public function downloadBackup($id) {
-        $url = "services/" . $this->getId() . "/voiceservers/backup/".(int)$id;
+    public function downloadBackup($id): string
+    {
+        $url = "services/" . $this->getId() . "/voiceservers/backup/" . (int)$id;
         $backup = $this->getApi()->dataGet($url)['snapshot'];
 
         return base64_decode($backup);
     }
 
-    public function uploadBackup($backup) {
+    /**
+     * @throws NitrapiException
+     */
+    public function uploadBackup($backup)
+    {
         $url = "services/" . $this->getId() . "/voiceservers/backup/upload/";
         $result = $this->getApi()->dataPost($url, null, null, [
-            'body' => base64_encode($backup)
+            'body' => base64_encode($backup),
         ])['snapshot'];
 
         $this->refresh();
@@ -165,12 +182,17 @@ class Voiceserver extends Service
 
     /**
      * Returns a voiceserver type instance
-     **/
-    public function getVoiceserverTypeInstance() {
+     * @throws NitrapiServiceTypeNotFoundException
+     * @throws NitrapiException
+     */
+    public function getVoiceserverTypeInstance()
+    {
         $class = "Nitrapi\\Services\\Voiceservers\\Types\\" . ucfirst($this->getDetails()->getType());
 
         if (!class_exists($class)) {
-            throw new NitrapiServiceTypeNotFoundException("Voiceserver Type " . $this->getDetails()->getType() . " not found");
+            throw new NitrapiServiceTypeNotFoundException(
+                "Voiceserver Type " . $this->getDetails()->getType() . " not found",
+            );
         }
 
         return new $class($this);

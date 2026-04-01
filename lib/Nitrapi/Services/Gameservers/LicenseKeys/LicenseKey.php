@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\Gameservers\LicenseKeys;
 
+use DateTime;
 use Nitrapi\Services\Gameservers\Gameserver;
 use Nitrapi\Services\ServiceItem;
 
@@ -18,28 +19,37 @@ class LicenseKey extends ServiceItem
     protected $key;
     protected $type;
 
-    public function __construct(Gameserver $service, array &$data) {
+    public function __construct(Gameserver $service, array &$data)
+    {
         parent::__construct($service, $data);
         $this->setService($service);
     }
 
-    public function getId() {
+    public function getId(): int
+    {
         return (int)$this->id;
     }
 
-    public function getKey() {
+    public function getKey()
+    {
         return $this->key;
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
-    public function getGame() {
+    public function getGame()
+    {
         return $this->game_short;
     }
 
-    public function getAssignedDateTime() {
-        return new \DateTime($this->assigned_at);
+    /**
+     * @throws \Exception
+     */
+    public function getAssignedDateTime(): DateTime
+    {
+        return new DateTime($this->assigned_at);
     }
 }

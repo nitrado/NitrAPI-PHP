@@ -11,7 +11,8 @@ abstract class Type
      */
     protected $service;
 
-    public function __construct(Voiceserver $service) {
+    public function __construct(Voiceserver $service)
+    {
         $this->service = $service;
     }
 }

@@ -2,6 +2,6 @@
 
 namespace Nitrapi\Services\TaskManager;
 
-class TaskException extends \Exception
-{
-}
+use Nitrapi\Common\Exceptions\NitrapiException;
+
+class TaskException extends NitrapiException {}

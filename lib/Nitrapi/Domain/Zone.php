@@ -2,13 +2,12 @@
 
 namespace Nitrapi\Domain;
 
-use DateTime;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\NitrapiObject;
 use Nitrapi\Nitrapi;
 
 class Zone extends NitrapiObject
 {
-
     /**
      * @var $fqdn
      */
@@ -32,7 +31,7 @@ class Zone extends NitrapiObject
      * @param array $data
      * @return $this
      */
-    public function setData($data)
+    public function setData(array $data): self
     {
         if (count($data) > 0) {
             $this->data = $data;
@@ -47,7 +46,7 @@ class Zone extends NitrapiObject
      * @param $fqdn
      * @return $this
      */
-    public function setFqdn($fqdn)
+    public function setFqdn($fqdn): self
     {
         $this->fqdn = $fqdn;
 
@@ -59,24 +58,23 @@ class Zone extends NitrapiObject
      *
      * @return bool
      */
-    public function getDNSSEC()
+    public function getDNSSEC(): bool
     {
-        return (bool) $this->data['DNSSEC'];
+        return (bool)$this->data['DNSSEC'];
     }
 
     /**
      * Sets the DNSSEC status
      *
      * @param bool $dnssec
-     * @return mixed
+     * @return array|bool|string
+     * @throws NitrapiException
      */
-    public function setDNSSEC($dnssec)
+    public function setDNSSEC(bool $dnssec)
     {
         $data = [
-            "dnssec" => $dnssec
+            "dnssec" => $dnssec,
         ];
         return $this->getApi()->dataPut("/domain/" . $this->fqdn . "/zone", $data);
     }
-
-
 }

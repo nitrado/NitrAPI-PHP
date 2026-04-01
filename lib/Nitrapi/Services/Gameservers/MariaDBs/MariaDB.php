@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\Gameservers\MariaDBs;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\Gameservers\Gameserver;
 use Nitrapi\Services\ServiceItem;
 
@@ -18,29 +19,34 @@ class MariaDB extends ServiceItem
     protected $schema;
     protected $hostname;
 
-    public function __construct(Gameserver $service, array &$data) {
+    public function __construct(Gameserver $service, array &$data)
+    {
         parent::__construct($service, $data);
         $this->setService($service);
-
     }
 
-    public function getId() {
+    public function getId(): int
+    {
         return (int)$this->id;
     }
 
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->password;
     }
 
-    public function getSchema() {
+    public function getSchema()
+    {
         return $this->schema;
     }
 
-    public function getHostname() {
+    public function getHostname()
+    {
         return $this->hostname;
     }
 
@@ -49,12 +55,14 @@ class MariaDB extends ServiceItem
      *
      * @param $uri
      * @return bool
+     * @throws NitrapiException
      */
-    public function import($uri) {
-        $url = "/services/".$this->getService()->getId()."/gameservers/mariadbs/".$this->getId()."/import";
-        $this->getService()->getApi()->dataPost($url, array(
-            "uri" => $uri
-        ));
+    public function import($uri): bool
+    {
+        $url = "/services/" . $this->getService()->getId() . "/gameservers/mariadbs/" . $this->getId() . "/import";
+        $this->getService()->getApi()->dataPost($url, [
+            "uri" => $uri,
+        ]);
         return true;
     }
 }

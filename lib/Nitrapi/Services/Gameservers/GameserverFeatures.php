@@ -7,7 +7,8 @@ class GameserverFeatures
 {
     protected $data;
 
-    public function __construct(array &$data) {
+    public function __construct(array &$data)
+    {
         $this->data = $data;
     }
 
@@ -16,30 +17,19 @@ class GameserverFeatures
      *
      * @return boolean true if the game has world backups
      */
-    public function hasWorldBackups() {
+    public function hasWorldBackups(): bool
+    {
         return $this->data['has_world_backups'];
     }
 
-    public function hasBackups() {
+    public function hasBackups()
+    {
         return $this->data['has_backups'];
     }
 
-    public function hasPackages() {
+    public function hasPackages()
+    {
         return $this->data['has_packages'];
-    }
-
-    /**
-     * Redirect the output stream from a running service.
-     *
-     * This feature is deprecated and should not be used any more. We keep
-     * it here for compatibility concerns, but will be removed in the
-     * future.
-     *
-     * @deprecated
-     * @return bool if the gameserver supports the old application server
-     */
-    public function hasApplicationServer() {
-        return $this->data['has_application_server'];
     }
 
     /**
@@ -55,43 +45,53 @@ class GameserverFeatures
      *
      * @return bool true if the gameserver supports container websockets
      */
-    public function hasContainerWebsocket() {
+    public function hasContainerWebsocket(): bool
+    {
         return $this->data['has_container_websocket'];
     }
 
-    public function hasFileBrowser() {
+    public function hasFileBrowser()
+    {
         return $this->data['has_file_browser'];
     }
 
-    public function hasExpertMode() {
+    public function hasExpertMode()
+    {
         return $this->data['has_expert_mode'];
     }
 
-    public function hasDatabase() {
+    public function hasDatabase()
+    {
         return $this->data['has_database'];
     }
 
-    public function hasRestartMessageSupport() {
+    public function hasRestartMessageSupport()
+    {
         return $this->data['has_restart_message_support'];
     }
 
-    public function hasPlayerManagement() {
+    public function hasPlayerManagement()
+    {
         return $this->data['has_playermanagement_feature'];
     }
 
-    public function hasPluginSystem() {
+    public function hasPluginSystem()
+    {
         return $this->data['has_plugin_system'];
     }
 
-    public function hasRCon() {
+    public function hasRCon()
+    {
         return $this->data['has_rcon'];
     }
 
-    public function hasFTP() {
+    public function hasFTP()
+    {
         return $this->data['has_ftp'];
     }
 
-    public function hasCurseforgeWorkshop() {
+    public function hasCurseforgeWorkshop()
+    {
         return $this->data['has_curseforge_workshop'];
     }
 }

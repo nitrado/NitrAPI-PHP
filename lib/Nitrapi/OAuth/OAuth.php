@@ -2,16 +2,18 @@
 
 namespace Nitrapi\OAuth;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Nitrapi;
 
-class OAuth {
-
+class OAuth
+{
     /**
      * @var Nitrapi
      */
     private $api;
 
-    public function __construct(Nitrapi $api) {
+    public function __construct(Nitrapi $api)
+    {
         $this->api = $api;
     }
 
@@ -20,8 +22,10 @@ class OAuth {
      *
      * @param $id
      * @return Client
+     * @throws NitrapiException
      */
-    public function getClient($id) {
+    public function getClient($id): Client
+    {
         $_client = $this->api->dataGet('/oauth/' . $id)['client'];
         return new Client($this->api, $_client);
     }
@@ -30,8 +34,10 @@ class OAuth {
      * Returns all your OAuth 2.0 clients.
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getClients() {
+    public function getClients(): array
+    {
         $clients = [];
         $_clients = $this->api->dataGet('/oauth')['clients'];
 
@@ -47,10 +53,11 @@ class OAuth {
      *
      * @param array $data
      * @return Client
+     * @throws NitrapiException
      */
-    public function createClient(array $data) {
+    public function createClient(array $data): Client
+    {
         $_client = $this->api->dataPost('/oauth/', $data)['client'];
         return new Client($this->api, $_client);
     }
-
 }

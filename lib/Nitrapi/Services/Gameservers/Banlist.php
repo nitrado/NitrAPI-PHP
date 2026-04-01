@@ -2,6 +2,8 @@
 
 namespace Nitrapi\Services\Gameservers;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
+
 class Banlist
 {
     /**
@@ -9,7 +11,8 @@ class Banlist
      */
     protected $service;
 
-    public function __construct(Gameserver $service) {
+    public function __construct(Gameserver $service)
+    {
         $this->service = $service;
     }
 
@@ -17,12 +20,12 @@ class Banlist
      * Get the ban list of the game server.
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getBanlist() {
-        $url = "/services/".$this->service->getId()."/gameservers/games/banlist";
-        $whitelist = $this->service->getApi()->dataGet($url);
-
-        return $whitelist;
+    public function getBanlist(): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/games/banlist";
+        return $this->service->getApi()->dataGet($url);
     }
 
     /**
@@ -30,11 +33,13 @@ class Banlist
      *
      * @param $identifier
      * @return string
+     * @throws NitrapiException
      */
-    public function addBanlist($identifier) {
-        $url = "/services/".$this->service->getId()."/gameservers/games/banlist";
+    public function addBanlist($identifier): string
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/games/banlist";
         return $this->service->getApi()->dataPost($url, [
-            'identifier' => $identifier
+            'identifier' => $identifier,
         ]);
     }
 
@@ -43,11 +48,13 @@ class Banlist
      *
      * @param $identifier
      * @return string
+     * @throws NitrapiException
      */
-    public function removeBanlist($identifier) {
-        $url = "/services/".$this->service->getId()."/gameservers/games/banlist";
+    public function removeBanlist($identifier): string
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/games/banlist";
         return $this->service->getApi()->dataDelete($url, [
-            'identifier' => $identifier
+            'identifier' => $identifier,
         ]);
     }
 }

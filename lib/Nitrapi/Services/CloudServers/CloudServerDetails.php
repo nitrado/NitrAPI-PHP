@@ -7,7 +7,8 @@ class CloudServerDetails
 {
     protected $data;
 
-    public function __construct(array &$data) {
+    public function __construct(array &$data)
+    {
         $this->data = $data;
     }
 
@@ -16,7 +17,8 @@ class CloudServerDetails
      *
      * @return string
      */
-    public function getStatus() {
+    public function getStatus(): string
+    {
         return (string)$this->data['status'];
     }
 
@@ -25,27 +27,30 @@ class CloudServerDetails
      *
      * @return string
      */
-    public function getHostname() {
+    public function getHostname(): string
+    {
         return (string)$this->data['hostname'];
     }
 
     /**
      * Returns the Dynamic Cloud Server
      *
-     * @return string
+     * @return bool
      */
-    public function isDynamic() {
+    public function isDynamic(): bool
+    {
         return (bool)$this->data['dynamic'];
     }
 
     /**
      * Returns the main ip address of the server
      *
-     * @return string
+     * @return string|null
      */
-    public function getMainIP() {
+    public function getMainIP(): ?string
+    {
         foreach ($this->getIPs() as $ip) {
-            if ($ip['main_ip'] && $ip['version'] == 4) {
+            if ($ip['main_ip'] && $ip['version'] === 4) {
                 return $ip['address'];
             }
         }
@@ -58,7 +63,8 @@ class CloudServerDetails
      *
      * @return array
      */
-    public function getIPs() {
+    public function getIPs(): array
+    {
         return (array)$this->data['ips'];
     }
 
@@ -67,7 +73,8 @@ class CloudServerDetails
      *
      * @return array
      */
-    public function getHardwareInfo() {
+    public function getHardwareInfo(): array
+    {
         return (array)$this->data['hardware'];
     }
 
@@ -76,7 +83,8 @@ class CloudServerDetails
      *
      * @return boolean
      */
-    public function isPasswordAvailable() {
+    public function isPasswordAvailable(): bool
+    {
         return (bool)$this->data['password_available'];
     }
 
@@ -85,7 +93,8 @@ class CloudServerDetails
      *
      * @return boolean
      */
-    public function isBandwidthLimited() {
+    public function isBandwidthLimited(): bool
+    {
         return (bool)$this->data['bandwidth_limited'];
     }
 
@@ -94,7 +103,8 @@ class CloudServerDetails
      *
      * @return int
      */
-    public function getImageId() {
+    public function getImageId(): int
+    {
         return $this->data['image']['id'];
     }
 
@@ -103,7 +113,8 @@ class CloudServerDetails
      *
      * @return string
      */
-    public function getImageName() {
+    public function getImageName(): string
+    {
         return $this->data['image']['name'];
     }
 
@@ -112,8 +123,8 @@ class CloudServerDetails
      *
      * @return bool
      */
-    public function hasDaemonSupport() {
+    public function hasDaemonSupport(): bool
+    {
         return $this->data['daemon_available'];
     }
-
 }

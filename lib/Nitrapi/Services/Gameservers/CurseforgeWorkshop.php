@@ -2,20 +2,27 @@
 
 namespace Nitrapi\Services\Gameservers;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\Service;
 
-class CurseforgeWorkshop {
+class CurseforgeWorkshop
+{
     protected $service;
 
-    public function __construct(Service $service) {
+    public function __construct(Service $service)
+    {
         $this->service = $service;
     }
 
-    public function searchMods($searchString, $page = 0, $sortBy = 'popularity') {
+    /**
+     * @throws NitrapiException
+     */
+    public function searchMods($searchString, $page = 0, $sortBy = 'popularity')
+    {
         $url = $this->baseEndpointUrl() . "/search_mods";
         $query = [
             'page' => $page,
-            'sort_by' => $sortBy
+            'sort_by' => $sortBy,
         ];
         if (!empty($searchString)) {
             $query['search'] = $searchString;
@@ -23,12 +30,17 @@ class CurseforgeWorkshop {
         return $this->service->getApi()->dataGet($url, null, ['query' => $query]);
     }
 
-    public function getInstalledMods() {
+    /**
+     * @throws NitrapiException
+     */
+    public function getInstalledMods()
+    {
         $url = $this->baseEndpointUrl() . "/installed_mods";
         return $this->service->getApi()->dataGet($url);
     }
 
-    private function baseEndpointUrl() {
-        return "/services/".$this->service->getId()."/gameservers/curseforge_workshop";
+    private function baseEndpointUrl(): string
+    {
+        return "/services/" . $this->service->getId() . "/gameservers/curseforge_workshop";
     }
 }

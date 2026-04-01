@@ -21,8 +21,9 @@ class DomainManager
      * Returns an array with all available top-level domains and prices.
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getPricing()
+    public function getPricing(): array
     {
         return $this->api->dataGet('/domain/pricing');
     }
@@ -31,8 +32,9 @@ class DomainManager
      * Returns a list with all active domains.
      *
      * @return Domain[]
+     * @throws NitrapiException
      */
-    public function getDomains()
+    public function getDomains(): array
     {
         $domains = [];
 
@@ -48,11 +50,15 @@ class DomainManager
      *
      * @param mixed $domain
      * @return Domain
+     * @throws NitrapiException
      */
-    public function getDomain($domain)
+    public function getDomain($domain): Domain
     {
         foreach ($this->api->dataGet('/domain')['domains'] as $_domain) {
-            if ($domain === $_domain['domain'] || (preg_match("@^[0-9]+$@", $domain) && $_domain['id'] === (int)$domain)) {
+            if ($domain === $_domain['domain'] || (preg_match(
+                        "@^\d+$@",
+                        $domain,
+                    ) && $_domain['id'] === (int)$domain)) {
                 return new Domain($this->api, $_domain);
             }
         }
@@ -65,10 +71,11 @@ class DomainManager
      *
      * @param Domain $domain
      * @param Handle $handle
-     * @param null $authCode
+     * @param null|string $authCode
      * @return string
+     * @throws NitrapiException
      */
-    public function registerDomain(Domain $domain, Handle $handle, $authCode = null)
+    public function registerDomain(Domain $domain, Handle $handle, ?string $authCode = null): string
     {
         $data = [
             'owner_c' => $handle->getHandle(),

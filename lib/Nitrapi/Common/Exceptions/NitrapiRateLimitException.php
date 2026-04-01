@@ -16,23 +16,29 @@ namespace Nitrapi\Common\Exceptions;
  *
  * @package Nitrapi\Common\Exceptions
  */
-class NitrapiRateLimitException extends NitrapiException {
+class NitrapiRateLimitException extends NitrapiException
+{
     private $rateLimit;
     private $resetTime;
 
-    public function __construct($rateLimit, $resetTime) {
+    public function __construct($rateLimit, $resetTime)
+    {
         $this->rateLimit = $rateLimit;
         $this->resetTime = $resetTime;
 
         $resetTimeString = $resetTime->format('Y-m-d H:i:s');
-        parent::__construct("The rate limit ($rateLimit requests in one hour) is exceeded. You need to wait until $resetTimeString to make another request.");
+        parent::__construct(
+            "The rate limit ($rateLimit requests in one hour) is exceeded. You need to wait until $resetTimeString to make another request.",
+        );
     }
 
-    public function getRateLimit() {
+    public function getRateLimit()
+    {
         return $this->rateLimit;
     }
 
-    public function getResetTime() {
+    public function getResetTime()
+    {
         return $this->resetTime;
     }
 }

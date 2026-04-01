@@ -2,6 +2,9 @@
 
 namespace Nitrapi\Services\Gameservers;
 
+use Nitrapi\Common\Exceptions\NitrapiErrorException;
+use Nitrapi\Common\Exceptions\NitrapiException;
+
 class BackupManager
 {
     /**
@@ -9,7 +12,8 @@ class BackupManager
      */
     protected $service;
 
-    public function __construct(Gameserver $service) {
+    public function __construct(Gameserver $service)
+    {
         $this->service = $service;
     }
 
@@ -17,10 +21,11 @@ class BackupManager
     /**
      * Returns details about the backup archive
      *
-     * @return object
+     * @return array|bool|string
+     * @throws NitrapiException
      */
-    public function info() {
-
+    public function info()
+    {
         $url = 'services/' . $this->service->getId() . '/backups/info';
         $response = $this->service->getApi()->dataGet($url);
 
@@ -35,9 +40,10 @@ class BackupManager
      * List archives available in the repository
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function list() {
-
+    public function list(): array
+    {
         $url = 'services/' . $this->service->getId() . '/backups';
         $response = $this->service->getApi()->dataGet($url);
 
@@ -53,15 +59,16 @@ class BackupManager
      *
      * @param string $type type of backup
      * @return bool
+     * @throws NitrapiException
      */
-    public function create($type = 'game') {
-
+    public function create(string $type = 'game'): bool
+    {
         $url = 'services/' . $this->service->getId() . '/backups';
         $response = $this->service->getApi()->dataPost($url, [
-            'type' => $type
+            'type' => $type,
         ]);
 
-        if (!isset($response) || $response['status'] != 'success') {
+        if (!isset($response) || $response['status'] !== 'success') {
             throw new NitrapiErrorException('Backup creation failed!');
         }
 
@@ -73,15 +80,17 @@ class BackupManager
      * Restore a backup
      *
      * @param string $backup name of the archive
+     * @param array $paths
      * @return bool
+     * @throws NitrapiException
      */
-    public function extract($backup, $paths = []) {
+    public function extract(string $backup, array $paths = []): bool
+    {
         $url = 'services/' . $this->service->getId() . '/backups/extract';
         $response = $this->service->getApi()->dataPost($url, [
             'name' => $backup,
-            'paths' => $paths
+            'paths' => $paths,
         ]);
-
 
         if (!isset($response)) {
             throw new NitrapiErrorException('Backup restore failed!');
@@ -91,17 +100,19 @@ class BackupManager
     }
 
     /**
-     * Deletes a archive
+     * Deletes an archive
      *
      * @param string $backup name of the archive
      * @return bool
+     * @throws NitrapiException
      */
-    public function delete($backup) {
+    public function delete(string $backup): bool
+    {
         $url = 'services/' . $this->service->getId() . '/backups';
         $response = $this->service->getApi()->dataDelete($url, [], [], [
             'query' => [
-                'prefix' => $backup
-            ]
+                'prefix' => $backup,
+            ],
         ]);
 
         if (!isset($response)) {

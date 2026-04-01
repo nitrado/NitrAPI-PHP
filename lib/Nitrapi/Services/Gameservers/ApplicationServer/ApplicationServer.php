@@ -2,7 +2,7 @@
 
 namespace Nitrapi\Services\Gameservers\ApplicationServer;
 
-use Nitrapi\Common\Exceptions\NitrapiErrorException;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
 class ApplicationServer
@@ -12,7 +12,8 @@ class ApplicationServer
      */
     protected $service;
 
-    public function __construct(Gameserver $service) {
+    public function __construct(Gameserver $service)
+    {
         $this->service = $service;
     }
 
@@ -21,12 +22,14 @@ class ApplicationServer
      *
      * @return bool
      */
-    public function ping() {
+    public function ping(): bool
+    {
         try {
-            $url = "/services/".$this->service->getId()."/gameservers/app_server";
+            $url = "/services/" . $this->service->getId() . "/gameservers/app_server";
             $this->service->getApi()->dataGet($url);
             return true;
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         return false;
     }
@@ -34,14 +37,16 @@ class ApplicationServer
     /**
      * Sends a command to the app server
      *
-     * @param $command string
+     * @param string $command
      * @return bool
+     * @throws NitrapiException
      */
-    public function sendCommand($command) {
-        $url = "/services/".$this->service->getId()."/gameservers/app_server/command";
-        $this->service->getApi()->dataPost($url, array(
-            "command" => $command
-        ));
+    public function sendCommand(string $command): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/app_server/command";
+        $this->service->getApi()->dataPost($url, [
+            "command" => $command,
+        ]);
         return true;
     }
 }

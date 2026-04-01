@@ -2,27 +2,32 @@
 
 namespace Nitrapi\Order\Pricing;
 
-class Location {
-    
+class Location
+{
     protected $data = [];
-    
-    public function __construct(array $data) {
+
+    public function __construct(array $data)
+    {
         $this->data = $data;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->data['id'];
     }
 
-    public function getCountry() {
+    public function getCountry()
+    {
         return $this->data['country'];
     }
 
-    public function getCity() {
+    public function getCity()
+    {
         return $this->data['city'];
     }
 
-    public function getProducts() {
+    public function getProducts()
+    {
         return $this->data['products'];
     }
 }

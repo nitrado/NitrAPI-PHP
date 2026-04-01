@@ -2,6 +2,4 @@
 
 namespace Nitrapi\Common\Exceptions;
 
-class NitrapiServiceTypeNotFoundException extends NitrapiException
-{
-}
+class NitrapiServiceTypeNotFoundException extends NitrapiException {}

@@ -1,29 +1,33 @@
 <?php
+
 namespace Nitrapi\Customer;
 
-use Nitrapi\Common\Exceptions\NitrapiHttpErrorException;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Nitrapi;
 
-class Registration {
-
-    private $api;
+class Registration
+{
     private $data;
 
-    public function __construct(Nitrapi $api,
-                                $oAuthClientId,
-                                $oAuthClientSecret,
-                                $userName,
-                                $email,
-                                $password,
-                                $consentPrivacy,
-                                $consentAge,
-                                $consentTos,
-                                $recaptchaResponse = null,
-                                $currency = null,
-                                $language = null,
-                                $timezone = null,
-                                $consentNewsletter = false) {
-        $this->api = $api;
+    /**
+     * @throws NitrapiException
+     */
+    public function __construct(
+        Nitrapi $api,
+        $oAuthClientId,
+        $oAuthClientSecret,
+        $userName,
+        $email,
+        $password,
+        $consentPrivacy,
+        $consentAge,
+        $consentTos,
+        $recaptchaResponse = null,
+        $currency = null,
+        $language = null,
+        $timezone = null,
+        $consentNewsletter = false
+    ) {
         $parameters = [
             "client_id" => $oAuthClientId,
             "client_secret" => $oAuthClientSecret,
@@ -33,7 +37,7 @@ class Registration {
             "consent_privacy" => $consentPrivacy,
             "consent_age" => $consentAge,
             "consent_tos" => $consentTos,
-            "consent_newsletter" => $consentNewsletter
+            "consent_newsletter" => $consentNewsletter,
         ];
 
         if (!empty($recaptchaResponse)) {
@@ -52,10 +56,14 @@ class Registration {
             $parameters["timezone"] = $timezone;
         }
 
-        $this->data = $this->api->dataPost("registration", $parameters);
+        $this->data = $api->dataPost("registration", $parameters);
     }
 
-    public static function getRecaptchaSiteKey(Nitrapi $api) {
+    /**
+     * @throws NitrapiException
+     */
+    public static function getRecaptchaSiteKey(Nitrapi $api)
+    {
         $data = $api->dataGet("registration");
         if (empty($data["registration"]["google_recaptcha"]["enabled"])) {
             return false;
@@ -64,23 +72,28 @@ class Registration {
         return $data["registration"]["google_recaptcha"]["key"];
     }
 
-    public function getUserId() {
+    public function getUserId()
+    {
         return $this->data["registration"]["user"]["id"];
     }
 
-    public function getAccessToken() {
+    public function getAccessToken()
+    {
         return $this->data["registration"]["oauth"]["access_token"];
     }
 
-    public function getRefreshToken() {
+    public function getRefreshToken()
+    {
         return $this->data["registration"]["oauth"]["refresh_token"];
     }
 
-    public function getTokenExpiration() {
+    public function getTokenExpiration()
+    {
         return $this->data["registration"]["oauth"]["expires_in"];
     }
 
-    public function getTokenScope() {
+    public function getTokenScope()
+    {
         return $this->data["registration"]["oauth"]["scope"];
     }
 }

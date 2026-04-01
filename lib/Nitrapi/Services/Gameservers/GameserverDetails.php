@@ -3,11 +3,14 @@
 namespace Nitrapi\Services\Gameservers;
 
 
+use DateTime;
+
 class GameserverDetails
 {
     protected $data;
 
-    public function __construct(array &$data) {
+    public function __construct(array &$data)
+    {
         $this->data = $data;
     }
 
@@ -16,22 +19,27 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getStatus() {
+    public function getStatus(): string
+    {
         return (string)$this->data['status'];
     }
 
     /**
      * @return bool
      */
-    public function isManagedRoot() {
+    public function isManagedRoot(): bool
+    {
         return isset($this->data['managed_root']);
     }
 
     /**
      * @return array
      */
-    public function getManagedRoot() {
-        if (!$this->isManagedRoot()) return [];
+    public function getManagedRoot(): array
+    {
+        if (!$this->isManagedRoot()) {
+            return [];
+        }
         return $this->data['managed_root'];
     }
 
@@ -40,7 +48,8 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getUsername() {
+    public function getUsername(): string
+    {
         return (string)$this->data['username'];
     }
 
@@ -49,7 +58,8 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getIP() {
+    public function getIP(): string
+    {
         return (string)$this->data['ip'];
     }
 
@@ -61,7 +71,8 @@ class GameserverDetails
      *
      * @return string|null
      */
-    public function getIPv6() {
+    public function getIPv6(): ?string
+    {
         return $this->data['ipv6'];
     }
 
@@ -70,7 +81,8 @@ class GameserverDetails
      *
      * @return int
      */
-    public function getPort() {
+    public function getPort(): int
+    {
         return (int)$this->data['port'];
     }
 
@@ -79,7 +91,8 @@ class GameserverDetails
      *
      * @return int
      */
-    public function getQueryPort() {
+    public function getQueryPort(): int
+    {
         return (int)$this->data['query_port'];
     }
 
@@ -88,7 +101,8 @@ class GameserverDetails
      *
      * @return int
      */
-    public function getRconPort() {
+    public function getRconPort(): int
+    {
         return (int)$this->data['rcon_port'];
     }
 
@@ -97,7 +111,8 @@ class GameserverDetails
      *
      * @return bool
      */
-    public function isMinecraftMode() {
+    public function isMinecraftMode(): bool
+    {
         return (bool)$this->data['minecraft_mode'];
     }
 
@@ -106,16 +121,18 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getGame() {
+    public function getGame(): string
+    {
         return (string)$this->data['game'];
     }
 
     /**
      * Returns the installed modpacks
      *
-     * @return string
+     * @return array
      */
-    public function getModpacks() {
+    public function getModpacks(): array
+    {
         return $this->data['modpacks'];
     }
 
@@ -124,12 +141,10 @@ class GameserverDetails
      *
      * @return mixed
      */
-    public function getInstalledModpack() {
+    public function getInstalledModpack()
+    {
         $modpacks = $this->getModpacks();
-        if (isset($modpacks[$this->getGame()])) {
-            return $modpacks[$this->getGame()];
-        }
-        return null;
+        return $modpacks[$this->getGame()] ?? null;
     }
 
     /**
@@ -137,7 +152,8 @@ class GameserverDetails
      *
      * @return int
      */
-    public function getSlots() {
+    public function getSlots(): int
+    {
         return (int)$this->data['slots'];
     }
 
@@ -146,19 +162,20 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getMySQLCredentials() {
+    public function getMySQLCredentials(): array
+    {
         if (!isset($this->data['credentials']['mysql']) &&
             empty($this->data['credentials']['mysql'])) {
-            return array();
+            return [];
         }
 
-        return array(
+        return [
             'hostname' => $this->data['credentials']['mysql']['hostname'],
             'port' => $this->data['credentials']['mysql']['port'],
             'username' => $this->data['credentials']['mysql']['username'],
             'password' => $this->data['credentials']['mysql']['password'],
             'database' => $this->data['credentials']['mysql']['database'],
-        );
+        ];
     }
 
     /**
@@ -166,18 +183,19 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getFTPCredentials() {
+    public function getFTPCredentials(): array
+    {
         if (!isset($this->data['credentials']['ftp']) &&
             empty($this->data['credentials']['ftp'])) {
-            return array();
+            return [];
         }
 
-        return array(
+        return [
             'hostname' => $this->data['credentials']['ftp']['hostname'],
             'port' => $this->data['credentials']['ftp']['port'],
             'username' => $this->data['credentials']['ftp']['username'],
             'password' => $this->data['credentials']['ftp']['password'],
-        );
+        ];
     }
 
     /**
@@ -185,7 +203,8 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getQuery() {
+    public function getQuery(): array
+    {
         return $this->data['query'];
     }
 
@@ -194,7 +213,8 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getMemory() {
+    public function getMemory(): string
+    {
         return (string)$this->data['memory'];
     }
 
@@ -203,7 +223,8 @@ class GameserverDetails
      *
      * @return int
      */
-    public function getMemoryInMB() {
+    public function getMemoryInMB(): int
+    {
         return (int)$this->data['memory_mb'];
     }
 
@@ -212,7 +233,8 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getType() {
+    public function getType(): string
+    {
         return (string)$this->data['type'];
     }
 
@@ -221,25 +243,28 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getLabel() {
+    public function getLabel(): string
+    {
         return (string)$this->data['label'];
     }
 
     /**
      * Returns the user id
      *
-     * @return string
+     * @return int
      */
-    public function getUserId() {
+    public function getUserId(): int
+    {
         return (int)$this->data['user_id'];
     }
 
     /**
      * Returns the service id
      *
-     * @return string
+     * @return int
      */
-    public function getServiceId() {
+    public function getServiceId(): int
+    {
         return (int)$this->data['service_id'];
     }
 
@@ -248,7 +273,8 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getLinuxHostsystem() {
+    public function getLinuxHostsystem(): array
+    {
         return $this->data['hostsystems']['linux'];
     }
 
@@ -257,11 +283,9 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getWindowsHostsystem() {
-        if (isset($this->data['hostsystems']['windows'])) {
-            return $this->data['hostsystems']['windows'];
-        }
-        return array();
+    public function getWindowsHostsystem(): array
+    {
+        return $this->data['hostsystems']['windows'] ?? [];
     }
 
     /**
@@ -269,7 +293,8 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getSettings() {
+    public function getSettings(): array
+    {
         return $this->data['settings'];
     }
 
@@ -278,7 +303,8 @@ class GameserverDetails
      *
      * @return mixed
      */
-    public function getQuota() {
+    public function getQuota()
+    {
         return $this->data['quota'];
     }
 
@@ -287,7 +313,8 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getWebsocketToken() {
+    public function getWebsocketToken(): string
+    {
         return $this->data['websocket_token'];
     }
 
@@ -296,16 +323,18 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getPath() {
+    public function getPath(): string
+    {
         return $this->data['game_specific']['path'];
     }
 
     /**
      * Return gameserver game path status
      *
-     * @return boolean
+     * @return bool
      */
-    public function isPathAvailable() {
+    public function isPathAvailable(): bool
+    {
         return $this->data['game_specific']['path_available'];
     }
 
@@ -314,7 +343,8 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getLogFiles() {
+    public function getLogFiles(): array
+    {
         return $this->data['game_specific']['log_files'];
     }
 
@@ -323,7 +353,8 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getConfigFiles() {
+    public function getConfigFiles(): array
+    {
         return $this->data['game_specific']['config_files'];
     }
 
@@ -332,21 +363,23 @@ class GameserverDetails
      *
      * @return string
      */
-    public function getUpdateStatus() {
+    public function getUpdateStatus(): string
+    {
         return $this->data['game_specific']['update_status'];
     }
 
     /**
      * Returns the last update status
      *
-     * @return \DateTime
+     * @return DateTime|null
      */
-    public function getLastUpdate() {
+    public function getLastUpdate(): ?DateTime
+    {
         if (empty($this->data['game_specific']['last_update'])) {
             return null;
         }
 
-        $dateTime = new \DateTime();
+        $dateTime = new DateTime();
         $dateTime->setTimestamp(strtotime($this->data['game_specific']['last_update']));
         return $dateTime;
     }
@@ -356,7 +389,8 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getFeatures() {
+    public function getFeatures(): array
+    {
         return $this->data['game_specific']['features'];
     }
 
@@ -365,7 +399,8 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getCurseforgeCustomerSettings() {
+    public function getCurseforgeCustomerSettings(): array
+    {
         return $this->data['game_specific']['curseforge_customer_settings'];
     }
 
@@ -379,7 +414,8 @@ class GameserverDetails
      *
      * @return array
      */
-    public function getCurseforgeLimits() {
+    public function getCurseforgeLimits(): array
+    {
         return $this->data['game_specific']['curseforge_limits'];
     }
 
@@ -388,7 +424,8 @@ class GameserverDetails
      *
      * @return int
      */
-    public function getModQuotaMegabytes() {
+    public function getModQuotaMegabytes(): int
+    {
         return $this->data['game_specific']['mod_quota_mb'];
     }
 }

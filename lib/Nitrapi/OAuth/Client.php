@@ -2,10 +2,11 @@
 
 namespace Nitrapi\OAuth;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Nitrapi;
 
-class Client {
-
+class Client
+{
     /**
      * @var Nitrapi
      */
@@ -16,12 +17,14 @@ class Client {
      */
     private $data;
 
-    public function __construct(Nitrapi $api, array $data) {
+    public function __construct(Nitrapi $api, array $data)
+    {
         $this->api = $api;
         $this->data = $data;
     }
 
-    public function getClientId() {
+    public function getClientId()
+    {
         return $this->data['id'];
     }
 
@@ -30,7 +33,8 @@ class Client {
      *
      * @return string|null
      */
-    public function getClientSecret() {
+    public function getClientSecret(): ?string
+    {
         return $this->data['secret'];
     }
 
@@ -39,7 +43,8 @@ class Client {
      *
      * @return bool
      */
-    public function isOfficial() {
+    public function isOfficial(): bool
+    {
         return $this->data['official'];
     }
 
@@ -48,7 +53,8 @@ class Client {
      *
      * @return bool
      */
-    public function isEnabled() {
+    public function isEnabled(): bool
+    {
         return $this->data['enabled'];
     }
 
@@ -57,7 +63,8 @@ class Client {
      *
      * @return string
      */
-    public function getName() {
+    public function getName(): string
+    {
         return $this->data['name'];
     }
 
@@ -66,7 +73,8 @@ class Client {
      *
      * @return string
      */
-    public function getIcon() {
+    public function getIcon(): string
+    {
         return $this->data['icon'];
     }
 
@@ -75,7 +83,8 @@ class Client {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription(): string
+    {
         return $this->data['description'];
     }
 
@@ -84,7 +93,8 @@ class Client {
      *
      * @return string
      */
-    public function getEMail() {
+    public function getEMail(): string
+    {
         return $this->data['email'];
     }
 
@@ -93,7 +103,8 @@ class Client {
      *
      * @return string
      */
-    public function getWebsite() {
+    public function getWebsite(): string
+    {
         return $this->data['website'];
     }
 
@@ -102,7 +113,8 @@ class Client {
      *
      * @return array
      */
-    public function getRedirectURIs() {
+    public function getRedirectURIs(): array
+    {
         return (array)$this->data['redirect_uris'];
     }
 
@@ -111,7 +123,8 @@ class Client {
      *
      * @return array
      */
-    public function getGrantTypes() {
+    public function getGrantTypes(): array
+    {
         return (array)$this->data['grant_types'];
     }
 
@@ -119,8 +132,10 @@ class Client {
      * Updates the client.
      *
      * @param array $data
+     * @throws NitrapiException
      */
-    public function update(array $data) {
+    public function update(array $data): void
+    {
         $this->data = $this->api->dataPut('/oauth/' . $this->getClientId(), $data)['client'];
     }
 
@@ -129,10 +144,12 @@ class Client {
      *
      * @param $updateToken
      * @return string
+     * @throws NitrapiException
      */
-    public function renewSecret($updateToken) {
+    public function renewSecret($updateToken): string
+    {
         return $this->api->dataPut('/oauth/' . $this->getClientId() . '/secret', [
-            'token' => $updateToken
+            'token' => $updateToken,
         ])['client']['secret'];
     }
 
@@ -143,11 +160,12 @@ class Client {
      *
      * @param $updateToken
      * @return bool
+     * @throws NitrapiException
      */
-    public function delete($updateToken) {
+    public function delete($updateToken): bool
+    {
         return $this->api->dataDelete('/oauth/' . $this->getClientId(), [
-            'token' => $updateToken
+            'token' => $updateToken,
         ]);
     }
-
 }

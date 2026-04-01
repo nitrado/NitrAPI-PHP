@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\Gameservers\Games;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
 abstract class Game
@@ -16,19 +17,22 @@ abstract class Game
      */
     protected $game;
 
-    public function __construct(Gameserver $service) {
+    public function __construct(Gameserver $service)
+    {
         $this->service = $service;
     }
 
-    public function getGame() {
+    public function getGame(): string
+    {
         return $this->game;
     }
 
     /**
-     * @return mixed
-     * @throws \Nitrapi\Common\Exceptions\NitrapiHttpErrorException
+     * @return array|bool|string
+     * @throws NitrapiException
      */
-    public function getInfo() {
+    public function getInfo()
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/" . $this->getGame();
         return $this->service->getApi()->dataGet($url);
     }

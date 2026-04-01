@@ -2,6 +2,8 @@
 
 namespace Nitrapi\Services\Gameservers;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
+
 class Whitelist
 {
     /**
@@ -9,7 +11,8 @@ class Whitelist
      */
     protected $service;
 
-    public function __construct(Gameserver $service) {
+    public function __construct(Gameserver $service)
+    {
         $this->service = $service;
     }
 
@@ -17,12 +20,12 @@ class Whitelist
      * Returns the whitelist of the game server.
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getWhitelist() {
-        $url = "/services/".$this->service->getId()."/gameservers/games/whitelist";
-        $whitelist = $this->service->getApi()->dataGet($url);
-
-        return $whitelist;
+    public function getWhitelist(): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/games/whitelist";
+        return $this->service->getApi()->dataGet($url);
     }
 
     /**
@@ -30,11 +33,13 @@ class Whitelist
      *
      * @param $identifier
      * @return string
+     * @throws NitrapiException
      */
-    public function addWhitelist($identifier) {
-        $url = "/services/".$this->service->getId()."/gameservers/games/whitelist";
+    public function addWhitelist($identifier): string
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/games/whitelist";
         return $this->service->getApi()->dataPost($url, [
-            'identifier' => $identifier
+            'identifier' => $identifier,
         ]);
     }
 
@@ -43,12 +48,13 @@ class Whitelist
      *
      * @param $identifier
      * @return string
+     * @throws NitrapiException
      */
-    public function removeWhitelist($identifier)
+    public function removeWhitelist($identifier): string
     {
         $url = "/services/" . $this->service->getId() . "/gameservers/games/whitelist";
         return $this->service->getApi()->dataDelete($url, [
-            'identifier' => $identifier
+            'identifier' => $identifier,
         ]);
     }
 }

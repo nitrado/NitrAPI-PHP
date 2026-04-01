@@ -2,6 +2,4 @@
 
 namespace Nitrapi\Common\Exceptions;
 
-class NitrapiHttpErrorException extends NitrapiException
-{
-}
+class NitrapiHttpErrorException extends NitrapiException {}

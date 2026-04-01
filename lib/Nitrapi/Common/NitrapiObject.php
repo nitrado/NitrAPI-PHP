@@ -13,18 +13,12 @@ abstract class NitrapiObject
         $this->setApi($api);
     }
 
-    /**
-     * @param Nitrapi $api
-     */
-    public function setApi(Nitrapi $api)
+    public function setApi(Nitrapi $api): void
     {
         $this->api = $api;
     }
 
-    /**
-     * @return Nitrapi
-     */
-    public function getApi()
+    public function getApi(): Nitrapi
     {
         return $this->api;
     }

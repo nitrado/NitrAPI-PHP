@@ -2,13 +2,12 @@
 
 namespace Nitrapi\Domain;
 
-use DateTime;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\NitrapiObject;
 use Nitrapi\Nitrapi;
 
 class Redirect extends NitrapiObject
 {
-
     /**
      * @var $api Nitrapi
      */
@@ -37,7 +36,7 @@ class Redirect extends NitrapiObject
      * @param $fqdn
      * @return $this
      */
-    public function setFqdn($fqdn)
+    public function setFqdn($fqdn): self
     {
         $this->fqdn = $fqdn;
 
@@ -50,7 +49,7 @@ class Redirect extends NitrapiObject
      * @param array $data
      * @return $this
      */
-    public function setData($data)
+    public function setData(array $data): self
     {
         if (count($data) > 0) {
             $this->data = $data;
@@ -64,7 +63,7 @@ class Redirect extends NitrapiObject
      *
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->data['type'];
     }
@@ -74,9 +73,9 @@ class Redirect extends NitrapiObject
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
-        return (int) $this->data['id'];
+        return (int)$this->data['id'];
     }
 
     /**
@@ -84,7 +83,7 @@ class Redirect extends NitrapiObject
      *
      * @return string
      */
-    public function getSld()
+    public function getSld(): string
     {
         return $this->data['type'];
     }
@@ -94,7 +93,7 @@ class Redirect extends NitrapiObject
      *
      * @return string
      */
-    public function getTarget()
+    public function getTarget(): string
     {
         return $this->data['target'];
     }
@@ -104,7 +103,7 @@ class Redirect extends NitrapiObject
      *
      * @return string
      */
-    public function getPagetitle()
+    public function getPagetitle(): string
     {
         return $this->data['pagetitle'];
     }
@@ -114,7 +113,7 @@ class Redirect extends NitrapiObject
      *
      * @return string
      */
-    public function getMetadescr()
+    public function getMetadescr(): string
     {
         return $this->data['metadescr'];
     }
@@ -124,7 +123,7 @@ class Redirect extends NitrapiObject
      *
      * @return string
      */
-    public function getMetakey()
+    public function getMetakey(): string
     {
         return $this->data['metakey'];
     }
@@ -132,17 +131,23 @@ class Redirect extends NitrapiObject
     /**
      * Update the redirect
      *
-     * @param string $type
-     * @param string $target
-     * @param string $pagetitle
-     * @param string $metadescr
-     * @param string $metakey
-     * @return mixed
+     * @param string|null $type
+     * @param string|null $target
+     * @param string|null $pagetitle
+     * @param string|null $metadescr
+     * @param string|null $metakey
+     * @return array|bool|string
+     * @throws NitrapiException
      */
-    public function update($type = NULL, $target = NULL, $pagetitle = NULL, $metadescr = NULL, $metakey = NULL)
-    {
+    public function update(
+        ?string $type = null,
+        ?string $target = null,
+        ?string $pagetitle = null,
+        ?string $metadescr = null,
+        ?string $metakey = null
+    ) {
         $data = [
-            'id' => $this->data['id']
+            'id' => $this->data['id'],
         ];
 
         if (!is_null($type)) {
@@ -168,11 +173,10 @@ class Redirect extends NitrapiObject
      * Delete the redirect
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function delete()
+    public function delete(): bool
     {
         return $this->getApi()->dataDelete("/domain/" . $this->fqdn . "/redirects", ["id" => $this->getId()]);
     }
-
-
 }

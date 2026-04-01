@@ -9,21 +9,19 @@ use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
 use Nitrapi\Services\SupportAuthorization;
 
-class CloudServer extends Service {
+class CloudServer extends Service
+{
     protected $game;
-    protected $info = null;
+    protected $info;
 
     /**
      * CloudServer constructor.
      *
-     * @see Gameserver::refresh()
-     *
-     * @param Nitrapi $api
-     * @param $data
      * @throws NitrapiHttpErrorException
-     * @throws NitrapiServiceNotActiveException
+     * @throws NitrapiServiceNotActiveException|NitrapiException
      */
-    public function __construct(Nitrapi $api, &$data) {
+    public function __construct(Nitrapi $api, &$data)
+    {
         parent::__construct($api, $data);
 
         if (!$this->refresh()) {
@@ -32,18 +30,18 @@ class CloudServer extends Service {
     }
 
     /**
+     * @throws NitrapiServiceNotActiveException|NitrapiException
+     *
      * @see Gameserver::refresh()
      * @see Service::forceAction()
-     *
-     * @return bool
-     * @throws NitrapiServiceNotActiveException
      */
-    public function refresh() {
+    public function refresh(): bool
+    {
         if (self::$ensureActiveService && $this->getStatus() !== self::SERVICE_STATUS_ACTIVE) {
             throw new NitrapiServiceNotActiveException('Service is not active any more.');
         }
 
-        if (in_array($this->getStatus(), [self::SERVICE_STATUS_ACTIVE, self::SERVICE_STATUS_SUSPENDED])) {
+        if (in_array($this->getStatus(), [self::SERVICE_STATUS_ACTIVE, self::SERVICE_STATUS_SUSPENDED], true)) {
             $url = 'services/' . $this->getId() . '/cloud_servers';
             $res = $this->getApi()->dataGet($url);
             if ($res !== null) {
@@ -54,17 +52,14 @@ class CloudServer extends Service {
             return false;
         }
 
-
-
         return true;
     }
 
     /**
      * Return information about the Cloud Server.
-     *
-     * @return CloudServerDetails
      */
-    public function getDetails() {
+    public function getDetails(): CloudServerDetails
+    {
         return new CloudServerDetails($this->info['cloud_server']);
     }
 
@@ -73,13 +68,13 @@ class CloudServer extends Service {
      * are located in the /etc/passwd. All newly creates users on the
      * system are included in this array.
      *
-     * @return array
+     * @throws NitrapiException
      */
-    public function getUsers() {
+    public function getUsers(): array
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/user';
         $users = $this->getApi()->dataGet($url);
-        if (isset($users['users']['users'])) return $users['users']['users'];
-        return [];
+        return $users['users']['users'] ?? [];
     }
 
     /**
@@ -87,25 +82,23 @@ class CloudServer extends Service {
      * After the password has been received it will
      * be permanently deleted from the Nitrado database.
      *
-     * @return mixed
+     * @throws NitrapiException
      */
-    public function getInitialPassword() {
+    public function getInitialPassword(): ?string
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/password';
         $password = $this->getApi()->dataGet($url);
 
-        if (isset($password['password'])) {
-            return $password['password'];
-        }
-
-        return null;
+        return $password['password'] ?? null;
     }
 
     /**
      * Boots a turned down server.
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function doBoot() {
+    public function doBoot(): string
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/boot';
         return $this->getApi()->dataPost($url);
     }
@@ -113,9 +106,10 @@ class CloudServer extends Service {
     /**
      * Sends a shutdown command via ACPI.
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function doShutdown() {
+    public function doShutdown(): string
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/shutdown';
         return $this->getApi()->dataPost($url);
     }
@@ -123,9 +117,10 @@ class CloudServer extends Service {
     /**
      * Sends a reboot command via ACPI.
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function doReboot() {
+    public function doReboot(): string
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/reboot';
         return $this->getApi()->dataPost($url);
     }
@@ -134,9 +129,10 @@ class CloudServer extends Service {
      * This method resets your server immediately.
      * This action might result in data loss.
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function doHardReset() {
+    public function doHardReset(): string
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/hard_reset';
         return $this->getApi()->dataPost($url);
     }
@@ -145,9 +141,10 @@ class CloudServer extends Service {
      * This method reboots your server in rescue mode.
      * This action might result in data loss.
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function doRescue() {
+    public function doRescue(): string
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/rescue';
         return $this->getApi()->dataPost($url);
     }
@@ -156,9 +153,10 @@ class CloudServer extends Service {
      * This method leaves the rescue mode and reboots the server.
      * This action might result in data loss.
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function doUnrescue() {
+    public function doUnrescue(): string
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/unrescue';
         return $this->getApi()->dataPost($url);
     }
@@ -166,9 +164,10 @@ class CloudServer extends Service {
     /**
      * Returns the noVNC console endpoint.
      *
-     * @return array
+     * @throws NitrapiException
      */
-    public function getConsole() {
+    public function getConsole(): array
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/console';
         return $this->getApi()->dataGet($url);
     }
@@ -176,14 +175,13 @@ class CloudServer extends Service {
     /**
      * Changes the PTR record of a specific IPv4 address.
      *
-     * @param string $ip
-     * @param string $hostname
-     * @return bool
+     * @throws NitrapiException
      */
-    public function changePTRRecord($ip, $hostname) {
+    public function changePTRRecord(string $ip, string $hostname): bool
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/ptr/' . $ip;
         $this->getApi()->dataPost($url, [
-            'hostname' => $hostname
+            'hostname' => $hostname,
         ]);
         return true;
     }
@@ -192,13 +190,13 @@ class CloudServer extends Service {
      * Changes the hostname of the server.
      * If no hostname has been provided, it will be reset to default.
      *
-     * @param string $hostname
-     * @return bool
+     * @throws NitrapiException
      */
-    public function changeHostname($hostname = null) {
+    public function changeHostname(?string $hostname = null): bool
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/hostname';
         $this->getApi()->dataPost($url, [
-            'hostname' => $hostname
+            'hostname' => $hostname,
         ]);
         return true;
     }
@@ -208,12 +206,21 @@ class CloudServer extends Service {
      *
      * @param Nitrapi $nitrapi
      * @return array
+     * @throws NitrapiException
      */
-    public static function getAvailableImages(Nitrapi &$nitrapi) {
+    public static function getAvailableImages(Nitrapi $nitrapi): array
+    {
         $images = $nitrapi->dataGet('/information/cloud_servers/images');
         $imgs = [];
         foreach ($images['images'] as $image) {
-            $imgs[] = new Image($image['id'], $image['name'], $image['is_windows'], $image['default'], $image['has_daemon'], $image['is_daemon_compatible']);
+            $imgs[] = new Image(
+                $image['id'],
+                $image['name'],
+                $image['is_windows'],
+                $image['default'],
+                $image['has_daemon'],
+                $image['is_daemon_compatible'],
+            );
         }
         return $imgs;
     }
@@ -222,8 +229,10 @@ class CloudServer extends Service {
      * Returns the daily traffic usage of the last 30 days.
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getTrafficStatistics() {
+    public function getTrafficStatistics(): array
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/traffic';
         return $this->getApi()->dataGet($url)['traffic'];
     }
@@ -231,14 +240,17 @@ class CloudServer extends Service {
     /**
      * Returns the Cloud Server resources usages.
      *
+     * @param string $time
      * @return array
+     * @throws NitrapiException
      */
-    public function getResources($time = '4h') {
+    public function getResources(string $time = '4h'): array
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/resources';
         return $this->getApi()->dataGet($url, null, [
             'query' => [
-                'time' => $time
-            ]
+                'time' => $time,
+            ],
         ])['resources'];
     }
 
@@ -249,8 +261,11 @@ class CloudServer extends Service {
      * DANGER! This deletes all your data!
      *
      * @param Image|null $image
+     * @return bool
+     * @throws NitrapiException
      */
-    public function doReinstall(Image $image = null) {
+    public function doReinstall(?Image $image = null): bool
+    {
         $url = 'services/' . $this->getId() . '/cloud_servers/reinstall';
 
         $data = [];
@@ -266,7 +281,11 @@ class CloudServer extends Service {
         return true;
     }
 
-    public function getSupportAuthorization() {
+    /**
+     * @throws NitrapiException
+     */
+    public function getSupportAuthorization(): ?SupportAuthorization
+    {
         $url = 'services/' . $this->getId() . '/support_authorization';
 
         try {
@@ -278,17 +297,24 @@ class CloudServer extends Service {
         }
 
         return $result;
-
     }
 
-    public function createSupportAuthorization() {
+    /**
+     * @throws NitrapiException
+     */
+    public function createSupportAuthorization(): SupportAuthorization
+    {
         $url = 'services/' . $this->getId() . '/support_authorization';
 
         $nitrapi = $this->getApi();
         return new SupportAuthorization($nitrapi, $nitrapi->dataPost($url));
     }
 
-    public function deleteSupportAuthorization() {
+    /**
+     * @throws NitrapiException
+     */
+    public function deleteSupportAuthorization(): bool
+    {
         $url = 'services/' . $this->getId() . '/support_authorization';
 
         try {

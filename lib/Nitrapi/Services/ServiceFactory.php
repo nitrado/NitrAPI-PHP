@@ -2,16 +2,24 @@
 
 namespace Nitrapi\Services;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\Exceptions\NitrapiServiceTypeNotFoundException;
 use Nitrapi\Nitrapi;
 
 class ServiceFactory
 {
-    public static function factory(Nitrapi $api, array $options = array()) {
+    /**
+     * @throws NitrapiException
+     * @throws NitrapiServiceTypeNotFoundException
+     */
+    public static function factory(Nitrapi $api, array $options = [])
+    {
         $data = $api->dataGet("services/" . $options['id'], null);
 
         $type = $data['service']['type'];
-        if ($type == 'cloud_server') $type = 'CloudServer'; //todo make it more fancy
+        if ($type === 'cloud_server') {
+            $type = 'CloudServer';
+        } //todo make it more fancy
 
         $class = "Nitrapi\\Services\\" . ucfirst($type) . "s\\" . ucfirst($type);
 

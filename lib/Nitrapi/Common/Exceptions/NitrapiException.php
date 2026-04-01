@@ -6,32 +6,36 @@ use Psr\Http\Message\ResponseInterface;
 
 class NitrapiException extends \Exception
 {
-    protected $errorId = null;
+    protected $errorId;
 
     /**
      * @var null|ResponseInterface
      */
-    protected $response = null;
+    protected $response;
 
-    public function getErrorId() {
+    public function getErrorId()
+    {
         return $this->errorId;
     }
 
-    public function setErrorId($errorId) {
+    public function setErrorId($errorId): void
+    {
         $this->errorId = $errorId;
     }
 
     /**
      * @return ResponseInterface|null
      */
-    public function getResponse() {
+    public function getResponse(): ?ResponseInterface
+    {
         return $this->response;
     }
 
     /**
      * @param ResponseInterface|null $response
      */
-    public function setResponse($response) {
+    public function setResponse(?ResponseInterface $response): void
+    {
         $this->response = $response;
     }
 }

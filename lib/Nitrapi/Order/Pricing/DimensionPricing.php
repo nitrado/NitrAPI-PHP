@@ -2,14 +2,20 @@
 
 namespace Nitrapi\Order\Pricing;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\CloudServers\CloudServer;
 use Nitrapi\Services\Service;
 
-abstract class DimensionPricing extends Pricing {
+abstract class DimensionPricing extends Pricing
+{
+    protected $dimensions;
 
-    protected $dimensions = null;
-
-    public function addDimension($dimension, $value) {
+    /**
+     * @throws PricingException
+     * @throws NitrapiException
+     */
+    public function addDimension($dimension, $value): void
+    {
         if ($this->dimensions === null) {
             $this->getDimensions();
         }
@@ -22,13 +28,10 @@ abstract class DimensionPricing extends Pricing {
     }
 
     /**
-     * @deprecated Use addDimension($dimension, $value) instead.
+     * @throws NitrapiException
      */
-    public function addDimenstion($dimension, $value) {
-        $this->addDimension($dimension, $value);
-    }
-
-    public function getDimensions() {
+    public function getDimensions(): array
+    {
         if ($this->dimensions === null) {
             $prices = $this->getPrices();
             $this->dimensions = [];
@@ -46,15 +49,20 @@ abstract class DimensionPricing extends Pricing {
      * @param $rentalTime
      * @param Service|null $service
      * @return int
+     * @throws PricingException
+     * @throws NitrapiException
      */
-    public function getPrice($rentalTime, Service &$service = null) {
+    public function getPrice($rentalTime, ?Service $service = null): int
+    {
         $information = $this->getPrices($service);
         $dimensions = $this->getDimensions();
         $dimensions['rental_time'] = $rentalTime;
 
         $prices = $information['prices'];
-        foreach ($dimensions as $key => $value) {
-            if ($value === null) continue;
+        foreach ($dimensions as $value) {
+            if ($value === null) {
+                continue;
+            }
             if (array_key_exists($value, $prices)) {
                 $prices = $prices[$value];
             } else {
@@ -78,19 +86,28 @@ abstract class DimensionPricing extends Pricing {
         throw new PricingException("No price for selected dimensions not found.");
     }
 
-    protected function getNewOrderArray($rentalTime) {
-        $orderArray = [
+    /**
+     * @throws PricingException
+     * @throws NitrapiException
+     */
+    protected function getNewOrderArray($rentalTime): array
+    {
+        return [
             'price' => $this->getPrice($rentalTime),
             'rental_time' => $rentalTime,
             'location' => $this->locationId,
             'dimensions' => $this->getDimensions(),
-            'additionals' => $this->additionals
+            'additionals' => $this->additionals,
         ];
-        return $orderArray;
     }
 
-    protected function getSwitchOrderArray(Service &$service, $rentalTime) {
-        $orderArray = [
+    /**
+     * @throws PricingException
+     * @throws NitrapiException
+     */
+    protected function getSwitchOrderArray(Service $service, $rentalTime): array
+    {
+        return [
             'price' => $this->getSwitchPrice($service, $rentalTime),
             'rental_time' => $rentalTime,
             'location' => $this->locationId,
@@ -99,7 +116,5 @@ abstract class DimensionPricing extends Pricing {
             'method' => 'switch',
             'service_id' => $service->getId(),
         ];
-
-        return $orderArray;
     }
 }

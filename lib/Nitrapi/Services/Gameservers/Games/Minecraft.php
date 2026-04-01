@@ -2,6 +2,8 @@
 
 namespace Nitrapi\Services\Gameservers\Games;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
+
 class Minecraft extends Game
 {
     protected $game = "minecraft";
@@ -12,8 +14,10 @@ class Minecraft extends Game
      * @param $world
      * @param int $limit
      * @return bool
+     * @throws NitrapiException
      */
-    public function startChunkfix($world, $limit = 0) {
+    public function startChunkfix($world, int $limit = 0): bool
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/chunkfix";
         $this->service->getApi()->dataPost($url, [
             'world' => $world,
@@ -26,13 +30,15 @@ class Minecraft extends Game
     /**
      * Changing bungeecord settings
      *
-     * @param bool|false $enabled
-     * @param bool|false $only
+     * @param bool $enabled
+     * @param bool $only
      * @param string $firewall
-     * @param null $ip
+     * @param mixed $ip
      * @return bool
+     * @throws NitrapiException
      */
-    public function setBungeeCord($enabled = false, $only = false, $firewall = 'off', $ip = null) {
+    public function setBungeeCord(bool $enabled = false, bool $only = false, string $firewall = 'off', $ip = null): bool
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/bungeecord";
         $this->service->getApi()->dataPost($url, [
             'enabled' => (int)$enabled,
@@ -47,12 +53,14 @@ class Minecraft extends Game
     /**
      * Changing rtk settings
      *
-     * @param bool|false $enabled
-     * @param null $username
-     * @param null $password
+     * @param bool $enabled
+     * @param string|null $username
+     * @param string|null $password
      * @return bool
+     * @throws NitrapiException
      */
-    public function setRemoteToolkit($enabled = false, $username = null, $password = null) {
+    public function setRemoteToolkit(bool $enabled = false, ?string $username = null, ?string $password = null): bool
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/rtk";
         $this->service->getApi()->dataPost($url, [
             'enabled' => (int)$enabled,
@@ -68,11 +76,13 @@ class Minecraft extends Game
      *
      * @param $world
      * @return bool
+     * @throws NitrapiException
      */
-    public function createBackup($world) {
+    public function createBackup($world): bool
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/backup";
         $this->service->getApi()->dataPost($url, [
-            'world' => $world
+            'world' => $world,
         ]);
 
         return true;
@@ -83,8 +93,10 @@ class Minecraft extends Game
      *
      * @param $backup
      * @return bool
+     * @throws NitrapiException
      */
-    public function deleteBackup($backup) {
+    public function deleteBackup($backup): bool
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/backup/" . $backup;
         $this->service->getApi()->dataDelete($url);
 
@@ -96,8 +108,10 @@ class Minecraft extends Game
      *
      * @param $backup
      * @return bool
+     * @throws NitrapiException
      */
-    public function restoreBackup($backup) {
+    public function restoreBackup($backup): bool
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/backup/" . $backup . "/restore";
         $this->service->getApi()->dataPost($url);
 
@@ -109,11 +123,13 @@ class Minecraft extends Game
      *
      * @param $md5
      * @return bool
+     * @throws NitrapiException
      */
-    public function switchVersion($md5) {
+    public function switchVersion($md5): bool
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/change_version";
         $this->service->getApi()->dataPost($url, [
-            'md5' => $md5
+            'md5' => $md5,
         ]);
 
         return true;
@@ -124,29 +140,33 @@ class Minecraft extends Game
      *
      * @param $username
      * @return array
+     * @throws NitrapiException
      */
-    public function getUUID($username) {
+    public function getUUID($username): array
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/uuid";
         return $this->service->getApi()->dataGet($url, null, [
             'query' => [
-                'username' => $username
-            ]
+                'username' => $username,
+            ],
         ])['user'];
     }
 
     /**
      * Returns the avatar as base64 encoded content of the specific minecraft user
-     * Note: case sensitive!
+     * Note: case-sensitive!
      *
      * @param $username
      * @return array
+     * @throws NitrapiException
      */
-    public function getAvatar($username) {
+    public function getAvatar($username): array
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/avatar";
         return $this->service->getApi()->dataGet($url, null, [
             'query' => [
-                'username' => $username
-            ]
+                'username' => $username,
+            ],
         ])['user'];
     }
 
@@ -154,15 +174,13 @@ class Minecraft extends Game
      * Returns all installed Bukkit/Spigot Plugins at Minecraft Bukkit
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getPlugins() {
+    public function getPlugins(): array
+    {
         $url = "services/" . $this->service->getId() . "/gameservers/games/minecraft/plugins";
         $result = $this->service->getApi()->dataGet($url);
 
-        if (isset($result['plugins'])) {
-            return $result['plugins'];
-        }
-
-        return [];
+        return $result['plugins'] ?? [];
     }
 }

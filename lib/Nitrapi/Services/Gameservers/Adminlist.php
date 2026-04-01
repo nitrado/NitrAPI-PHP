@@ -2,6 +2,8 @@
 
 namespace Nitrapi\Services\Gameservers;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
+
 class Adminlist
 {
     /**
@@ -9,7 +11,8 @@ class Adminlist
      */
     protected $service;
 
-    public function __construct(Gameserver $service) {
+    public function __construct(Gameserver $service)
+    {
         $this->service = $service;
     }
 
@@ -17,12 +20,12 @@ class Adminlist
      * Returns the admin list from the game server.
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getAdminlist() {
-        $url = "/services/".$this->service->getId()."/gameservers/games/adminlist";
-        $whitelist = $this->service->getApi()->dataGet($url);
-
-        return $whitelist;
+    public function getAdminlist(): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/games/adminlist";
+        return $this->service->getApi()->dataGet($url);
     }
 
     /**
@@ -30,11 +33,13 @@ class Adminlist
      *
      * @param $identifier
      * @return string
+     * @throws NitrapiException
      */
-    public function addAdminlist($identifier) {
-        $url = "/services/".$this->service->getId()."/gameservers/games/adminlist";
+    public function addAdminlist($identifier): string
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/games/adminlist";
         return $this->service->getApi()->dataPost($url, [
-            'identifier' => $identifier
+            'identifier' => $identifier,
         ]);
     }
 
@@ -43,11 +48,13 @@ class Adminlist
      *
      * @param $identifier
      * @return string
+     * @throws NitrapiException
      */
-    public function removeAdminlist($identifier) {
-        $url = "/services/".$this->service->getId()."/gameservers/games/adminlist";
+    public function removeAdminlist($identifier): string
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/games/adminlist";
         return $this->service->getApi()->dataDelete($url, [
-            'identifier' => $identifier
+            'identifier' => $identifier,
         ]);
     }
 }

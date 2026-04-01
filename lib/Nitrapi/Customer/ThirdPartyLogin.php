@@ -2,11 +2,11 @@
 
 namespace Nitrapi\Customer;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Nitrapi;
 
 class ThirdPartyLogin
 {
-
     private $api;
 
     public function __construct(Nitrapi $api)
@@ -18,8 +18,10 @@ class ThirdPartyLogin
      * List all connected 3rd Party accounts.
      *
      * @return mixed
+     * @throws NitrapiException
      */
-    public function getList() {
+    public function getList()
+    {
         return $this->api->dataGet("/user/third_party")['connections'];
     }
 
@@ -30,8 +32,10 @@ class ThirdPartyLogin
      * @param $updateToken
      * @param $redirectUrl
      * @return string
+     * @throws NitrapiException
      */
-    public function addGoogle($updateToken, $redirectUrl) {
+    public function addGoogle($updateToken, $redirectUrl): string
+    {
         return $this->api->dataPost("/user/third_party/google", [
             'token' => $updateToken,
             'redirect_url' => $redirectUrl,
@@ -45,8 +49,10 @@ class ThirdPartyLogin
      * @param $updateToken
      * @param $redirectUrl
      * @return string
+     * @throws NitrapiException
      */
-    public function addFacebook($updateToken, $redirectUrl) {
+    public function addFacebook($updateToken, $redirectUrl): string
+    {
         return $this->api->dataPost("/user/third_party/facebook", [
             'token' => $updateToken,
             'redirect_url' => $redirectUrl,
@@ -60,8 +66,10 @@ class ThirdPartyLogin
      * @param $updateToken
      * @param $redirectUrl
      * @return string
+     * @throws NitrapiException
      */
-    public function addTwitch($updateToken, $redirectUrl) {
+    public function addTwitch($updateToken, $redirectUrl): string
+    {
         return $this->api->dataPost("/user/third_party/twitch", [
             'token' => $updateToken,
             'redirect_url' => $redirectUrl,
@@ -69,14 +77,16 @@ class ThirdPartyLogin
     }
 
     /**
-     * Add a Github Account.
+     * Add a GitHub Account.
      * This method returns a URL, you need to redirect the User to this URL.
      *
      * @param $updateToken
      * @param $redirectUrl
      * @return string
+     * @throws NitrapiException
      */
-    public function addGithub($updateToken, $redirectUrl) {
+    public function addGithub($updateToken, $redirectUrl): string
+    {
         return $this->api->dataPost("/user/third_party/github", [
             'token' => $updateToken,
             'redirect_url' => $redirectUrl,
@@ -90,8 +100,10 @@ class ThirdPartyLogin
      * @param $updateToken
      * @param $redirectUrl
      * @return string
+     * @throws NitrapiException
      */
-    public function addMicrosoft($updateToken, $redirectUrl) {
+    public function addMicrosoft($updateToken, $redirectUrl): string
+    {
         return $this->api->dataPost("/user/third_party/microsoft", [
             'token' => $updateToken,
             'redirect_url' => $redirectUrl,
@@ -99,63 +111,72 @@ class ThirdPartyLogin
     }
 
     /**
-     * Deletes a existing Google connection.
+     * Deletes an existing Google connection.
      *
      * @param $updateToken
      * @return bool
+     * @throws NitrapiException
      */
-    public function deleteGoogle($updateToken) {
+    public function deleteGoogle($updateToken): bool
+    {
         return $this->api->dataDelete("/user/third_party/google", [
-            'token' => $updateToken
+            'token' => $updateToken,
         ]);
     }
 
     /**
-     * Deletes a existing Facebook connection.
+     * Deletes an existing Facebook connection.
      *
      * @param $updateToken
      * @return bool
+     * @throws NitrapiException
      */
-    public function deleteFacebook($updateToken) {
+    public function deleteFacebook($updateToken): bool
+    {
         return $this->api->dataDelete("/user/third_party/facebook", [
-            'token' => $updateToken
+            'token' => $updateToken,
         ]);
     }
 
     /**
-     * Deletes a existing Twitch connection.
+     * Deletes an existing Twitch connection.
      *
      * @param $updateToken
      * @return bool
+     * @throws NitrapiException
      */
-    public function deleteTwitch($updateToken) {
+    public function deleteTwitch($updateToken): bool
+    {
         return $this->api->dataDelete("/user/third_party/twitch", [
-            'token' => $updateToken
+            'token' => $updateToken,
         ]);
     }
 
     /**
-     * Deletes a existing Github connection.
+     * Deletes an existing GitHub connection.
      *
      * @param $updateToken
      * @return bool
+     * @throws NitrapiException
      */
-    public function deleteGithub($updateToken) {
+    public function deleteGithub($updateToken): bool
+    {
         return $this->api->dataDelete("/user/third_party/github", [
-            'token' => $updateToken
+            'token' => $updateToken,
         ]);
     }
 
     /**
-     * Deletes a existing Microsoft connection.
+     * Deletes an existing Microsoft connection.
      *
      * @param $updateToken
      * @return bool
+     * @throws NitrapiException
      */
-    public function deleteMicrosoft($updateToken) {
+    public function deleteMicrosoft($updateToken): bool
+    {
         return $this->api->dataDelete("/user/third_party/microsoft", [
-            'token' => $updateToken
+            'token' => $updateToken,
         ]);
     }
-
 }

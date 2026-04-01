@@ -2,6 +2,8 @@
 
 namespace Nitrapi\Services\CloudServers\Backup;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
+
 class Backup
 {
     /**
@@ -11,28 +13,34 @@ class Backup
 
     protected $data;
 
-    public function __construct(BackupManager $backupManager, array $data) {
+    public function __construct(BackupManager $backupManager, array $data)
+    {
         $this->backupManager = $backupManager;
         $this->data = $data;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->data['id'];
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->data['name'];
     }
 
-    public function getStatus() {
+    public function getStatus()
+    {
         return $this->data['status'];
     }
 
-    public function getCreatedAt() {
+    public function getCreatedAt(): \DateTime
+    {
         return (new \DateTime())->setTimestamp(strtotime($this->data['created_at']));
     }
 
-    public function getType() {
+    public function getType()
+    {
         return $this->data['type'];
     }
 
@@ -43,9 +51,12 @@ class Backup
      * The Cloud Server instance will reset to the Backup, this causes data-loss.
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function doRestore() {
-        $url = "/services/".$this->backupManager->getCloudServer()->getId()."/cloud_servers/backups/" . $this->getId() . "/restore";
+    public function doRestore(): bool
+    {
+        $url = "/services/" . $this->backupManager->getCloudServer()->getId(
+            ) . "/cloud_servers/backups/" . $this->getId() . "/restore";
         $this->backupManager->getCloudServer()->getApi()->dataPost($url);
 
         return true;
@@ -58,9 +69,12 @@ class Backup
      * Automatic Backups can't be deleted and will throw a Exception.
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function doDelete() {
-        $url = "/services/".$this->backupManager->getCloudServer()->getId()."/cloud_servers/backups/" . $this->getId();
+    public function doDelete(): bool
+    {
+        $url = "/services/" . $this->backupManager->getCloudServer()->getId(
+            ) . "/cloud_servers/backups/" . $this->getId();
         $this->backupManager->getCloudServer()->getApi()->dataDelete($url);
 
         return true;

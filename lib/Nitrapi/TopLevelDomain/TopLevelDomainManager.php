@@ -12,7 +12,8 @@ class TopLevelDomainManager
      */
     protected $api;
 
-    public function __construct(Nitrapi $api) {
+    public function __construct(Nitrapi $api)
+    {
         $this->api = $api;
     }
 
@@ -20,10 +21,12 @@ class TopLevelDomainManager
      * Returns all tlds
      *
      * @param bool $show_disabled show disabled tlds (that can no longer be bought)
-     * @param string $provider limit to one provider (one of cps, nicdirect)
+     * @param string|null $provider limit to one provider (one of cps, nicdirect)
      * @return TopLevelDomain[]
+     * @throws NitrapiException
      */
-    public function getTlds($show_disabled = false, $provider = NULL) {
+    public function getTlds(bool $show_disabled = false, ?string $provider = null): array
+    {
         $tlds = [];
         $data = [
             "show_disabled" => $show_disabled ? 'true' : 'false',
@@ -38,5 +41,4 @@ class TopLevelDomainManager
 
         return $tlds;
     }
-
 }

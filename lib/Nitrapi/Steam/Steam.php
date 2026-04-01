@@ -9,30 +9,26 @@ class Steam
 {
     protected $api;
 
-    public function __construct(Nitrapi $api) {
+    public function __construct(Nitrapi $api)
+    {
         $this->setApi($api);
-    }
-    
-    /**
-     * Returns the Workshop Object
-     *
-     * @return ServerManager
-     */
-    public function getWorkshop() {
-        return new Workshop($this);
-    }
-    
-    /**
-     * @param Nitrapi $api
-     */
-    protected function setApi(Nitrapi $api) {
-        $this->api = $api;
     }
 
     /**
-     * @return Nitrapi
+     * Returns the Workshop Object
      */
-    public function getApi() {
+    public function getWorkshop(): Workshop
+    {
+        return new Workshop($this);
+    }
+
+    protected function setApi(Nitrapi $api): void
+    {
+        $this->api = $api;
+    }
+
+    public function getApi(): Nitrapi
+    {
         return $this->api;
     }
 }

@@ -2,13 +2,19 @@
 
 namespace Nitrapi\Services\Bouncers;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\Service;
 
-class Bouncer extends Service {
+class Bouncer extends Service
+{
     protected $info;
 
-    public function __construct(Nitrapi $api, $id) {
+    /**
+     * @throws NitrapiException
+     */
+    public function __construct(Nitrapi $api, $id)
+    {
         parent::__construct($api, $id);
 
         if ($this->isActive()) {
@@ -16,31 +22,45 @@ class Bouncer extends Service {
         }
     }
 
-    public function getDetails() {
+    public function getDetails(): BouncerDetails
+    {
         return new BouncerDetails($this->info);
     }
 
-    public function addIdent($identName, $password) {
+    /**
+     * @throws NitrapiException
+     */
+    public function addIdent($identName, $password)
+    {
         return $this->getApi()->dataPost($this->url(), [
             'ident' => $identName,
-            'password' => $password
+            'password' => $password,
         ]);
     }
 
-    public function editPassword(Ident $ident, $newPassword) {
+    /**
+     * @throws NitrapiException
+     */
+    public function editPassword(Ident $ident, $newPassword)
+    {
         return $this->getApi()->dataPut($this->url(), [
             'ident' => $ident->getIdent(),
             'password' => $newPassword,
         ]);
     }
 
-    public function deleteIdent(Ident $ident) {
+    /**
+     * @throws NitrapiException
+     */
+    public function deleteIdent(Ident $ident)
+    {
         return $this->getApi()->dataDelete($this->url(), [
-            'ident' => $ident->getIdent()
+            'ident' => $ident->getIdent(),
         ]);
     }
 
-    private function url($path = '') {
-        return 'services/' . $this->getId() . '/bouncers' . $path;
+    private function url(): string
+    {
+        return 'services/' . $this->getId() . '/bouncers';
     }
 }

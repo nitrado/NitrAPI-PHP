@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\CloudServers\Firewall;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\CloudServers\CloudServer;
 
 class Firewall
@@ -14,23 +15,30 @@ class Firewall
     /**
      * @var bool
      */
-    protected $enabled = null;
+    protected $enabled;
 
     /**
      * @var array
      */
     protected $rules = [];
 
-    public function __construct(CloudServer $service) {
+    /**
+     * @throws NitrapiException
+     */
+    public function __construct(CloudServer $service)
+    {
         $this->service = $service;
         $this->refresh();
     }
 
     /**
      * Refresh firewall data
+     *
+     * @throws NitrapiException
      */
-    public function refresh() {
-        $url = "/services/".$this->service->getId()."/cloud_servers/firewall";
+    public function refresh(): void
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/firewall";
         $firewall = $this->service->getApi()->dataGet($url)['firewall'];
 
         $this->enabled = $firewall['enabled'];
@@ -40,9 +48,10 @@ class Firewall
     /**
      * Returns the Firewall Status
      *
-     * @return bool
+     * @return bool|null
      */
-    public function isEnabled() {
+    public function isEnabled(): ?bool
+    {
         return $this->enabled;
     }
 
@@ -51,7 +60,8 @@ class Firewall
      *
      * @return array
      */
-    public function getRules() {
+    public function getRules(): array
+    {
         return $this->rules;
     }
 
@@ -60,11 +70,13 @@ class Firewall
      *
      * @param $number
      * @return bool
+     * @throws NitrapiException
      */
-    public function deleteRule($number) {
-        $url = "/services/".$this->service->getId()."/cloud_servers/firewall/remove";
+    public function deleteRule($number): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/firewall/remove";
         $this->service->getApi()->dataDelete($url, [
-            'number' => $number
+            'number' => $number,
         ]);
         $this->refresh();
         return true;
@@ -74,9 +86,11 @@ class Firewall
      * Enables the Firewall.
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function enableFirewall() {
-        $url = "/services/".$this->service->getId()."/cloud_servers/firewall/enable";
+    public function enableFirewall(): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/firewall/enable";
         $this->service->getApi()->dataPost($url);
         $this->refresh();
         return true;
@@ -86,9 +100,11 @@ class Firewall
      * Disables the Firewall.
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function disableFirewall() {
-        $url = "/services/".$this->service->getId()."/cloud_servers/firewall/disable";
+    public function disableFirewall(): bool
+    {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/firewall/disable";
         $this->service->getApi()->dataPost($url);
         $this->refresh();
         return true;
@@ -97,15 +113,22 @@ class Firewall
     /**
      * Creates a new Firewall Rule.
      *
-     * @param $sourceIp string
-     * @param $targetIp string
-     * @param $targetPort integer
-     * @param $protocol string
-     * @param $comment string
+     * @param string|null $sourceIp
+     * @param string|null $targetIp
+     * @param int|null $targetPort
+     * @param string $protocol
+     * @param string $comment
      * @return bool
+     * @throws NitrapiException
      */
-    public function addRule($sourceIp = null, $targetIp = null, $targetPort = null, $protocol = 'tcp', $comment = 'Firewall rule') {
-        $url = "/services/".$this->service->getId()."/cloud_servers/firewall/add";
+    public function addRule(
+        ?string $sourceIp = null,
+        ?string $targetIp = null,
+        ?int $targetPort = null,
+        string $protocol = 'tcp',
+        string $comment = 'Firewall rule'
+    ): bool {
+        $url = "/services/" . $this->service->getId() . "/cloud_servers/firewall/add";
         $this->service->getApi()->dataPost($url, [
             'source_ip' => $sourceIp,
             'target_ip' => $targetIp,
@@ -116,5 +139,4 @@ class Firewall
         $this->refresh();
         return true;
     }
-
 }

@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\Gameservers\CustomerSettings;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\Gameservers\Gameserver;
 
 class CustomerSettings
@@ -11,11 +12,12 @@ class CustomerSettings
      */
     protected $service;
 
-    protected $settings = null;
+    protected $settings;
 
-    protected $defaults = null;
+    protected $defaults;
 
-    public function __construct(Gameserver $service, array &$settings) {
+    public function __construct(Gameserver $service, array &$settings)
+    {
         $this->service = $service;
         $this->settings = &$settings;
     }
@@ -27,26 +29,32 @@ class CustomerSettings
      * returned. If category and key is provided, the actual value is
      * returned.
      *
-     * @see CustomerSettingsDBSetting::setDefaultValue()
-     *
      * @param string|null $category The setting category
      * @param string|null $key The setting key
      * @return array|string The default values
      *
      * @throws CustomerSettingNotFoundException
+     * @throws NitrapiException
+     * @see CustomerSettingsDBSetting::setDefaultValue()
+     *
      */
-    public function getDefaults($category=null, $key=null) {
+    public function getDefaults(?string $category = null, ?string $key = null)
+    {
         // Refresh the cache.
         if ($this->defaults === null) {
-            $this->defaults = $this->service->getApi()->dataGet('services/' . $this->service->getId() . '/gameservers/settings/defaults')['settings'];
+            $this->defaults = $this->service->getApi()->dataGet(
+                'services/' . $this->service->getId() . '/gameservers/settings/defaults',
+            )['settings'];
         }
 
         if ($category !== null && !isset($this->defaults[$category])) {
-            throw new CustomerSettingNotFoundException('Category "'.$category.'" not found');
+            throw new CustomerSettingNotFoundException('Category "' . $category . '" not found');
         }
 
         if ($key !== null && !isset($this->defaults[$category][$key])) {
-            throw new CustomerSettingNotFoundException('Setting "'.$key.'" in category "'.$category.'" not found');
+            throw new CustomerSettingNotFoundException(
+                'Setting "' . $key . '" in category "' . $category . '" not found',
+            );
         }
 
         // Return a single default value
@@ -63,13 +71,19 @@ class CustomerSettings
         return $this->defaults;
     }
 
-    public function readSetting($category = null, $key = null) {
+    /**
+     * @throws CustomerSettingNotFoundException
+     */
+    public function readSetting($category = null, $key = null)
+    {
         if (!empty($category) && !$this->hasCategory($category)) {
-            throw new CustomerSettingNotFoundException("Category \"".$category."\" not found");
+            throw new CustomerSettingNotFoundException("Category \"" . $category . "\" not found");
         }
 
         if (!empty($key) && !$this->hasSetting($category, $key)) {
-            throw new CustomerSettingNotFoundException("Setting \"".$key."\" in category \"".$category."\" not found");
+            throw new CustomerSettingNotFoundException(
+                "Setting \"" . $key . "\" in category \"" . $category . "\" not found",
+            );
         }
 
         if (!empty($category) && !empty($key)) {
@@ -83,9 +97,16 @@ class CustomerSettings
         return $this->settings;
     }
 
-    public function writeSetting($category, $key, $value) {
+    /**
+     * @throws NitrapiException
+     * @throws CustomerSettingNotFoundException
+     */
+    public function writeSetting($category, $key, $value): bool
+    {
         if (!$this->hasSetting($category, $key)) {
-            throw new CustomerSettingNotFoundException("Setting \"".$key."\" in category \"".$category."\" not found");
+            throw new CustomerSettingNotFoundException(
+                "Setting \"" . $key . "\" in category \"" . $category . "\" not found",
+            );
         }
 
         $this->service->getApi()->dataPost("services/" . $this->service->getId() . "/gameservers/settings", [
@@ -100,33 +121,63 @@ class CustomerSettings
         return true;
     }
 
-    public function getConfigSets() {
-        return $this->service->getApi()->dataGet("services/" . $this->service->getId() . "/gameservers/settings/sets")['sets'];
+    /**
+     * @throws NitrapiException
+     */
+    public function getConfigSets()
+    {
+        return $this->service->getApi()->dataGet(
+            "services/" . $this->service->getId() . "/gameservers/settings/sets",
+        )['sets'];
     }
 
-    public function restoreConfigset($id) {
-        $this->service->getApi()->dataPost("services/" . $this->service->getId() . "/gameservers/settings/sets/".$id."/restore");
+    /**
+     * @throws NitrapiException
+     */
+    public function restoreConfigset($id): bool
+    {
+        $this->service->getApi()->dataPost(
+            "services/" . $this->service->getId() . "/gameservers/settings/sets/" . $id . "/restore",
+        );
         return true;
     }
 
-    public function deleteConfigset($id) {
-        $this->service->getApi()->dataDelete("services/" . $this->service->getId() . "/gameservers/settings/sets/".$id);
+    /**
+     * @throws NitrapiException
+     */
+    public function deleteConfigset($id): bool
+    {
+        $this->service->getApi()->dataDelete(
+            "services/" . $this->service->getId() . "/gameservers/settings/sets/" . $id,
+        );
         return true;
     }
 
-    public function createConfigset($name = null) {
+    /**
+     * @throws NitrapiException
+     */
+    public function createConfigset($name = null): bool
+    {
         $settings = (!empty($name)) ? ['name' => $name] : [];
 
-        $this->service->getApi()->dataPost("services/" . $this->service->getId() . "/gameservers/settings/sets", $settings);
+        $this->service->getApi()->dataPost(
+            "services/" . $this->service->getId() . "/gameservers/settings/sets",
+            $settings,
+        );
         return true;
     }
 
-    public function resetSettings() {
+    /**
+     * @throws NitrapiException
+     */
+    public function resetSettings(): bool
+    {
         $this->service->getApi()->dataDelete("services/" . $this->service->getId() . "/gameservers/settings");
         return true;
     }
 
-    public function hasCategory($category) {
+    public function hasCategory($category): bool
+    {
         if (!isset($this->settings[$category])) {
             return false;
         }
@@ -134,7 +185,8 @@ class CustomerSettings
         return true;
     }
 
-    public function hasSetting($category, $key) {
+    public function hasSetting($category, $key): bool
+    {
         if (!$this->hasCategory($category)) {
             return false;
         }

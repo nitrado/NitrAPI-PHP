@@ -2,14 +2,20 @@
 
 namespace Nitrapi\Order\Pricing;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\CloudServers\CloudServer;
 use Nitrapi\Services\Service;
 
-abstract class PartPricing extends Pricing {
-    
-    protected $parts = null;
+abstract class PartPricing extends Pricing
+{
+    protected $parts;
 
-    public function addPart($part, $value) {
+    /**
+     * @throws PricingException
+     * @throws NitrapiException
+     */
+    public function addPart($part, $value): void
+    {
         if ($this->parts === null) {
             $this->getParts();
         }
@@ -17,11 +23,15 @@ abstract class PartPricing extends Pricing {
         if (!array_key_exists($part, $this->parts)) {
             throw new PricingException("Part " . $part . " is not available for this product.");
         }
-        
+
         $this->parts[$part] = $value;
     }
 
-    public function getParts() {
+    /**
+     * @throws NitrapiException
+     */
+    public function getParts(): array
+    {
         if ($this->parts === null) {
             $prices = $this->getPrices();
             $this->parts = [];
@@ -33,7 +43,12 @@ abstract class PartPricing extends Pricing {
         return $this->parts;
     }
 
-    public function getPrice($rentalTime, Service &$service = null) {
+    /**
+     * @throws PricingException
+     * @throws NitrapiException
+     */
+    public function getPrice($rentalTime, ?Service $service = null): int
+    {
         $this->checkDependencies();
         $prices = $this->getPrices($service);
         $parts = $this->getParts();
@@ -43,8 +58,10 @@ abstract class PartPricing extends Pricing {
 
         // Dynamic rental times
         if ($prices['rental_times'] === null) {
-            if(($rentalTime % $prices['min_rental_time']) !== 0) {
-                throw new PricingException("Rental time " . $rentalTime . " is invalid (Modulu ".$prices['min_rental_time'].").");
+            if (($rentalTime % $prices['min_rental_time']) !== 0) {
+                throw new PricingException(
+                    "Rental time " . $rentalTime . " is invalid (Modulu " . $prices['min_rental_time'] . ").",
+                );
             }
 
             $multiply = $rentalTime / $prices['min_rental_time'];
@@ -53,25 +70,41 @@ abstract class PartPricing extends Pricing {
 
         foreach ($prices['parts'] as $part) {
             $amount = $parts[$part['type']];
-            if (empty($amount)) continue;
+            if (empty($amount)) {
+                continue;
+            }
 
-            if ($amount <= 0) throw new PricingException("The amount of {$part['type']} can't be 0.");
-            if ($amount > $part['max_count']) throw new PricingException("The amount {$amount} of type {$part['type']} is too big.");
-            if ($amount < $part['min_count']) throw new PricingException("The amount {$amount} of type {$part['type']} is too low.");
-            if (!empty($part['steps']) && !in_array($amount, $part['steps'])) throw new PricingException("The amount {$amount} of type {$part['type']} is not available.");
+            if ($amount <= 0) {
+                throw new PricingException("The amount of {$part['type']} can't be 0.");
+            }
+            if ($amount > $part['max_count']) {
+                throw new PricingException("The amount {$amount} of type {$part['type']} is too big.");
+            }
+            if ($amount < $part['min_count']) {
+                throw new PricingException("The amount {$amount} of type {$part['type']} is too low.");
+            }
+            if (!empty($part['steps']) && !in_array($amount, $part['steps'], true)) {
+                throw new PricingException("The amount {$amount} of type {$part['type']} is not available.");
+            }
 
             $bestPrice = false;
-            foreach ($part['rental_times'] as $hoursAndPrices)
-                if ($hoursAndPrices['hours'] == $rentalTime)
-                    foreach ($hoursAndPrices['prices'] as $price)
-                        if ($price['count'] === $amount)
+            foreach ($part['rental_times'] as $hoursAndPrices) {
+                if ($hoursAndPrices['hours'] === $rentalTime) {
+                    foreach ($hoursAndPrices['prices'] as $price) {
+                        if ($price['count'] === $amount) {
                             $bestPrice = $price['price'];
+                        }
+                    }
+                }
+            }
 
-            if (!is_float($bestPrice) && !is_int($bestPrice)) throw new PricingException("No valid price found for part {$part['type']}.");
+            if (!is_float($bestPrice) && !is_int($bestPrice)) {
+                throw new PricingException("No valid price found for part {$part['type']}.");
+            }
             $totalPrice += $bestPrice;
         }
 
-        // Multiple by rental time if dynamic rental times
+        // Multiply by rental time if dynamic rental times
         $totalPrice *= $multiply;
 
         // Remove 50% of advice if the old service is not a Cloud Server Dynamic
@@ -80,38 +113,49 @@ abstract class PartPricing extends Pricing {
             $removePercent = 0;
         }
 
-        $totalPrice = $this->calcAdvicePrice(round($totalPrice, 0), $prices['advice'], $removePercent);
-
-        return $totalPrice;
+        return $this->calcAdvicePrice(round($totalPrice, 0), $prices['advice'], $removePercent);
     }
 
-    public function checkDependencies() {
+    /**
+     * @throws PricingException
+     * @throws NitrapiException
+     */
+    public function checkDependencies(): void
+    {
         $prices = $this->getPrices();
         $parts = $this->getParts();
         foreach ($prices['parts'] as $part) {
             if ($part['optional'] === false &&
-                (!isset($parts[$part['type']]) || empty($parts[$part['type']]))) {
+                (empty($parts[$part['type']]))) {
                 throw new PricingException("No value provided for needed part type " . $part['type'] . ".");
             }
         }
     }
 
-    protected function getNewOrderArray($rentalTime) {
+    /**
+     * @throws PricingException
+     * @throws NitrapiException
+     */
+    protected function getNewOrderArray($rentalTime): array
+    {
         $this->checkDependencies();
-        $orderArray = [
+        return [
             'price' => $this->getPrice($rentalTime),
             'rental_time' => $rentalTime,
             'location' => $this->locationId,
             'parts' => $this->getParts(),
-            'additionals' => $this->additionals
+            'additionals' => $this->additionals,
         ];
-
-        return $orderArray;
     }
 
-    protected function getSwitchOrderArray(Service &$service, $rentalTime) {
+    /**
+     * @throws PricingException
+     * @throws NitrapiException
+     */
+    protected function getSwitchOrderArray(Service $service, $rentalTime): array
+    {
         $this->checkDependencies();
-        $orderArray = [
+        return [
             'price' => $this->getSwitchPrice($service, $rentalTime),
             'rental_time' => $rentalTime,
             'location' => $this->locationId,
@@ -120,7 +164,5 @@ abstract class PartPricing extends Pricing {
             'method' => 'switch',
             'service_id' => $service->getId(),
         ];
-
-        return $orderArray;
     }
 }

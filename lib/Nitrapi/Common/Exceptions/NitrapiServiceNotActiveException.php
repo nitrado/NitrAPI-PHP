@@ -2,5 +2,4 @@
 
 namespace Nitrapi\Common\Exceptions;
 
-class NitrapiServiceNotActiveException extends NitrapiException {
-}
+class NitrapiServiceNotActiveException extends NitrapiException {}

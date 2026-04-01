@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\CloudServers\System;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\CloudServers\CloudServer;
 
 /**
@@ -13,10 +14,12 @@ use Nitrapi\Services\CloudServers\CloudServer;
  *
  * @package Nitrapi\Services\CloudServers\System
  */
-class Systemd {
+class Systemd
+{
     public $service;
 
-    public function __construct(CloudServer $service) {
+    public function __construct(CloudServer $service)
+    {
         $this->service = $service;
     }
 
@@ -24,17 +27,21 @@ class Systemd {
      * Returns a SSE (server-send event) stream URL, which will stream
      * changes on the Systemd services.
      *
-     * @param null|string $unit a unit to filter at
+     * @param string|null $unit a unit to filter at
      * @param bool $initialState to send an initial state for all units
      * @return string The URL
+     * @throws NitrapiException
      */
-    public function changeFeedUrl($unit=null, $initialState=false) {
+    public function changeFeedUrl(?string $unit = null, bool $initialState = false): string
+    {
         /* @var $apiResults array[][] */
         $apiResult = $this->service->getApi()->dataGet(
-            $this->url('/changefeed'), [
+            $this->url('/changefeed'),
+            [
                 'unit' => $unit,
-                'initial_state' => $initialState
-            ]);
+                'initial_state' => $initialState,
+            ],
+        );
         return $apiResult['token']['url'];
     }
 
@@ -42,8 +49,10 @@ class Systemd {
      * Reset all units in failure state back to normal.
      *
      * @return void
+     * @throws NitrapiException
      */
-    public function resetAllFailedUnits() {
+    public function resetAllFailedUnits(): void
+    {
         $this->service->getApi()->dataPost($this->url('/reset_all_failed'));
     }
 
@@ -51,8 +60,10 @@ class Systemd {
      * Reload the Systemd daemon
      *
      * @return void
+     * @throws NitrapiException
      */
-    public function reloadDaemon() {
+    public function reloadDaemon(): void
+    {
         $this->service->getApi()->dataPost($this->url('/daemon_reload'));
     }
 
@@ -61,8 +72,10 @@ class Systemd {
      * by type and name.
      *
      * @return Unit[] the list of units
+     * @throws NitrapiException
      */
-    public function getUnits() {
+    public function getUnits(): array
+    {
         /* @var $apiResults array[][] */
         $apiResults = $this->service->getApi()->dataGet($this->url(''));
         $units = [];
@@ -71,7 +84,7 @@ class Systemd {
         }
 
         // Sort
-        usort($units, function(Unit $a, Unit $b) {
+        usort($units, static function (Unit $a, Unit $b) {
             $aType = explode('.', $a->getName());
             $bType = explode('.', $b->getName());
 
@@ -88,7 +101,8 @@ class Systemd {
         return $units;
     }
 
-    private function url($endpoint) {
+    private function url($endpoint): string
+    {
         return '/services/' . $this->service->getId() . '/cloud_servers/system/units' . $endpoint;
     }
 }

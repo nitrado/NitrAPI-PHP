@@ -3,6 +3,7 @@
 namespace Nitrapi\Admin\Servers\IPMI;
 
 use Nitrapi\Admin\Servers\ServerManager;
+use Nitrapi\Common\Exceptions\NitrapiException;
 
 class Ipmi
 {
@@ -13,9 +14,10 @@ class Ipmi
     }
 
     /**
-     * @return bool
+     * @throws NitrapiException
      */
-    public function getIKVM($hostname) {
+    public function getIKVM($hostname): bool
+    {
         return $this->getServerManager()->getAdmin()->getApi()->dataGet('/admin/server/ipmi/ikvm', null, [
             'query' => [
                 'hostname' => $hostname
@@ -23,28 +25,44 @@ class Ipmi
         ])['ipmi'];
     }
 
-    public function doReset($hostname) {
+    /**
+     * @throws NitrapiException
+     */
+    public function doReset($hostname): bool
+    {
         $this->getServerManager()->getAdmin()->getApi()->dataPost('/admin/server/ipmi/reset', [
             'hostname' => $hostname
         ]);
         return true;
     }
 
-    public function doPowerOff($hostname) {
+    /**
+     * @throws NitrapiException
+     */
+    public function doPowerOff($hostname): bool
+    {
         $this->getServerManager()->getAdmin()->getApi()->dataPost('/admin/server/ipmi/power_off', [
             'hostname' => $hostname
         ]);
         return true;
     }
 
-    public function doPowerOn($hostname) {
+    /**
+     * @throws NitrapiException
+     */
+    public function doPowerOn($hostname): bool
+    {
         $this->getServerManager()->getAdmin()->getApi()->dataPost('/admin/server/ipmi/power_on', [
             'hostname' => $hostname
         ]);
         return true;
     }
 
-    public function doIKVMReset($hostname) {
+    /**
+     * @throws NitrapiException
+     */
+    public function doIKVMReset($hostname): bool
+    {
         $this->getServerManager()->getAdmin()->getApi()->dataPost('/admin/server/ipmi/ikvm_reset', [
             'hostname' => $hostname
         ]);
@@ -54,14 +72,16 @@ class Ipmi
     /**
      * @param ServerManager $serverManager
      */
-    protected function setServerManager(ServerManager $serverManager) {
+    protected function setServerManager(ServerManager $serverManager): void
+    {
         $this->serverManager = $serverManager;
     }
 
     /**
      * @return ServerManager
      */
-    public function getServerManager() {
+    public function getServerManager(): ServerManager
+    {
         return $this->serverManager;
     }
 }

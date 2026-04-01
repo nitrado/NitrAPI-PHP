@@ -2,59 +2,91 @@
 
 namespace Nitrapi\Services\Voiceservers\Types;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
+
 class Teamspeak3 extends Type
 {
-    public function status($show_icons = false) {
+    /**
+     * @throws NitrapiException
+     */
+    public function status($show_icons = false)
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/status";
         $params = [];
-        if($show_icons) {
+        if ($show_icons) {
             $params["show_icons"] = true;
         }
-        $status = $this->service->getApi()->dataGet($url, null, ["query" => $params])['status'];
-        return $status;
+        return $this->service->getApi()->dataGet($url, null, ["query" => $params])['status'];
     }
-    
-    public function icon($icon_id) {
+
+    /**
+     * @throws NitrapiException
+     */
+    public function icon($icon_id)
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/icon";
-        $icon = $this->service->getApi()->dataGet($url, null, ["query" => ["icon_id" => $icon_id]])['icon'];
-        return $icon;
+        return $this->service->getApi()->dataGet($url, null, ["query" => ["icon_id" => $icon_id]])['icon'];
     }
-    
-    public function getWhitelist() {
+
+    /**
+     * @throws NitrapiException
+     */
+    public function getWhitelist()
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/whitelist";
         return $this->service->getApi()->dataGet($url, null)['list'];
     }
-    
-    public function addWhitelist($ip, $comment) {
+
+    /**
+     * @throws NitrapiException
+     */
+    public function addWhitelist($ip, $comment)
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/whitelist";
         return $this->service->getApi()->dataPost($url, [
             'ip' => $ip,
-            'comment' => $comment
+            'comment' => $comment,
         ])['entry'];
     }
-    
-    public function deleteWhitelist($id) {
+
+    /**
+     * @throws NitrapiException
+     */
+    public function deleteWhitelist($id): bool
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/whitelist";
         $this->service->getApi()->dataDelete($url, [
-            'id' => $id
+            'id' => $id,
         ]);
         return true;
     }
 
-    public function getBanlist() {
+    /**
+     * @throws NitrapiException
+     */
+    public function getBanlist()
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/bans";
         return $this->service->getApi()->dataGet($url, null);
     }
 
-    public function deleteBanlist($id) {
+    /**
+     * @throws NitrapiException
+     */
+    public function deleteBanlist($id): bool
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/bans";
         $this->service->getApi()->dataDelete($url, [
-            'ban_id' => $id
+            'ban_id' => $id,
         ]);
         return true;
     }
 
-    public function setHostMessage($mode, $message) {
+    /**
+     * @throws NitrapiException
+     */
+    public function setHostMessage($mode, $message): bool
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/hostmessage";
         $this->service->getApi()->dataPost($url, [
             'mode' => $mode,
@@ -63,7 +95,11 @@ class Teamspeak3 extends Type
         return true;
     }
 
-    public function addPassword($password, $description, $duration = 10) {
+    /**
+     * @throws NitrapiException
+     */
+    public function addPassword($password, $description, $duration = 10): bool
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/temppassword";
         $this->service->getApi()->dataPost($url, [
             'password' => $password,
@@ -73,63 +109,79 @@ class Teamspeak3 extends Type
         return true;
     }
 
-    public function enableLogView($group) {
+    /**
+     * @throws NitrapiException
+     */
+    public function enableLogView($group)
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/enable_log_view";
         return $this->service->getApi()->dataPost($url, [
-            'group' => $group
+            'group' => $group,
         ]);
     }
-    
-    public function cleanupUsers($groups, $days) {
+
+    /**
+     * @throws NitrapiException
+     */
+    public function cleanupUsers($groups, $days)
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/cleanup_users";
         return $this->service->getApi()->dataPost($url, [
             'groups' => $groups,
-            'days' => $days
+            'days' => $days,
         ])['cleanup'];
     }
-    
-    public function info() {
+
+    /**
+     * @throws NitrapiException
+     */
+    public function info()
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/info";
         return $this->service->getApi()->dataGet($url, null)['info'];
     }
-    
+
     /**
      * Send commands to voiceserver
-     * 
+     *
      * @param array $commands
      * @return array
+     * @throws NitrapiException
      */
-    public function query($commands) {
+    public function query(array $commands): array
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/query";
         $response = $this->service->getApi()->dataPost($url, null, null, [
             'json' => [
-                'commands' => $commands
-            ]
+                'commands' => $commands,
+            ],
         ]);
         return $response['query'];
     }
-    
+
     /**
      * Creates a new Admin Group
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function addGroup($name) {
+    public function addGroup($name): string
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/group";
         return $this->service->getApi()->dataPost($url, [
-            'name' => $name
+            'name' => $name,
         ])['token'];
     }
 
     /**
      * Deletes a Group
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function deleteGroup($groupId) {
+    public function deleteGroup($groupId): bool
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/group";
         $this->service->getApi()->dataDelete($url, [
-            'sgid' => $groupId
+            'sgid' => $groupId,
         ]);
 
         return true;
@@ -138,26 +190,29 @@ class Teamspeak3 extends Type
     /**
      * Adds a new token for a Group
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function addToken($groupId) {
+    public function addToken($groupId): string
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/token";
         return $this->service->getApi()->dataGet($url, null, [
             'query' => [
-                'sgid' => $groupId
-            ]
+                'sgid' => $groupId,
+            ],
         ])['token'];
     }
 
     /**
      * Deletes a Token
      *
-     * @return string
+     * @return true
+     * @throws NitrapiException
      */
-    public function deleteToken($token) {
+    public function deleteToken($token): bool
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/token";
         $this->service->getApi()->dataDelete($url, [
-            'token' => $token
+            'token' => $token,
         ]);
 
         return true;
@@ -168,8 +223,10 @@ class Teamspeak3 extends Type
      *
      * @admin
      * @return array
+     * @throws NitrapiException
      */
-    public function getHostsystems() {
+    public function getHostsystems(): array
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/servers";
         return $this->service->getApi()->dataGet($url)['servers'];
     }
@@ -179,15 +236,16 @@ class Teamspeak3 extends Type
      * Except files and icons, these are not migrated
      *
      * @admin
-     * @return bool
+     * @return true
+     * @throws NitrapiException
      */
-    public function doSwitch($hostname) {
+    public function doSwitch($hostname): bool
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/teamspeak3/switch";
         $this->service->getApi()->dataPost($url, [
-            'server' => $hostname
+            'server' => $hostname,
         ]);
 
         return true;
     }
-
 }

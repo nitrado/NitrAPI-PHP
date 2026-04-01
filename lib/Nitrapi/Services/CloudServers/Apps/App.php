@@ -2,7 +2,8 @@
 
 namespace Nitrapi\Services\CloudServers\Apps;
 
-class DataMissingException extends \Exception {}
+use Nitrapi\Common\Exceptions\NitrapiException;
+use Nitrapi\Nitrapi;
 
 /**
  * Class App
@@ -37,14 +38,16 @@ class DataMissingException extends \Exception {}
  * @method App setConfigurations()
  * @method App setPorts()
  */
-class App {
+class App
+{
     /**
      * @var AppManager $appManager
      */
     protected $appManager;
     public $data;
 
-    public function __construct(AppManager $appManager, array $data) {
+    public function __construct(AppManager $appManager, array $data)
+    {
         $this->appManager = $appManager;
         $this->data = $data;
 
@@ -57,16 +60,17 @@ class App {
      * Implement the getter and setter methods to access the $data
      * array via getter and set the data via the setter.
      *
-     * @example $app->setAppName('mc_server');
-     * @example $app->getStatus();
-     *
      * @param string $name The method name
      * @param array $args The args
      * @return mixed The resulting value from $data
      * @throws DataMissingException if the key in $data does not exist.
      * @throws \BadMethodCallException if the method does not exist.
+     * @example $app->getStatus();
+     *
+     * @example $app->setAppName('mc_server');
      */
-    public function __call($name, $args) {
+    public function __call(string $name, array $args)
+    {
         if (preg_match('/(get|set)(.+)/', $name) === 0) {
             throw new \BadMethodCallException("Method $name not found.");
         }
@@ -89,11 +93,13 @@ class App {
     /**
      * Saves all the changed data attributes
      * @return $this
+     * @throws NitrapiException
      */
-    public function persist() {
+    public function persist(): self
+    {
         $this->_api()->dataPut($this->_url($this->getAppName()), [
             'cmd' => $this->getCmd(),
-            'parameters' => $this->getParameters()
+            'parameters' => $this->getParameters(),
         ]);
         return $this;
     }
@@ -102,22 +108,22 @@ class App {
      * Install the application
      *
      * @return $this
+     * @throws NitrapiException
      */
-    public function install() {
+    public function install(): self
+    {
         $this->_api()->dataPost($this->_url(''), [
             'app_type' => $this->getAppType(),
             'app_name' => $this->getAppName(),
-            'ports' => $this->getPorts()
+            'ports' => $this->getPorts(),
         ]);
 
-        /**
-         * Update the $data array
-         * @var $installedApps App[]
-         */
+        // Update the $data array
         $installedApps = $this->appManager->getInstalledApps();
         foreach ($installedApps as $app) {
             if ($app->getAppType() === $this->getAppType() &&
-                $app->getAppName() === $this->getAppName()) {
+                $app->getAppName() === $this->getAppName()
+            ) {
                 $this->data = $app->data;
             }
         }
@@ -129,18 +135,22 @@ class App {
      * Uninstall the application.
      *
      * @return $this
+     * @throws NitrapiException
      */
-    public function uninstall() {
+    public function uninstall(): self
+    {
         $this->_api()->dataDelete($this->_url($this->getAppName()));
         return $this;
     }
 
     /**
-     * Update teh application.
+     * Update the application.
      *
      * @return $this
+     * @throws NitrapiException
      */
-    public function update() {
+    public function update(): self
+    {
         $this->_api()->dataPost($this->_url($this->getAppName() . '/update'));
         return $this;
     }
@@ -149,8 +159,10 @@ class App {
      * Restart the application.
      *
      * @return $this
+     * @throws NitrapiException
      */
-    public function restart() {
+    public function restart(): self
+    {
         $this->_api()->dataPost($this->_url($this->getAppName() . '/restart'));
         return $this;
     }
@@ -159,17 +171,21 @@ class App {
      * Stop the application.
      *
      * @return $this
+     * @throws NitrapiException
      */
-    public function stop() {
+    public function stop(): self
+    {
         $this->_api()->dataPost($this->_url($this->getAppName() . '/stop'));
         return $this;
     }
 
-    private function _url($method) {
+    private function _url($method): string
+    {
         return '/services/' . $this->appManager->service->getId() . '/cloud_servers/apps/' . $method;
     }
 
-    private function _api() {
+    private function _api(): Nitrapi
+    {
         return $this->appManager->service->getApi();
     }
 }

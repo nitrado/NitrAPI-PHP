@@ -2,6 +2,9 @@
 
 namespace Nitrapi\Services;
 
+use DateTime;
+use Nitrapi\Common\Exceptions\NitrapiErrorException;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Nitrapi;
 use Nitrapi\Services\CloudServers\Apps\AppManager;
 use Nitrapi\Services\CloudServers\CloudServer;
@@ -34,24 +37,26 @@ abstract class Service extends NitrapiObject
 
     protected static $ensureActiveService = true;
 
-    const SERVICE_STATUS_INSTALLING = 'installing';
-    const SERVICE_STATUS_ACTIVE = 'active';
-    const SERVICE_STATUS_SUSPENDED = 'suspended';
-    const SERVICE_STATUS_DELETED = 'deleted';
-    const SERVICE_STATUS_ADMINLOCKED = 'adminlocked';
-    const SERVICE_STATUS_ADMINLOCKED_SUSPENDED = 'adminlocked_suspended';
+    public const SERVICE_STATUS_INSTALLING = 'installing';
+    public const SERVICE_STATUS_ACTIVE = 'active';
+    public const SERVICE_STATUS_SUSPENDED = 'suspended';
+    public const SERVICE_STATUS_DELETED = 'deleted';
+    public const SERVICE_STATUS_ADMINLOCKED = 'adminlocked';
+    public const SERVICE_STATUS_ADMINLOCKED_SUSPENDED = 'adminlocked_suspended';
 
-    public function __construct(Nitrapi $api, array &$data) {
+    public function __construct(Nitrapi $api, array &$data)
+    {
         parent::__construct($api);
         $this->loadData($data);
     }
 
-     /**
+    /**
      * Return the name of the service as a string.
      *
      * @return string Name of the service
      */
-    public function __toString() {
+    public function __toString()
+    {
         return strtolower(substr(get_class($this), (int)strrpos(get_class($this), '\\') + 1));
     }
 
@@ -62,7 +67,8 @@ abstract class Service extends NitrapiObject
      *
      * @return array list of arguments
      */
-    public function getArguments() {
+    public function getArguments(): array
+    {
         return $this->arguments;
     }
 
@@ -71,7 +77,8 @@ abstract class Service extends NitrapiObject
      *
      * @return int
      */
-    public function getLocationId() {
+    public function getLocationId(): int
+    {
         return $this->location_id;
     }
 
@@ -80,7 +87,8 @@ abstract class Service extends NitrapiObject
      *
      * @return mixed
      */
-    public function getStatus() {
+    public function getStatus()
+    {
         return $this->status;
     }
 
@@ -89,7 +97,8 @@ abstract class Service extends NitrapiObject
      *
      * @return integer
      */
-    public function getStatusCode(): int {
+    public function getStatusCode(): int
+    {
         return $this->status_code;
     }
 
@@ -98,7 +107,8 @@ abstract class Service extends NitrapiObject
      *
      * @return mixed
      */
-    public function isReadonly() {
+    public function isReadonly()
+    {
         return $this->readonly;
     }
 
@@ -113,13 +123,12 @@ abstract class Service extends NitrapiObject
      *     $nitrapi->getService($serviceId)->doDelete();
      * });
      *
-     * @see Gameserver::refresh()
      * @param $fn
      * @return null|mixed The return value from the given lambda fn
+     * @see Gameserver::refresh()
      */
-    public static function forceAction($fn) {
-        $res = null;
-
+    public static function forceAction($fn)
+    {
         self::$ensureActiveService = false;
         $res = $fn();
         self::$ensureActiveService = true;
@@ -131,7 +140,8 @@ abstract class Service extends NitrapiObject
      * Returns if the service is currently installing.
      * @return bool
      */
-    public function isInstalling() {
+    public function isInstalling(): bool
+    {
         return $this->getStatus() === self::SERVICE_STATUS_INSTALLING;
     }
 
@@ -139,7 +149,8 @@ abstract class Service extends NitrapiObject
      * Returns if the service is currently active.
      * @return bool
      */
-    public function isActive() {
+    public function isActive(): bool
+    {
         return $this->getStatus() === self::SERVICE_STATUS_ACTIVE;
     }
 
@@ -147,7 +158,8 @@ abstract class Service extends NitrapiObject
      * Returns if the service is currently suspended.
      * @return bool
      */
-    public function isSuspended() {
+    public function isSuspended(): bool
+    {
         return $this->getStatus() === self::SERVICE_STATUS_SUSPENDED;
     }
 
@@ -155,7 +167,8 @@ abstract class Service extends NitrapiObject
      * Returns if the service is currently deleted.
      * @return bool
      */
-    public function isDeleted() {
+    public function isDeleted(): bool
+    {
         return $this->getStatus() === self::SERVICE_STATUS_DELETED;
     }
 
@@ -163,7 +176,8 @@ abstract class Service extends NitrapiObject
      * Returns if the service is currently admin locked.
      * @return bool
      */
-    public function isAdminLocked() {
+    public function isAdminLocked(): bool
+    {
         return $this->getStatus() === self::SERVICE_STATUS_ADMINLOCKED;
     }
 
@@ -171,7 +185,8 @@ abstract class Service extends NitrapiObject
      * Returns if the service is currently admin locked and suspended.
      * @return bool
      */
-    public function isAdminLockedSuspended() {
+    public function isAdminLockedSuspended(): bool
+    {
         return $this->getStatus() === self::SERVICE_STATUS_ADMINLOCKED_SUSPENDED;
     }
 
@@ -184,7 +199,8 @@ abstract class Service extends NitrapiObject
      *
      * @return bool True if the service has the auto extension enabled
      */
-    public function isAutoExtensionEnabled() {
+    public function isAutoExtensionEnabled(): bool
+    {
         return (bool)$this->auto_extension;
     }
 
@@ -194,7 +210,8 @@ abstract class Service extends NitrapiObject
      *
      * @return int The duration for the auto extension feature
      */
-    public function getAutoExtensionDuration() {
+    public function getAutoExtensionDuration(): int
+    {
         return $this->auto_extension_duration;
     }
 
@@ -203,58 +220,54 @@ abstract class Service extends NitrapiObject
      *
      * @return mixed
      */
-    public function getComment() {
+    public function getComment()
+    {
         return $this->comment;
     }
 
     /**
      * Returns the suspend date
-     *
-     * @return \DateTime
      */
-    public function getSuspendDate() {
-        $datetime = new \DateTime();
+    public function getSuspendDate(): DateTime
+    {
+        $datetime = new DateTime();
         $datetime->setTimestamp(strtotime($this->suspend_date));
         return $datetime;
     }
 
     /**
      * Returns the delete date
-     *
-     * @return \DateTime
      */
-    public function getDeleteDate() {
-        $datetime = new \DateTime();
+    public function getDeleteDate(): DateTime
+    {
+        $datetime = new DateTime();
         $datetime->setTimestamp(strtotime($this->delete_date));
         return $datetime;
     }
 
     /**
      * Returns the start date
-     *
-     * @return \DateTime
      */
-    public function getStartDate() {
-        $datetime = new \DateTime();
+    public function getStartDate(): DateTime
+    {
+        $datetime = new DateTime();
         $datetime->setTimestamp(strtotime($this->start_date));
         return $datetime;
     }
 
     /**
      * Returns the service id
-     *
-     * @return int
      */
-    public function getId() {
+    public function getId(): int
+    {
         return (int)$this->id;
     }
 
     /**
      * Returns the user id of the service
-     *
-     * @return int
      */
-    public function getUserId() {
+    public function getUserId(): int
+    {
         return (int)$this->user_id;
     }
 
@@ -263,7 +276,8 @@ abstract class Service extends NitrapiObject
      *
      * @return string
      */
-    public function getUsername() {
+    public function getUsername(): string
+    {
         return (string)$this->username;
     }
 
@@ -272,7 +286,8 @@ abstract class Service extends NitrapiObject
      *
      * @return string
      */
-    public function getWebsocketToken() {
+    public function getWebsocketToken(): string
+    {
         return (string)$this->websocket_token;
     }
 
@@ -281,7 +296,8 @@ abstract class Service extends NitrapiObject
      *
      * @return array
      */
-    public function getServiceDetails() {
+    public function getServiceDetails(): array
+    {
         return (array)$this->details;
     }
 
@@ -290,7 +306,8 @@ abstract class Service extends NitrapiObject
      *
      * @return array
      */
-    public function getRoles() {
+    public function getRoles(): array
+    {
         return (array)$this->roles;
     }
 
@@ -298,8 +315,10 @@ abstract class Service extends NitrapiObject
      * Returns the ddos history
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getDDoSHistory() {
+    public function getDDoSHistory(): array
+    {
         $url = "services/" . $this->getId() . "/ddos";
         return $this->getApi()->dataGet($url);
     }
@@ -325,30 +344,42 @@ abstract class Service extends NitrapiObject
      * games will be returned. With the second parameter you can
      * suppress all non alert messages.
      *
-     * @param boolean true if you need items from all games
-     * @param boolean true if only alerts should be shown
+     * @param bool $allGames true if you need items from all games
+     * @param bool $onlyAlerts true if only alerts should be shown
      *
      * @return array a list of changelog items
+     * @throws NitrapiException
      */
-    public function getChangelogItems($allGames = false, $onlyAlerts = false) {
+    public function getChangelogItems(bool $allGames = false, bool $onlyAlerts = false): array
+    {
         $changelogs = $this->getApi()->dataGet('/changelogs');
-        if (!isset($changelogs['changelogs'])) return [];
+        if (!isset($changelogs['changelogs'])) {
+            return [];
+        }
 
         $filteredChangelogs = $changelogs['changelogs'];
 
-        // Filter out all non current game related items
+        // Filter out all non-current game related items
         if (!$allGames) {
             $details = $this->getServiceDetails();
-            if (!isset($details['game'])) return [];
-            foreach ($filteredChangelogs as $i => $changelog)
-                if (!isset($changelog['game']) || $changelog['game'] != $details['game'])
+            if (!isset($details['game'])) {
+                return [];
+            }
+            foreach ($filteredChangelogs as $i => $changelog) {
+                if (!isset($changelog['game']) || $changelog['game'] !== $details['game']) {
                     unset($filteredChangelogs[$i]);
+                }
+            }
         }
 
         // Filter out all normal items (only alerts)
-        if ($onlyAlerts)
-            foreach ($filteredChangelogs as $i => $changelog)
-                if (!$changelog['alert']) unset($filteredChangelogs[$i]);
+        if ($onlyAlerts) {
+            foreach ($filteredChangelogs as $i => $changelog) {
+                if (!$changelog['alert']) {
+                    unset($filteredChangelogs[$i]);
+                }
+            }
+        }
 
         return $filteredChangelogs;
     }
@@ -357,27 +388,25 @@ abstract class Service extends NitrapiObject
      * Returns the last log entries. You can optionally
      * provide a page number.
      *
-     * @param int $hours
-     * @return array
+     * @throws NitrapiException
      */
-    public function getLogs($page = 1) {
+    public function getLogs(int $page = 1): array
+    {
         $url = "services/" . $this->getId() . "/logs";
         return $this->getApi()->dataGet($url, null, [
             'query' => [
-                'page' => $page
-            ]
+                'page' => $page,
+            ],
         ]);
     }
 
     /**
      * Adds a new log entry to your service
      *
-     * @param string $category
-     * @param string $message
-     * @param string $severity
-     * @return boolean
+     * @throws NitrapiException
      */
-    public function addLog($category, $message, $severity = 'info') {
+    public function addLog(string $category, string $message, string $severity = 'info'): bool
+    {
         $url = "services/" . $this->getId() . "/logs";
         $this->getApi()->dataPost($url, [
             'category' => $category,
@@ -390,9 +419,10 @@ abstract class Service extends NitrapiObject
     /**
      * This can be used to force delete a suspended service.
      *
-     * @return boolean
+     * @throws NitrapiException
      */
-    public function doDelete() {
+    public function doDelete(): bool
+    {
         $url = "services/" . $this->getId();
         $this->getApi()->dataDelete($url);
         return true;
@@ -401,9 +431,10 @@ abstract class Service extends NitrapiObject
     /**
      * Returns the sale price for the specified service.
      *
-     * @return integer
+     * @throws NitrapiException
      */
-    public function getSalePrice() {
+    public function getSalePrice(): int
+    {
         $url = "services/" . $this->getId() . "/sale_price";
         return $this->getApi()->dataGet($url)['sale_price']['price'];
     }
@@ -413,8 +444,10 @@ abstract class Service extends NitrapiObject
      * The sale price will be added as credit to your account.
      *
      * @return boolean
+     * @throws NitrapiException
      */
-    public function doCancel() {
+    public function doCancel(): bool
+    {
         $url = "services/" . $this->getId() . "/cancel";
         $this->getApi()->dataPost($url);
         return true;
@@ -423,9 +456,10 @@ abstract class Service extends NitrapiObject
     /**
      * Returns the task manager
      *
-     * @return TaskManager
+     * @throws NitrapiException
      */
-    public function getTaskManager() {
+    public function getTaskManager(): TaskManager
+    {
         return new TaskManager($this);
     }
 
@@ -434,28 +468,38 @@ abstract class Service extends NitrapiObject
      *
      * @return AppManager|bool
      */
-    public function getAppManager() {
-        if ($this instanceof CloudServer)
+    public function getAppManager()
+    {
+        if ($this instanceof CloudServer) {
             return new AppManager($this);
+        }
         return false;
     }
 
-    /**
-     * @param array $data
-     */
-    protected function loadData(array $data) {
+    protected function loadData(array $data): void
+    {
         $reflectionClass = new \ReflectionClass($this);
         $properties = $reflectionClass->getProperties();
 
         foreach ($properties as $property) {
-            if (!isset($data[$property->getName()])) continue;
-            if (!$property->isProtected()) continue;
+            if (!isset($data[$property->getName()])) {
+                continue;
+            }
+            if (!$property->isProtected()) {
+                continue;
+            }
             $value = $data[$property->getName()];
-            if (empty($value)) continue;
+            if (empty($value)) {
+                continue;
+            }
 
-            $property->setAccessible(true);
-            $property->setValue($this, $value);
-            $property->setAccessible(false);
+            if (PHP_VERSION_ID >= 80100) {
+                $property->setValue($this, $value);
+            } else {
+                $property->setAccessible(true);
+                $property->setValue($this, $value);
+                $property->setAccessible(false);
+            }
         }
     }
 
@@ -463,38 +507,49 @@ abstract class Service extends NitrapiObject
      * Returns all available domains to register subdomains to
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getDomains(): array {
+    public function getDomains(): array
+    {
         return $this->getApi()->dataGet("services/" . $this->getId() . "/subdomain/domains");
     }
 
     /**
      * Returns the currently set subdomain
      *
-     * @return array ["subdomain": "mysubdomain", "domain": "nitrado.net", "fqdn": "mysubdomain.nitrado.net", "domain_id": 5]
+     * @return array{
+     *     subdomain: string,
+     *     domain: string,
+     *     fqdn: string,
+     *     domain_id: int
+     * }
+     * @throws NitrapiException
      */
-    public function getSubdomain(): array {
+    public function getSubdomain(): array
+    {
         return $this->getApi()->dataGet("services/" . $this->getId() . "/subdomain");
     }
 
     /**
      * Deletes the currently set subdomain
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function deleteSubdomain(): string {
+    public function deleteSubdomain(): string
+    {
         return $this->getApi()->dataDelete("services/" . $this->getId() . "/subdomain");
     }
 
     /**
      * Sets a new subdomain
      *
-     * @return string
+     * @throws NitrapiException
      */
-    public function setSubdomain(string $subdomain, int $domain_id): string {
+    public function setSubdomain(string $subdomain, int $domain_id): string
+    {
         $data = [
-          "subdomain" => $subdomain,
-          "domain_id" => $domain_id
+            "subdomain" => $subdomain,
+            "domain_id" => $domain_id,
         ];
 
         return $this->getApi()->dataPut("services/" . $this->getId() . "/subdomain", $data);
@@ -505,8 +560,9 @@ abstract class Service extends NitrapiObject
      *
      * @return integer
      */
-    public function getServicetype(): int {
-        return (int) $this->servicetype;
+    public function getServicetype(): int
+    {
+        return (int)$this->servicetype;
     }
 
     /**
@@ -514,19 +570,29 @@ abstract class Service extends NitrapiObject
      *
      * @return bool
      */
-    public function isOwnService(): bool {
-        return (bool) $this->is_owner;
+    public function isOwnService(): bool
+    {
+        return (bool)$this->is_owner;
     }
 
-    public function getSupportAuthorization() {
+    public function getSupportAuthorization(): ?SupportAuthorization
+    {
         return null;
     }
 
-    public function createSupportAuthorization() {
+    /**
+     * @throws NitrapiErrorException
+     */
+    public function createSupportAuthorization(): SupportAuthorization
+    {
         throw new NitrapiErrorException("Support Authorizations aren't supported for this service type.");
     }
 
-    public function deleteSupportAuthorization() {
+    /**
+     * @throws NitrapiErrorException
+     */
+    public function deleteSupportAuthorization(): bool
+    {
         throw new NitrapiErrorException("Support Authorizations aren't supported for this service type.");
     }
 }

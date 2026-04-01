@@ -12,11 +12,12 @@ class HandleManager
      */
     protected $api;
 
-    const TYPE_OWNER_C = 'owner_c';
-    const TYPE_ADMIN_C = 'admin_c';
-    const TYPE_TECH_C = 'tech_c';
+    public const TYPE_OWNER_C = 'owner_c';
+    public const TYPE_ADMIN_C = 'admin_c';
+    public const TYPE_TECH_C = 'tech_c';
 
-    public function __construct(Nitrapi $api) {
+    public function __construct(Nitrapi $api)
+    {
         $this->api = $api;
     }
 
@@ -24,8 +25,10 @@ class HandleManager
      * Returns a array with all handles for your user.
      *
      * @return Handle[]
+     * @throws NitrapiException
      */
-    public function getHandles() {
+    public function getHandles(): array
+    {
         $handles = [];
 
         foreach ($this->api->dataGet('/domain/contact')['contacts'] as $contact) {
@@ -40,8 +43,10 @@ class HandleManager
      *
      * @param $handle
      * @return Handle
+     * @throws NitrapiException
      */
-    public function getHandle($handle) {
+    public function getHandle($handle): Handle
+    {
         foreach ($this->api->dataGet('/domain/contact')['contacts'] as $contact) {
             if ($contact['handle'] === $handle) {
                 return new Handle($this->api, $contact);
@@ -50,5 +55,4 @@ class HandleManager
 
         throw new NitrapiException("Handle " . $handle . " can't be found");
     }
-
 }

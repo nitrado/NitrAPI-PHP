@@ -2,7 +2,9 @@
 
 namespace Nitrapi\Order\Pricing\Products;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Order\Pricing\DimensionPricing;
+use Nitrapi\Order\Pricing\PricingException;
 use Nitrapi\Services\Service;
 Use Nitrapi\Nitrapi;
 use Nitrapi\Order\Pricing\Location;
@@ -18,11 +20,13 @@ class Gameserver extends DimensionPricing {
         $this->promoCode = $promoCode;
     }
 
-    public function setGame($game) {
+    public function setGame($game): void
+    {
         $this->additionals['game'] = $game;
     }
 
-    public function setModpack($modpack) {
+    public function setModpack($modpack): void
+    {
         $this->additionals['modpack'] = $modpack;
     }
 
@@ -32,7 +36,8 @@ class Gameserver extends DimensionPricing {
      * @param int $autoextend
      * @return void
      */
-    public function setAutoextend($autoextend) {
+    public function setAutoextend(int $autoextend): void
+    {
         $this->additionals['autoextend'] = $autoextend;
     }
 
@@ -41,10 +46,11 @@ class Gameserver extends DimensionPricing {
      *
      * @param $rentalTime
      * @param Service|null $service
-     * @throws \Nitrapi\Order\Pricing\PricingException
      * @return int
+     * @throws PricingException
+     * @throws NitrapiException
      */
-    public function getPrice($rentalTime, Service &$service = null) {
+    public function getPrice($rentalTime, ?Service $service = null): int {
         $price = parent::getPrice($rentalTime, $service);
 
         if (!empty($this->promoCode)) {
@@ -53,7 +59,7 @@ class Gameserver extends DimensionPricing {
                 if ($result['promo_code']['effect_type'] === 'DISCOUNT') {
                     $amount = $result['promo_code']['effect_params']['amount'];
 
-                    $price = $price  - intval($amount * $price);
+                    $price -= ($amount * $price);
                 }
             } catch(\Exception $e) {
                 //Ignore faulty promo code
@@ -64,7 +70,7 @@ class Gameserver extends DimensionPricing {
         return $price;
     }
 
-    protected function getNewOrderArray($rentalTime) {
+    protected function getNewOrderArray($rentalTime): array {
         $orderArray = parent::getNewOrderArray($rentalTime);
 
         if (!empty($this->promoCode)) {

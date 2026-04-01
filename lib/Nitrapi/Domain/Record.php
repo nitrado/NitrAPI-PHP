@@ -2,7 +2,7 @@
 
 namespace Nitrapi\Domain;
 
-use DateTime;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\NitrapiObject;
 use Nitrapi\Nitrapi;
 
@@ -37,7 +37,7 @@ class Record extends NitrapiObject
      * @param $data
      * @return $this
      */
-    public function setData($data)
+    public function setData($data): self
     {
         if (count($data) > 0) {
             $this->data = $data;
@@ -52,7 +52,7 @@ class Record extends NitrapiObject
      * @param $fqdn
      * @return $this
      */
-    public function setFqdn($fqdn)
+    public function setFqdn($fqdn): self
     {
         $this->fqdn = $fqdn;
 
@@ -64,9 +64,9 @@ class Record extends NitrapiObject
      *
      * @return bool
      */
-    public function setByUser()
+    public function setByUser(): bool
     {
-        return $this->data['mode'] == "manual";
+        return $this->data['mode'] === "manual";
     }
 
     /**
@@ -76,9 +76,10 @@ class Record extends NitrapiObject
      * @param string $type
      * @param string $content
      * @param int $ttl
-     * @return mixed
+     * @return array|bool|string
+     * @throws NitrapiException
      */
-    public function update($name, $type, $content, $ttl)
+    public function update(string $name, string $type, string $content, int $ttl)
     {
         $data = [
             "name_old" => $this->getName(),
@@ -87,7 +88,7 @@ class Record extends NitrapiObject
             "ttl" => $ttl,
             "name" => $name,
             "content" => $content,
-            "type" => $type
+            "type" => $type,
         ];
         return $this->getApi()->dataPut("/domain/" . $this->fqdn . "/records", $data);
     }
@@ -97,7 +98,7 @@ class Record extends NitrapiObject
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->data['name'];
     }
@@ -107,7 +108,7 @@ class Record extends NitrapiObject
      *
      * @return string
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->data['type'];
     }
@@ -117,7 +118,7 @@ class Record extends NitrapiObject
      *
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->data['content'];
     }
@@ -126,16 +127,15 @@ class Record extends NitrapiObject
      * Deletes the record
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function delete()
+    public function delete(): bool
     {
         $data = [
             "name" => $this->getName(),
             "type" => $this->getType(),
-            "content" => $this->getContent()
+            "content" => $this->getContent(),
         ];
         return $this->getApi()->dataDelete("/domain/" . $this->fqdn . "/records", $data);
     }
-
-
 }

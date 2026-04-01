@@ -2,11 +2,16 @@
 
 namespace Nitrapi\GameInfo;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\NitrapiObject;
 
-class GameInfoInterface extends NitrapiObject {
-
-    public function getGameList() {
+class GameInfoInterface extends NitrapiObject
+{
+    /**
+     * @throws NitrapiException
+     */
+    public function getGameList(): array
+    {
         $api = $this->getApi();
         $result = [];
 
@@ -19,7 +24,11 @@ class GameInfoInterface extends NitrapiObject {
         return $result;
     }
 
-    public function getGameListByFolderShort() {
+    /**
+     * @throws NitrapiException
+     */
+    public function getGameListByFolderShort(): array
+    {
         $result = [];
         $gameList = $this->getGameList();
 

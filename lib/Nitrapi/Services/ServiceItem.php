@@ -6,7 +6,8 @@ abstract class ServiceItem
 {
     protected $service;
 
-    public function __construct(Service $service, array $data) {
+    public function __construct(Service $service, array $data)
+    {
         $this->setService($service);
         $this->loadData($data);
     }
@@ -14,33 +15,40 @@ abstract class ServiceItem
     /**
      * @param array $data
      */
-    protected function loadData(array $data) {
+    protected function loadData(array $data): void
+    {
         $reflectionClass = new \ReflectionClass($this);
         $properties = $reflectionClass->getProperties();
 
         foreach ($properties as $property) {
-            if (!isset($data[$property->getName()])) continue;
-            if (!$property->isProtected()) continue;
+            if (!isset($data[$property->getName()])) {
+                continue;
+            }
+            if (!$property->isProtected()) {
+                continue;
+            }
             $value = $data[$property->getName()];
-            if ($value === null) continue;
+            if ($value === null) {
+                continue;
+            }
 
-            $property->setAccessible(true);
-            $property->setValue($this, $value);
-            $property->setAccessible(false);
+            if (PHP_VERSION_ID >= 80100) {
+                $property->setValue($this, $value);
+            } else {
+                $property->setAccessible(true);
+                $property->setValue($this, $value);
+                $property->setAccessible(false);
+            }
         }
     }
 
-    /**
-     * @param Service $service
-     */
-    protected function setService(Service $service) {
+    protected function setService(Service $service): void
+    {
         $this->service = $service;
     }
 
-    /**
-     * @return Service
-     */
-    protected function getService() {
+    protected function getService(): Service
+    {
         return $this->service;
     }
 }

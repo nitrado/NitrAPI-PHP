@@ -2,6 +2,7 @@
 
 namespace Nitrapi\Services\TaskManager;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Services\Service;
 
 class TaskManager
@@ -9,12 +10,17 @@ class TaskManager
     protected $service;
     protected $tasks = [];
 
-    public function __construct(Service $service) {
+    /**
+     * @throws NitrapiException
+     */
+    public function __construct(Service $service)
+    {
         $this->service = $service;
         $this->reloadTasks();
     }
 
-    public function getService() {
+    public function getService(): Service
+    {
         return $this->service;
     }
 
@@ -23,11 +29,16 @@ class TaskManager
      *
      * @return array
      */
-    public function getTasks() {
+    public function getTasks(): array
+    {
         return $this->tasks;
     }
 
-    public function getTaskList() {
+    /**
+     * @throws NitrapiException
+     */
+    public function getTaskList()
+    {
         $url = "services/" . $this->getService()->getId() . "/tasks/list";
         return $this->getService()->getApi()->dataGet($url)['tasks'];
     }
@@ -37,8 +48,10 @@ class TaskManager
      *
      * @param Task $task
      * @return Task
+     * @throws NitrapiException
      */
-    public function persistTask(Task $task) {
+    public function persistTask(Task $task): Task
+    {
         $id = $task->getId();
 
         if (empty($id)) {
@@ -69,8 +82,11 @@ class TaskManager
      *
      * @param Task $task
      * @return bool
+     * @throws NitrapiException
+     * @throws TaskException
      */
-    public function deleteTask(Task $task) {
+    public function deleteTask(Task $task): bool
+    {
         $id = $task->getId();
 
         if (empty($id)) {
@@ -85,8 +101,11 @@ class TaskManager
         return true;
     }
 
-
-    public function reloadTasks() {
+    /**
+     * @throws NitrapiException
+     */
+    public function reloadTasks(): void
+    {
         $url = "services/" . $this->getService()->getId() . "/tasks";
         $_tasks = $this->getService()->getApi()->dataGet($url);
 
@@ -94,7 +113,7 @@ class TaskManager
         foreach ($_tasks['tasks'] as $task) {
             $_ = new Task();
             $_->setTaskManager($this, $task);
-            $this->tasks[$task['id']] =  $_;
+            $this->tasks[$task['id']] = $_;
         }
     }
 }

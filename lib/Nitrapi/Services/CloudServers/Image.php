@@ -4,14 +4,15 @@ namespace Nitrapi\Services\CloudServers;
 
 class Image
 {
-    protected $id = null;
-    protected $name = null;
+    protected $id;
+    protected $name;
     protected $isWindows = false;
     protected $default = false;
     protected $hasDaemon = false;
     protected $isDaemonCompatible = false;
 
-    public function __construct($id, $name, $isWindows, $default, $hasDaemon, $isDaemonCompatible) {
+    public function __construct($id, $name, $isWindows, $default, $hasDaemon, $isDaemonCompatible)
+    {
         $this->id = $id;
         $this->name = $name;
         $this->isWindows = $isWindows;
@@ -20,27 +21,33 @@ class Image
         $this->isDaemonCompatible = $isDaemonCompatible;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function isWindows() {
+    public function isWindows()
+    {
         return $this->isWindows;
     }
 
-    public function isDefault() {
+    public function isDefault()
+    {
         return $this->default;
     }
 
-    public function hasDaemon() {
+    public function hasDaemon()
+    {
         return $this->hasDaemon;
     }
 
-    public function isDaemonCompatible() {
+    public function isDaemonCompatible()
+    {
         return $this->isDaemonCompatible;
     }
 }

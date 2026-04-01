@@ -2,6 +2,4 @@
 
 namespace Nitrapi\Common\Exceptions;
 
-class NitrapiPaymentException extends NitrapiException
-{
-}
+class NitrapiPaymentException extends NitrapiException {}

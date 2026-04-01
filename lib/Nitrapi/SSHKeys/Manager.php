@@ -2,6 +2,7 @@
 
 namespace Nitrapi\SSHKeys;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Nitrapi;
 
 class Manager
@@ -20,8 +21,9 @@ class Manager
      * Returns all your SSH Public Keys
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getPublicKeys()
+    public function getPublicKeys(): array
     {
         $url = "user/ssh_keys";
         $keys = [];
@@ -34,19 +36,16 @@ class Manager
     /**
      * Uploads a new SSH Public Key
      *
-     * @param $key
-     * @param bool $enabled
-     * @return bool
+     * @throws NitrapiException
      */
-    public function uploadPublicKey($key, $enabled = true)
+    public function uploadPublicKey($key, bool $enabled = true): bool
     {
         $url = "user/ssh_keys";
         $this->api->dataPost($url, [
             'key' => $key,
-            'enabled' => ($enabled ? 'true' : 'false')
+            'enabled' => ($enabled ? 'true' : 'false'),
         ]);
 
         return true;
     }
-
 }

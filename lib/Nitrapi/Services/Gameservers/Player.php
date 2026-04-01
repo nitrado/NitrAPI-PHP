@@ -2,14 +2,17 @@
 
 namespace Nitrapi\Services\Gameservers;
 
-class Player {
+use Nitrapi\Common\Exceptions\NitrapiException;
 
+class Player
+{
     /**
      * @var Gameserver $service
      */
     protected $service;
 
-    public function __construct(Gameserver $service) {
+    public function __construct(Gameserver $service)
+    {
         $this->service = $service;
     }
 
@@ -17,11 +20,11 @@ class Player {
      * Return a list of all online players.
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getOnlinePlayers() {
-        $url = "/services/".$this->service->getId()."/gameservers/games/players";
-        $whitelist = $this->service->getApi()->dataGet($url);
-
-        return $whitelist;
+    public function getOnlinePlayers(): array
+    {
+        $url = "/services/" . $this->service->getId() . "/gameservers/games/players";
+        return $this->service->getApi()->dataGet($url);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Nitrapi\Services\Voiceservers\Types;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
+
 class Mumble extends Type
 {
     /**
@@ -9,9 +11,11 @@ class Mumble extends Type
      *
      * @param string $username
      * @param string $password
-     * @return string
+     * @return true
+     * @throws NitrapiException
      */
-    public function addUser($username, $password) {
+    public function addUser(string $username, string $password): bool
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/mumble/user";
         $this->service->getApi()->dataPost($url, [
             'username' => $username,
@@ -19,19 +23,20 @@ class Mumble extends Type
         ]);
 
         return true;
-
     }
 
     /**
      * Deletes a User
      *
      * @param string $username
-     * @return string
+     * @return true
+     * @throws NitrapiException
      */
-    public function deleteUser($username) {
+    public function deleteUser(string $username): bool
+    {
         $url = "services/" . $this->service->getId() . "/voiceservers/mumble/user";
         $this->service->getApi()->dataDelete($url, [
-            'username' => $username
+            'username' => $username,
         ]);
 
         return true;

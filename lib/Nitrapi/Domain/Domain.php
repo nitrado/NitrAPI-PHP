@@ -3,15 +3,15 @@
 namespace Nitrapi\Domain;
 
 use DateTime;
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Common\NitrapiObject;
 use Nitrapi\Nitrapi;
 
 class Domain extends NitrapiObject
 {
-
-    const AUTH_CODE_STATUS_AVAILABLE = 'available';
-    const AUTH_CODE_STATUS_NOT_REQUESTED = 'not_requested';
-    const AUTH_CODE_STATUS_PENDING = 'pending';
+    public const AUTH_CODE_STATUS_AVAILABLE = 'available';
+    public const AUTH_CODE_STATUS_NOT_REQUESTED = 'not_requested';
+    public const AUTH_CODE_STATUS_PENDING = 'pending';
 
     /**
      * @var $data array
@@ -30,7 +30,7 @@ class Domain extends NitrapiObject
      * @param $data
      * @return $this
      */
-    public function setData($data)
+    public function setData($data): self
     {
         if (count($data) > 0) {
             $this->data = $data;
@@ -44,7 +44,7 @@ class Domain extends NitrapiObject
      *
      * @return int
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->data['id'];
     }
@@ -54,7 +54,7 @@ class Domain extends NitrapiObject
      *
      * @return string
      */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->data['status'];
     }
@@ -64,7 +64,7 @@ class Domain extends NitrapiObject
      *
      * @return DateTime|null
      */
-    public function getDeleteAt()
+    public function getDeleteAt(): ?DateTime
     {
         if (empty($this->data['delete_at'])) {
             return null;
@@ -78,7 +78,7 @@ class Domain extends NitrapiObject
      *
      * @return string
      */
-    public function getProvider()
+    public function getProvider(): string
     {
         return $this->data['provider'];
     }
@@ -88,8 +88,9 @@ class Domain extends NitrapiObject
      *
      * @return int days
      */
-    public function getCancelperiod() {
-        return (int) $this->data['cancelperiod'];
+    public function getCancelperiod(): int
+    {
+        return (int)$this->data['cancelperiod'];
     }
 
     /**
@@ -97,8 +98,9 @@ class Domain extends NitrapiObject
      *
      * @return int seconds
      */
-    public function getDuration() {
-        return (int) $this->data['duration'];
+    public function getDuration(): int
+    {
+        return (int)$this->data['duration'];
     }
 
     /**
@@ -106,12 +108,12 @@ class Domain extends NitrapiObject
      *
      * @return int
      */
-    public function deleteOnExpire()
+    public function deleteOnExpire(): int
     {
         return $this->data['delete_on_expire'];
     }
 
-    public function setDomain($domain)
+    public function setDomain(string $domain): self
     {
         $this->data['domain'] = $domain;
 
@@ -123,7 +125,7 @@ class Domain extends NitrapiObject
      *
      * @return string
      */
-    public function getDomain()
+    public function getDomain(): string
     {
         return $this->data['domain'];
     }
@@ -133,7 +135,7 @@ class Domain extends NitrapiObject
      *
      * @return DateTime
      */
-    public function getRenewUntil()
+    public function getRenewUntil(): DateTime
     {
         return (new DateTime())->setTimestamp(strtotime($this->data['renew_until']));
     }
@@ -143,7 +145,7 @@ class Domain extends NitrapiObject
      *
      * @return DateTime
      */
-    public function getPaidUntil()
+    public function getPaidUntil(): DateTime
     {
         return (new DateTime())->setTimestamp(strtotime($this->data['paid_until']));
     }
@@ -152,10 +154,11 @@ class Domain extends NitrapiObject
      * Sets new nameserver for the domain.
      * If no nameserver has been set, the default settings will be restored.
      *
-     * @param null $nameserver
-     * @return mixed
+     * @param array<int, string>|null $nameserver
+     * @return array|bool|string
+     * @throws NitrapiException
      */
-    public function setNameserver($nameserver = null)
+    public function setNameserver(?array $nameserver = null)
     {
         $data = [];
 
@@ -176,7 +179,7 @@ class Domain extends NitrapiObject
      *
      * @return array
      */
-    public function getNameserver()
+    public function getNameserver(): array
     {
         return $this->data['nameserver'];
     }
@@ -185,8 +188,9 @@ class Domain extends NitrapiObject
      * Returns an array of DNS Records
      *
      * @return Record[]
+     * @throws NitrapiException
      */
-    public function getDNSRecords()
+    public function getDNSRecords(): array
     {
         $records = [];
         $nitrapi = $this->getApi();
@@ -204,15 +208,16 @@ class Domain extends NitrapiObject
      * @param string $type
      * @param string $content
      * @param int $ttl
-     * @return mixed
+     * @return array|bool|string
+     * @throws NitrapiException
      */
-    public function setDNSRecord($name, $type, $content, $ttl)
+    public function setDNSRecord(string $name, string $type, string $content, int $ttl)
     {
         $data = [
             "name" => $name,
             "type" => $type,
             "content" => $content,
-            "ttl" => $ttl
+            "ttl" => $ttl,
         ];
         return $this->getApi()->dataPost("/domain/" . $this->getDomain() . "/records", $data);
     }
@@ -221,8 +226,9 @@ class Domain extends NitrapiObject
      * Returns an array with all available DNS record types and their displayed name
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getRecordTypes()
+    public function getRecordTypes(): array
     {
         return $this->getApi()->dataGet("/domain/" . $this->getDomain() . "/record_types");
     }
@@ -231,8 +237,9 @@ class Domain extends NitrapiObject
      * Returns an array with all available redirect types and their displayed name
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getRedirectTypes()
+    public function getRedirectTypes(): array
     {
         return $this->getApi()->dataGet("/domain/" . $this->getDomain() . "/redirect_types");
     }
@@ -241,8 +248,9 @@ class Domain extends NitrapiObject
      * Returns all redirects
      *
      * @return Redirect[]
+     * @throws NitrapiException
      */
-    public function getRedirects()
+    public function getRedirects(): array
     {
         $nitrapi = $this->getApi();
         $redirects = [];
@@ -262,16 +270,23 @@ class Domain extends NitrapiObject
      * @param string $metadescr
      * @param string $metakey
      * @return string
+     * @throws NitrapiException
      */
-    public function setRedirect($sld, $type, $target, $pagetitle = "", $metadescr = "", $metakey = "")
-    {
+    public function setRedirect(
+        string $sld,
+        string $type,
+        string $target,
+        string $pagetitle = "",
+        string $metadescr = "",
+        string $metakey = ""
+    ): string {
         $data = [
             "subdomain" => $sld,
             "type" => $type,
             "target" => $target,
             "pagetitle" => $pagetitle,
             "metadescription" => $metadescr,
-            "metakey" => $metakey
+            "metakey" => $metakey,
         ];
 
         return $this->getApi()->dataPost("/domain/" . $this->getDomain() . "/redirects", $data);
@@ -281,8 +296,9 @@ class Domain extends NitrapiObject
      * Returns settings of the DNS zone
      *
      * @return Zone
+     * @throws NitrapiException
      */
-    public function getZone()
+    public function getZone(): Zone
     {
         $result = $this->getApi()->dataGet("/domain/" . $this->getDomain() . "/zone");
         $nitrapi = $this->getApi();
@@ -294,7 +310,7 @@ class Domain extends NitrapiObject
      *
      * @return bool
      */
-    public function hasDns()
+    public function hasDns(): bool
     {
         return $this->data['dns'] == 1;
     }
@@ -304,7 +320,7 @@ class Domain extends NitrapiObject
      *
      * @return string
      */
-    public function getHandle()
+    public function getHandle(): string
     {
         return $this->data['handle'];
     }
@@ -312,7 +328,8 @@ class Domain extends NitrapiObject
     /**
      * Extends the Domain instantly.
      *
-     * @return mixed
+     * @return array|bool|string
+     * @throws NitrapiException
      */
     public function doExtend()
     {
@@ -323,8 +340,9 @@ class Domain extends NitrapiObject
      * Returns the Auth Code and the Auth Code status.
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getAuthCode()
+    public function getAuthCode(): array
     {
         return $this->getApi()->dataGet('/domain/' . $this->getDomain() . '/auth_code');
     }
@@ -334,7 +352,8 @@ class Domain extends NitrapiObject
      * It can take up to 24 hours until the Auth Code is available.
      * Requesting the Auth Code removes the transfer lock of the domain.
      *
-     * @return mixed
+     * @return array|bool|string
+     * @throws NitrapiException
      */
     public function createAuthCode()
     {
@@ -346,16 +365,20 @@ class Domain extends NitrapiObject
      * If you delete the Auth Code, the transfer lock will be re-enabled again.
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function deleteAuthCode()
+    public function deleteAuthCode(): array
     {
         return $this->getApi()->dataDelete('/domain/' . $this->getDomain() . '/auth_code');
     }
 
+    /**
+     * @throws NitrapiException
+     */
     public function changeHandle(Handle $handle, $type = HandleManager::TYPE_OWNER_C)
     {
         return $this->getApi()->dataPut('/domain/' . $this->getDomain() . '/handle/' . $handle->getHandle(), [
-            'type' => $type
+            'type' => $type,
         ]);
     }
 
@@ -363,8 +386,9 @@ class Domain extends NitrapiObject
      * This method returns true if the domain is available to be registered.
      *
      * @return bool
+     * @throws NitrapiException
      */
-    public function isFree()
+    public function isFree(): bool
     {
         return $this->getApi()->dataGet('/domain/' . $this->getDomain() . '/check')['check']['free'];
     }
@@ -376,9 +400,9 @@ class Domain extends NitrapiObject
      *
      * @deprecated feature no longer existent
      */
-    public function getServiceId()
+    public function getServiceId(): int
     {
-        return (int) $this->data['service_id'];
+        return (int)$this->data['service_id'];
     }
 
     /**
@@ -386,7 +410,7 @@ class Domain extends NitrapiObject
      *
      * @return DateTime
      */
-    public function getExpireDate()
+    public function getExpireDate(): DateTime
     {
         return (new DateTime())->setTimestamp(strtotime($this->data['expires']));
     }
@@ -396,27 +420,28 @@ class Domain extends NitrapiObject
      *
      * @return int
      */
-    public function getTldId()
+    public function getTldId(): int
     {
-        return (int) $this->data['tld_id'];
+        return (int)$this->data['tld_id'];
     }
 
     /**
-     * Returns if nameserver edits are allowed.
+     * Returns whether nameserver edits are blocked.
      *
-     * @return bool
+     * @return int
      */
-    public function nameserverEditBlocked()
+    public function nameserverEditBlocked(): int
     {
-        return (int) $this->data['block_nameserver_edit'];
+        return (int)$this->data['block_nameserver_edit'];
     }
 
     /**
      * Returns information about the DNS Zone
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getZoneInfo()
+    public function getZoneInfo(): array
     {
         return $this->getApi()->dataGet("/domain/" . $this->getDomain() . "/zone");
     }
@@ -425,8 +450,9 @@ class Domain extends NitrapiObject
      * Returns all current notifications
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getNotifications()
+    public function getNotifications(): array
     {
         return $this->getApi()->dataGet("/domain/" . $this->getDomain() . "/notifications");
     }
@@ -436,7 +462,8 @@ class Domain extends NitrapiObject
      *
      * @return bool
      */
-    public function isRegistered() {
+    public function isRegistered(): bool
+    {
         return $this->data['registered'] == 1;
     }
 
@@ -445,7 +472,8 @@ class Domain extends NitrapiObject
      *
      * @return int
      */
-    public function getRenewCount() {
+    public function getRenewCount(): int
+    {
         return (int)$this->data['renew_count'];
     }
 
@@ -454,7 +482,8 @@ class Domain extends NitrapiObject
      *
      * @return int
      */
-    public function getExtendCount() {
+    public function getExtendCount(): int
+    {
         return (int)$this->data['extend_count'];
     }
 
@@ -462,8 +491,10 @@ class Domain extends NitrapiObject
      * Returns information about the domain
      *
      * @return array
+     * @throws NitrapiException
      */
-    public function getInfo() {
+    public function getInfo(): array
+    {
         return $this->getApi()->dataGet("/domain/" . $this->getDomain() . "/info");
     }
 
@@ -473,11 +504,13 @@ class Domain extends NitrapiObject
      * @param integer $service_id
      * @return string success message
      *
+     * @throws NitrapiException
      * @deprecated feature no longer existent
      */
-    public function addService(int $service_id): string {
+    public function addService(int $service_id): string
+    {
         $data = [
-          "service_id" => $service_id
+            "service_id" => $service_id,
         ];
         return $this->getApi()->dataPut("/domain/" . $this->getDomain() . "/service", $data);
     }
@@ -487,9 +520,11 @@ class Domain extends NitrapiObject
      *
      * @return string
      *
+     * @throws NitrapiException
      * @deprecated feature no longer existent
      */
-    public function removeService(): string {
+    public function removeService(): string
+    {
         return $this->getApi()->dataDelete("/domain/" . $this->getDomain() . "/service");
     }
 
@@ -498,7 +533,8 @@ class Domain extends NitrapiObject
      *
      * @return boolean
      */
-    public function isLocked(): bool {
+    public function isLocked(): bool
+    {
         return (bool)$this->data['locked'];
     }
 }

@@ -2,10 +2,11 @@
 
 namespace Nitrapi\SSHKeys;
 
+use Nitrapi\Common\Exceptions\NitrapiException;
 use Nitrapi\Nitrapi;
 
-class SSHKey {
-
+class SSHKey
+{
     /**
      * @var Nitrapi
      */
@@ -16,7 +17,8 @@ class SSHKey {
      */
     private $data;
 
-    public function __construct(Nitrapi $api, array $data) {
+    public function __construct(Nitrapi $api, array $data)
+    {
         $this->api = $api;
         $this->data = $data;
         $this->data['full_public_key'] = $this->data['type'] . ' ' . $this->data['public_key'] . ' ' . $this->data['comment'];
@@ -27,7 +29,8 @@ class SSHKey {
      *
      * @return int
      */
-    public function getId() {
+    public function getId(): int
+    {
         return (int)$this->data['id'];
     }
 
@@ -36,7 +39,8 @@ class SSHKey {
      *
      * @return string
      */
-    public function getType() {
+    public function getType(): string
+    {
         return $this->data['type'];
     }
 
@@ -45,7 +49,8 @@ class SSHKey {
      *
      * @return string
      */
-    public function getComment() {
+    public function getComment(): string
+    {
         return $this->data['comment'];
     }
 
@@ -54,7 +59,7 @@ class SSHKey {
      *
      * @return string
      */
-    public function getPublicKey()
+    public function getPublicKey(): string
     {
         return $this->data['full_public_key'];
     }
@@ -62,9 +67,9 @@ class SSHKey {
     /**
      * Updates the existing SSH public key
      *
-     * @return SSHKey
+     * @throws NitrapiException
      */
-    public function setPublicKey($key)
+    public function setPublicKey($key): self
     {
         $this->data['full_public_key'] = $key;
         $this->doUpdate();
@@ -73,10 +78,8 @@ class SSHKey {
 
     /**
      * Returns true if the key is enabled
-     *
-     * @return bool
      */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return (bool)$this->data['enabled'];
     }
@@ -84,9 +87,9 @@ class SSHKey {
     /**
      * Returns true if the key is enabled
      *
-     * @return SSHKey
+     * @throws NitrapiException
      */
-    public function setEnabled($enabled = true)
+    public function setEnabled($enabled = true): self
     {
         $this->data['enabled'] = $enabled;
         $this->doUpdate();
@@ -96,9 +99,9 @@ class SSHKey {
     /**
      * Deletes this SSH public key
      *
-     * @return bool
+     * @throws NitrapiException
      */
-    public function doDelete()
+    public function doDelete(): bool
     {
         $url = "user/ssh_keys/" . $this->data['id'];
         $this->api->dataDelete($url);
@@ -109,17 +112,14 @@ class SSHKey {
     /**
      * Updates this SSH public key in database
      *
-     * @return $this
+     * @throws NitrapiException
      */
-    private function doUpdate()
+    private function doUpdate(): void
     {
         $url = "user/ssh_keys/" . $this->data['id'];
         $this->api->dataPost($url, [
             'key' => $this->getPublicKey(),
-            'enabled' => ($this->isEnabled() ? 'true' : 'false')
+            'enabled' => ($this->isEnabled() ? 'true' : 'false'),
         ]);
-
-        return $this;
     }
-
 }

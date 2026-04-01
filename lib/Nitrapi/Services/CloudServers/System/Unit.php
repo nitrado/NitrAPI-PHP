@@ -2,7 +2,9 @@
 
 namespace Nitrapi\Services\CloudServers\System;
 
-class DataMissingException extends \Exception {}
+use BadMethodCallException;
+use Nitrapi\Common\Exceptions\NitrapiException;
+use Nitrapi\Nitrapi;
 
 /**
  * Class Unit
@@ -32,11 +34,13 @@ class DataMissingException extends \Exception {}
  * @method int restart()
  * @method int reload()
  */
-class Unit {
+class Unit
+{
     private $systemd;
     private $data;
 
-    public function __construct(Systemd $systemd, array $data=[]) {
+    public function __construct(Systemd $systemd, array $data = [])
+    {
         $this->systemd = $systemd;
         $this->data = $data;
     }
@@ -44,15 +48,16 @@ class Unit {
     /**
      * Implement the getter methods for the $data array.
      *
-     * @example $app->getJobType();
-     *
      * @param string $name The method name
      * @param array $_ params, which are not used
      * @return mixed The resulting value from $data
      * @throws DataMissingException if the key in $data does not exist.
-     * @throws \BadMethodCallException if the method does not exits.
+     * @throws BadMethodCallException if the method does not exits.
+     * @throws NitrapiException
+     * @example $app->getJobType();
      */
-    public function __call($name, $_) {
+    public function __call(string $name, array $_)
+    {
         if (in_array($name, ['enable', 'disable', 'mask', 'umask'], true)) {
             /* @var array[][] $apiResponse */
             $apiResponse = $this->api()->dataPost($this->url('/' . $name));
@@ -66,11 +71,13 @@ class Unit {
         }
 
         if (preg_match('/get(.+)/', $name) === 0) {
-            throw new \BadMethodCallException("Method $name not found.");
+            throw new BadMethodCallException("Method $name not found.");
         }
         $method = strtolower($name[3]) . substr($name, 4);
         $key = strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $method));
-        if (isset($this->data[$key])) return $this->data[$key];
+        if (isset($this->data[$key])) {
+            return $this->data[$key];
+        }
         throw new DataMissingException('The key ' . $key . ' does not exist. Please set first.');
     }
 
@@ -78,8 +85,10 @@ class Unit {
      * Resets the failure state of a unit back to normal.
      *
      * @return void
+     * @throws NitrapiException
      */
-    public function resetFailed() {
+    public function resetFailed(): void
+    {
         $this->api()->dataPost($this->url('/reset_failed'));
     }
 
@@ -89,20 +98,27 @@ class Unit {
      * @param string $who which process to send the kill signal
      * @param int $signal which signal will be send
      * @return void
+     * @throws NitrapiException
      */
-    public function kill($who='all', $signal=15) {
+    public function kill(string $who = 'all', int $signal = 15): void
+    {
         $this->api()->dataPost($this->url('/kill'), [
             'who' => $who,
-            'signal' => $signal
+            'signal' => $signal,
         ]);
     }
 
-
-    private function url($endpoint) {
-        return '/services/' . $this->systemd->service->getId() . '/cloud_servers/system/units/' . $this->getName() . $endpoint;
+    private function url($endpoint): string
+    {
+        return '/services/'
+            . $this->systemd->service->getId()
+            . '/cloud_servers/system/units/'
+            . $this->getName()
+            . $endpoint;
     }
 
-    private function api() {
+    private function api(): Nitrapi
+    {
         return $this->systemd->service->getApi();
     }
 }

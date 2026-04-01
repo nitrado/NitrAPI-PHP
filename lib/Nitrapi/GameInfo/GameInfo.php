@@ -1,55 +1,67 @@
 <?php
+
 namespace Nitrapi\GameInfo;
 
 use Nitrapi\Common\NitrapiObject;
 use Nitrapi\Nitrapi;
 
-class GameInfo extends NitrapiObject{
-
+class GameInfo extends NitrapiObject
+{
     private $data;
 
-    public function __construct(Nitrapi $api, &$data) {
+    public function __construct(Nitrapi $api, &$data)
+    {
         parent::__construct($api);
         $this->data = $data;
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->data['id'];
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->data['name'];
     }
 
-    public function getMinimumSlots() {
+    public function getMinimumSlots()
+    {
         return $this->data['minimum_slots'];
     }
 
-    public function getMaximumRecommendedSlots() {
+    public function getMaximumRecommendedSlots()
+    {
         return $this->data['maximum_recommended_slots'];
     }
 
-    public function getLocationIds() {
+    public function getLocationIds()
+    {
         return $this->data['locations'];
     }
 
-    public function getPreOrderLocationIds() {
+    public function getPreOrderLocationIds()
+    {
         return !empty($this->data['preorder_locations']) ? $this->data['preorder_locations'] : [];
     }
 
-    public function getSlotMultiplier() {
+    public function getSlotMultiplier()
+    {
         return $this->data['slot_multiplier'];
     }
 
-    public function getFolderShort() {
+    public function getFolderShort()
+    {
         return $this->data['folder_short'];
     }
 
-    public function getPortlistShort() {
+    public function getPortlistShort()
+    {
         return $this->data['portlist_short'];
     }
 }
