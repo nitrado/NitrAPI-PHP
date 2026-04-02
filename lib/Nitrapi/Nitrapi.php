@@ -29,13 +29,13 @@ class Nitrapi extends Client
     /**
      * @param string|null $accessToken Bearer token for API authentication
      * @param array{
-     *     user_ip: string,
-     *     user_ipv6: string,
-     *     oAuthClientId: string,
-     *     oAuthClientSecret: string,
-     *     http_client: ClientInterface,
-     *     request_factory: RequestFactoryInterface,
-     *     stream_factory: StreamFactoryInterface,
+     *     user_ip?: string,
+     *     user_ipv6?: string,
+     *     oAuthClientId?: string,
+     *     oAuthClientSecret?: string,
+     *     http_client?: ClientInterface,
+     *     request_factory?: RequestFactoryInterface,
+     *     stream_factory?: StreamFactoryInterface,
      * } $options Client options
      * @param string $url Base URL, defaults to NITRAPI_LIVE_URL
      *
