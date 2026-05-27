@@ -391,4 +391,13 @@ class GameserverDetails
     public function getModQuotaMegabytes() {
         return $this->data['game_specific']['mod_quota_mb'];
     }
+
+    /**
+     * Returns restrictions that apply for the gameserver.
+     *
+     * @return array
+     */
+    public function getRestrictions() {
+        return is_array($this->data['restrictions']) ? $this->data['restrictions'] : [];
+    }
 }
