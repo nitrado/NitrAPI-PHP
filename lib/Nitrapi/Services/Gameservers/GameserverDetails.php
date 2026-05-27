@@ -400,4 +400,13 @@ class GameserverDetails
     public function getRestrictions() {
         return is_array($this->data['restrictions']) ? $this->data['restrictions'] : [];
     }
+
+    /**
+     * Returns whether the service was ordered via microsoft subscription.
+     *
+     * @return bool
+     */
+    public function isMicrosoftSubscription() {
+        return is_bool($this->data['is_microsoft_subscription']) && $this->data['is_microsoft_subscription'];
+    }
 }
