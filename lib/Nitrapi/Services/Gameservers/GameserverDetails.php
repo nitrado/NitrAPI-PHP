@@ -409,4 +409,13 @@ class GameserverDetails
     public function isMicrosoftSubscription() {
         return is_bool($this->data['is_microsoft_subscription']) && $this->data['is_microsoft_subscription'];
     }
+
+    /**
+     * Returns numeric id of the gameservers location.
+     *
+     * @return int
+     */
+    public function getLocationId() {
+        return $this->data['location_id'];
+    }
 }
