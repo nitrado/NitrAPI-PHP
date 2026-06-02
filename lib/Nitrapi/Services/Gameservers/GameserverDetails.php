@@ -391,4 +391,31 @@ class GameserverDetails
     public function getModQuotaMegabytes() {
         return $this->data['game_specific']['mod_quota_mb'];
     }
+
+    /**
+     * Returns restrictions that apply for the gameserver.
+     *
+     * @return array
+     */
+    public function getRestrictions() {
+        return is_array($this->data['restrictions']) ? $this->data['restrictions'] : [];
+    }
+
+    /**
+     * Returns whether the service was ordered via microsoft subscription.
+     *
+     * @return bool
+     */
+    public function isMicrosoftSubscription() {
+        return is_bool($this->data['is_microsoft_subscription']) && $this->data['is_microsoft_subscription'];
+    }
+
+    /**
+     * Returns numeric id of the gameservers location.
+     *
+     * @return int
+     */
+    public function getLocationId() {
+        return $this->data['location_id'];
+    }
 }
