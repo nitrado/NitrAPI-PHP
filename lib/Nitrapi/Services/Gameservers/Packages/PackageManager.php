@@ -27,8 +27,19 @@ class PackageManager {
             throw new NitrapiException($packages);
 
         $packageInstances = [];
-        foreach ($packages['packages'] as $package => $params)
-            $packageInstances[] = new Package($this->service, $package, $params['description'], $params['status'], $params['version'], $params['patches'], $params['dependencies']);
+        foreach ($packages['packages'] as $package => $params) {
+            $conflicts = isset($params['conflicts']) && is_array($params['conflicts']) ? $params['conflicts'] : [];
+            $packageInstances[] = new Package(
+                $this->service,
+                $package,
+                $params['description'],
+                $params['status'],
+                $params['version'],
+                $params['patches'],
+                $params['dependencies'],
+                $conflicts
+            );
+        }
         return $packageInstances;
     }
 }

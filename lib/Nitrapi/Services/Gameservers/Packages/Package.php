@@ -12,7 +12,7 @@ class Package {
      * @param Description $description
      * @param Status $status
      */
-    public function __construct($service, $name, $description, $status, $version, $patches, $dependencies) {
+    public function __construct($service, $name, $description, $status, $version, $patches, $dependencies, $conflicts = []) {
         $this->name = $name;
         $this->description = $description;
         $this->status = $status;
@@ -20,6 +20,7 @@ class Package {
         $this->version = $version;
         $this->patches = $patches;
         $this->dependencies = $dependencies;
+        $this->conflicts = $conflicts;
     }
 
     public function getName() {
@@ -44,6 +45,10 @@ class Package {
 
     public function getDependencies() {
         return $this->dependencies;
+    }
+
+    public function getConflicts() {
+        return $this->conflicts;
     }
 
     public function install($version) {
