@@ -418,4 +418,18 @@ class GameserverDetails
     public function getLocationId() {
         return $this->data['location_id'];
     }
+
+    /**
+     * @return bool
+     */
+    public function hasSlotLabel() {
+        return isset($this->data['slot_label']) && !empty($this->data['slot_label']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getSlotLabel() {
+        return isset($this->data['slot_label']) ? $this->data['slot_label'] : [];
+    }
 }
